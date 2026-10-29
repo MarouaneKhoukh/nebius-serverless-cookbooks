@@ -1,8 +1,8 @@
 [← Back to the cookbook](../README.md)
 
-# Optional Endpoint reference and CLI alternative
+# Optional Endpoint settings reference
 
-The README contains the complete default console setup. This page is optional reference and a CLI alternative. An existing compatible, token-authenticated Endpoint is sufficient. Otherwise create a **custom Endpoint** in the [Nebius console](https://console.nebius.com), reviewing this configuration first:
+The README contains the complete console, CLI and agent deployment choices in step 4. This page is optional settings reference; start with the README. An existing compatible, token-authenticated Endpoint is sufficient. Otherwise create a **custom Endpoint** in the [Nebius console](https://console.nebius.com), reviewing this configuration first:
 
 | Setting | Value |
 | --- | --- |
