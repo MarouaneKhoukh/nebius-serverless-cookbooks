@@ -20,6 +20,8 @@ The GPU Endpoint hosts the model used during ingestion and each text search. It 
 
 ## Media limits
 
+Supported images: `.jpg`, `.jpeg`, `.png`, `.webp`. Supported videos: `.mp4`, `.mov`, `.mkv`, `.webm`. Ingestion includes subdirectories and ignores symbolic links.
+
 The first path is deliberately bounded:
 
 | Input or derivative | Default behavior |
