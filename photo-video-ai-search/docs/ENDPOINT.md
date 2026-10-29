@@ -1,8 +1,8 @@
 [← Back to the cookbook](../README.md)
 
-# Deploy the embedding model
+# Optional Endpoint reference and CLI alternative
 
-An existing compatible, token-authenticated Endpoint is sufficient. Otherwise create a **custom Endpoint** in the [Nebius console](https://console.nebius.com), reviewing this configuration first:
+The README contains the complete default console setup. This page is optional reference and a CLI alternative. An existing compatible, token-authenticated Endpoint is sufficient. Otherwise create a **custom Endpoint** in the [Nebius console](https://console.nebius.com), reviewing this configuration first:
 
 | Setting | Value |
 | --- | --- |
