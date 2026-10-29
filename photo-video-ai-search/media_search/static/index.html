@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light">
+    <title>Find a moment · AI media search</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <script src="/static/app.js" defer></script>
+  </head>
+  <body>
+    <main class="page">
+      <header class="header">
+        <a class="brand" href="/" aria-label="AI media search home"><img class="nebius-logo" src="/static/brand/nebius-logo.svg" alt="Nebius" width="131" height="36"><span>MEDIA SEARCH<span class="brand-caption">Powered by Nebius Serverless AI</span></span></a>
+        <span class="local-badge"><span aria-hidden="true"></span>Your collection</span>
+      </header>
+
+      <section class="hero" aria-labelledby="page-title">
+        <p class="eyebrow">PHOTOS. VIDEOS. ONE SEARCH.</p>
+        <h1 id="page-title">Find a moment.<br><span>Describe what you see.</span></h1>
+        <p class="intro">Search your media by meaning, from “a dog at the beach” to “someone making coffee.” Qwen3-VL embeddings connect your words to images and video clips.</p>
+
+        <form class="search-form" id="search-form" role="search" aria-label="Search your media">
+          <label class="sr-only" for="query">Describe the photo or video you want to find</label>
+          <div class="search-row">
+            <svg class="search-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4.5 4.5"/></svg>
+            <input id="query" name="query" type="search" placeholder="A quiet street after the rain…" autocomplete="off" maxlength="500" required>
+            <button class="search-button" id="search-button" type="submit">Search <span aria-hidden="true">↗</span></button>
+          </div>
+          <div class="search-options">
+            <fieldset class="filters" aria-label="Media type">
+              <legend class="sr-only">Media type</legend>
+              <label><input type="radio" name="kind" value="all" checked><span>All media</span></label>
+              <label><input type="radio" name="kind" value="image"><span>Photos</span></label>
+              <label><input type="radio" name="kind" value="video"><span>Video clips</span></label>
+            </fieldset>
+            <button class="clear-button" id="clear-button" type="button" hidden>Clear search</button>
+          </div>
+        </form>
+        <p class="model-note" id="model-note">Embeddings on Nebius Serverless AI · Media and Qdrant stored separately</p>
+      </section>
+
+      <section class="collection" aria-labelledby="results-title" aria-busy="false" id="collection">
+        <div class="collection-heading">
+          <div><p class="eyebrow" id="results-kicker">YOUR LIBRARY</p><h2 id="results-title">The collection</h2></div>
+          <span class="result-count" id="result-count" role="status" aria-live="polite"></span>
+        </div>
+        <div class="notice" id="notice" role="status" aria-live="polite" hidden></div>
+        <div class="empty-state" id="empty-state" hidden>
+          <span class="empty-mark" aria-hidden="true">＋</span>
+          <h3 id="empty-title">Make your media searchable.</h3>
+          <p id="empty-description">Add a folder of photos and videos from your terminal, then refresh this page.</p>
+          <code id="ingest-command">python -m media_search ingest ./my-media</code>
+        </div>
+        <div class="gallery" id="gallery"></div>
+        <div class="collection-actions"><button class="load-more" id="load-more" type="button" hidden>Load more media <span aria-hidden="true">↓</span></button></div>
+        <p class="collection-footnote" id="collection-footnote" hidden>Similarity scores rank matches for this query. They are not confidence percentages.</p>
+      </section>
+
+      <footer><span>Built to explore your own media.</span><span>Qwen3-VL Embedding + Qdrant</span></footer>
+    </main>
+  </body>
+</html>
