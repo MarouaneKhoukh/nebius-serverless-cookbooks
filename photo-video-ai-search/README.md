@@ -72,6 +72,10 @@ In **Administration → IAM**, check that you have the `editor` role. In **Admin
 
 ## 4. Create the model Endpoint
 
+Choose **one** route: the console below, the expandable **CLI** instructions, or **an agent with Nebius skills/MCP**. All use the same model and return to step 5. Do not create a second Endpoint if you already completed another route.
+
+### Option A: Web console (recommended)
+
 In the sidebar, open **Serverless AI → Endpoints → Create endpoint**. Choose **Custom** and enter:
 
 | Setting | Value |
@@ -103,6 +107,150 @@ Open the Endpoint details and copy the managed **`https://` URL** under **Networ
 
 *These settings follow the [official Endpoint configuration](https://docs.nebius.com/serverless/endpoints/manage#how-to-create-an-endpoint) and [Qwen3-VL template](https://github.com/nebius/serverless-ai-cookbook/blob/main/templates/endpoint-qwen3-vl-embedding/README.md).*
 
+<details>
+<summary><strong>Option B: Create the Endpoint with the CLI</strong></summary>
+
+**Install and sign in.** This route uses the [official Nebius CLI](https://docs.nebius.com/cli/install), version **0.12.277 or newer**. If needed, install it:
+
+```bash
+curl -sSL https://artifacts.nebius.cloud/cli/install.sh | bash
+```
+
+Restart Terminal to load the CLI, then return to your recipe directory:
+
+```bash
+cd ~/Downloads/nebius-serverless-cookbooks-main/photo-video-ai-search
+source .venv/bin/activate
+export AI_AGENT="${AI_AGENT:-codex}"
+nebius version
+nebius profile create
+```
+
+If `nebius version` reports an older release, run `nebius update` yourself before continuing. For a new profile, choose a name such as `media-search`; keep `api.nebius.cloud`, `federation` authentication and `auth.nebius.com`. Sign in in the browser that opens, then select the same tenant and project as step 3. A compatible existing profile can be reused instead of creating another.
+
+**Set the resource IDs.** Copy your project ID from the console's project selector. Find `default-subnet` under **Networking → Virtual Networks → Subnets** and copy its ID. Replace both values below with those real IDs:
+
+```bash
+export PROJECT_ID=project-REPLACE_WITH_YOUR_ID
+export SUBNET_ID=vpcsubnet-REPLACE_WITH_YOUR_ID
+```
+
+**Save a token locally.** Generate the Endpoint token and write it directly into your existing `.env`, without printing it:
+
+```bash
+export MEDIA_SEARCH_ENDPOINT_TOKEN="$(python3 -c 'import secrets; print(secrets.token_urlsafe(32))')"
+python3 -c 'import os; from dotenv import set_key; set_key(".env", "EMBEDDING_API_KEY", os.environ["MEDIA_SEARCH_ENDPOINT_TOKEN"]); os.chmod(".env", 0o600)'
+```
+
+**Create once.** This command creates a billable regular H100 Endpoint with the same settings as Option A, using that saved token:
+
+```bash
+nebius ai endpoint create \
+  --parent-id "$PROJECT_ID" \
+  --name photo-video-embeddings \
+  --image vllm/vllm-openai:v0.19.1 \
+  --platform gpu-h100-sxm \
+  --preset 1gpu-16vcpu-200gb \
+  --subnet-id "$SUBNET_ID" \
+  --container-port 8000/http \
+  --disk-size 500Gi \
+  --shm-size 16Gi \
+  --auth token \
+  --token "$MEDIA_SEARCH_ENDPOINT_TOKEN" \
+  --container-command python3 \
+  --args '-m vllm.entrypoints.openai.api_server --model Qwen/Qwen3-VL-Embedding-8B --runner pooling --trust-remote-code --max-model-len 8192 --host 0.0.0.0 --port 8000' \
+  --async \
+  --format jsonpath='{.metadata.id}'
+unset MEDIA_SEARCH_ENDPOINT_TOKEN
+```
+
+The token is already saved in `.env`. The output is limited to a resource ID; use the lookup below to identify the Endpoint and its URL.
+
+To check state and get the managed URL without displaying credentials:
+
+```bash
+nebius ai endpoint get-by-name \
+  --parent-id "$PROJECT_ID" --name photo-video-embeddings \
+  --format jsonpath='{.metadata.id}{"\n"}{.status.state}{"\n"}{.status.public_endpoints[0]}{"\n"}'
+```
+
+If the URL is not assigned yet, wait and repeat this read command. Do not repeat `create`. Save the Endpoint ID for cleanup. Once it is running and has a `https://` URL, **continue at step 5**; your token is already in `.env`. Step 7 checks model readiness.
+
+</details>
+
+<details>
+<summary><strong>Option C: Ask an agent using Nebius skills or MCP</strong></summary>
+
+First complete the **CLI installation and sign-in** instructions in Option B, but skip its create command. Both agent approaches use your authenticated local Nebius CLI. Open this recipe directory in an agent with terminal access, or use the MCP credential handoff described below.
+
+**Choose Nebius skills.** Install the [official skills](https://github.com/nebius/skills):
+
+```bash
+brew install node
+npx skills add nebius/skills
+```
+
+In the installer, select your agent and the `nebius-cloud-basics` and `nebius-serverless-endpoints` skills. Restart the agent session if needed so it can discover them.
+
+**Or connect the operational MCP (beta).** The [official Nebius MCP server](https://github.com/nebius/mcp-server) requires Python 3.13+ for its own runtime; the gallery keeps its Python 3.12 environment. Install its tools:
+
+```bash
+brew install uv
+uv python install 3.13
+```
+
+Add this local server in your MCP client's server settings (for clients accepting `mcpServers` JSON, use this configuration):
+
+```json
+{
+  "mcpServers": {
+    "nebius": {
+      "command": "uvx",
+      "args": [
+        "--python", "3.13",
+        "--refresh-package", "nebius-mcp-server",
+        "nebius-mcp-server@git+https://github.com/nebius/mcp-server@main"
+      ],
+      "env": {
+        "SAFE_MODE": "true"
+      }
+    }
+  }
+}
+```
+
+If the client cannot find `uvx`, use the full path printed by `command -v uvx` as the configuration’s `command`. Its environment must also be able to find `nebius` (check `command -v nebius`). Restart or reconnect the client. Ask it to list `nebius_profiles` and check that `nebius_cli_help` and `nebius_cli_execute` are available. Keep safe mode enabled. The separate `docs.nebius.com/mcp` server only searches documentation; it cannot deploy this model.
+
+**Keep credentials local.** The operational MCP returns CLI output to the agent. Use output projections such as `--format jsonpath='{.metadata.id}'` or `--format jsonpath='{.status.state}'` for Endpoint reads, and never retrieve tokens through MCP. For creation and private token capture, use the agent's local terminal with credential output suppressed, or run Option B's token-generation and create commands yourself; they save the token in `.env`. An MCP-only agent can prepare the exact create command, then monitor the resource after that handoff.
+
+Paste this prompt after choosing one of the approaches above:
+
+```text
+Follow this cookbook using nebius-cloud-basics and nebius-serverless-endpoints,
+if installed, or the connected Nebius operational MCP. Confirm my project and
+check for an existing photo-video-embeddings Endpoint before creating one.
+
+Use the exact settings from step 4: Qwen/Qwen3-VL-Embedding-8B,
+vllm/vllm-openai:v0.19.1, pooling runner, trust-remote-code, context 8192,
+HTTP port 8000, regular gpu-h100-sxm / 1gpu-16vcpu-200gb,
+500 GiB disk, 16 GiB shared memory and token authentication.
+
+Show the deployment command and estimated cost. Ask for approval of paid
+creation/start and a bounded sample test unless I have already approved them.
+Deploy once. Keep tokens out of chat, tool output and logs; use a local terminal
+for private credential capture, or give me Option B's command to run myself.
+Do not pass credential-bearing output through MCP or disable its safe mode.
+
+Help me save the URL and token in local .env, then follow steps 6–8 for
+readiness, sample ingestion and the gallery. Report what worked, the Endpoint
+ID/URL/state and the scoped stop action. Stop at the approved time limit or
+when I finish testing; never leave paid compute running without telling me.
+```
+
+Whichever route you choose, **return to step 5** with the Endpoint's managed HTTPS URL and saved token, then follow the same database, readiness and gallery steps. If your agent cannot run a required action, use Option A or B; no additional Markdown guide is required.
+
+</details>
+
 ## 5. Connect the app to your Endpoint
 
 Back in the recipe terminal, open the local configuration file:
@@ -111,7 +259,7 @@ Back in the recipe terminal, open the local configuration file:
 nano .env
 ```
 
-Replace these two values with the URL and token you just saved:
+Replace these two values with the URL and token you saved. **CLI users:** your token is already set; replace only `EMBEDDING_BASE_URL`:
 
 ```dotenv
 EMBEDDING_BASE_URL=https://your-managed-endpoint-host
@@ -181,6 +329,17 @@ docker compose down
 
 3. In the Nebius console, return to **Serverless AI → Endpoints**. Find **photo-video-embeddings**, open its action menu, choose **Stop**, and confirm. Wait until the state is **Stopped**.
 
+If you used the CLI, you can stop it from Terminal instead. Replace the placeholder with the ID saved during creation:
+
+```bash
+export ENDPOINT_ID=aiendpoint-REPLACE_WITH_YOUR_ID
+export AI_AGENT="${AI_AGENT:-codex}"
+nebius ai endpoint stop --id "$ENDPOINT_ID"
+nebius ai endpoint get --id "$ENDPOINT_ID" --format jsonpath='{.status.state}'
+```
+
+Wait until the check reports `STOPPED`. An agent can perform this same scoped stop after your authorization.
+
 Closing the gallery does **not** stop the GPU. Stopping the Endpoint stops its compute and boot-disk charges; [separately mounted storage has its own billing](https://docs.nebius.com/serverless/pricing-quotas). This recipe does not mount extra cloud storage.
 
 Your local `data/` folder and Qdrant volume retain the media and vectors. Keep both. When you return, start this same Endpoint from its console action menu, run `docker compose up -d qdrant`, repeat the readiness check in step 7, and start the gallery again. In a new terminal, first return to the recipe directory and run `source .venv/bin/activate`.
@@ -207,4 +366,4 @@ Refresh the gallery afterward. Start with up to **20 images or short videos**; v
 | Ingestion fails | Read its reported error. Once fixed, rerun ingestion; completed items are skipped. |
 | Gallery is empty | Confirm ingestion reported five collection points and you started the app from the recipe directory. |
 
-Optional depth: [technical reference and agent prompt](docs/REFERENCE.md), [CLI deployment alternative](docs/ENDPOINT.md), [live test results](LIVE-TEST.md), and [local validation](VALIDATION.md). None is needed to follow the default console-and-local-app path above.
+Optional depth: [technical reference](docs/REFERENCE.md), [Endpoint settings reference](docs/ENDPOINT.md), [live test results](LIVE-TEST.md), and [local validation](VALIDATION.md). None is needed to follow the default console-and-local-app path above.
