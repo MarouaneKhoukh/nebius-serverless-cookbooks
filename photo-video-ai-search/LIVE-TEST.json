@@ -1,0 +1,179 @@
+{
+  "started_utc": "2026-10-29T13:11:36.464125+00:00",
+  "embedding_requests": 10,
+  "checks": {
+    "text_dimensions": 4096,
+    "repeat_ingestion_new_requests": 0,
+    "collection_points": 5,
+    "image_points": 3,
+    "video_points": 2,
+    "browser": {
+      "video_query_correct": true,
+      "query": "a moving red circle",
+      "kind": "video",
+      "matches": [
+        {
+          "start_seconds": 0,
+          "end_seconds": 8,
+          "score_displayed": 0.544
+        },
+        {
+          "start_seconds": 8,
+          "end_seconds": 12,
+          "score_displayed": 0.312
+        }
+      ],
+      "video_durations_seconds": [
+        8,
+        4
+      ],
+      "native_playback_observed": true,
+      "media_http_checks": [
+        {
+          "kind": "image",
+          "thumbnail_status": 200,
+          "media_status": 200,
+          "bytes_returned": 10766
+        },
+        {
+          "kind": "video",
+          "thumbnail_status": 200,
+          "media_status": 206,
+          "bytes_returned": 32
+        },
+        {
+          "kind": "video",
+          "thumbnail_status": 200,
+          "media_status": 206,
+          "bytes_returned": 32
+        },
+        {
+          "kind": "image",
+          "thumbnail_status": 200,
+          "media_status": 200,
+          "bytes_returned": 8404
+        },
+        {
+          "kind": "image",
+          "thumbnail_status": 200,
+          "media_status": 200,
+          "bytes_returned": 11297
+        }
+      ],
+      "live_gallery_url": "http://127.0.0.1:8081/"
+    }
+  },
+  "queries": [
+    {
+      "query": "red circle",
+      "kind": "image",
+      "expected_source": "synthetic_red_circle.png",
+      "top_source": "synthetic_red_circle.png",
+      "top1_correct": true,
+      "matches": [
+        {
+          "source": "synthetic_red_circle.png",
+          "score": 0.41471264
+        },
+        {
+          "source": "synthetic_green_triangle.png",
+          "score": 0.14486845
+        },
+        {
+          "source": "synthetic_blue_square.png",
+          "score": 0.12367708
+        }
+      ]
+    },
+    {
+      "query": "blue square",
+      "kind": "image",
+      "expected_source": "synthetic_blue_square.png",
+      "top_source": "synthetic_blue_square.png",
+      "top1_correct": true,
+      "matches": [
+        {
+          "source": "synthetic_blue_square.png",
+          "score": 0.46274155
+        },
+        {
+          "source": "synthetic_green_triangle.png",
+          "score": 0.16084898
+        },
+        {
+          "source": "synthetic_red_circle.png",
+          "score": 0.14375341
+        }
+      ]
+    },
+    {
+      "query": "green triangle",
+      "kind": "image",
+      "expected_source": "synthetic_green_triangle.png",
+      "top_source": "synthetic_green_triangle.png",
+      "top1_correct": true,
+      "matches": [
+        {
+          "source": "synthetic_green_triangle.png",
+          "score": 0.48067838
+        },
+        {
+          "source": "synthetic_blue_square.png",
+          "score": 0.18195426
+        },
+        {
+          "source": "synthetic_red_circle.png",
+          "score": 0.16798504
+        }
+      ]
+    }
+  ],
+  "status": "passed",
+  "endpoint_state": "RUNNING",
+  "successful_requests": [
+    {
+      "kind": "text",
+      "dimensions": 4096
+    },
+    {
+      "kind": "image_url",
+      "dimensions": 4096
+    },
+    {
+      "kind": "image_url",
+      "dimensions": 4096
+    },
+    {
+      "kind": "image_url",
+      "dimensions": 4096
+    },
+    {
+      "kind": "video_url",
+      "dimensions": 4096
+    },
+    {
+      "kind": "video_url",
+      "dimensions": 4096
+    },
+    {
+      "kind": "text",
+      "dimensions": 4096
+    },
+    {
+      "kind": "text",
+      "dimensions": 4096
+    },
+    {
+      "kind": "text",
+      "dimensions": 4096
+    },
+    {
+      "kind": "text",
+      "dimensions": 4096
+    }
+  ],
+  "stop_exit_code": 0,
+  "endpoint_final_state": "STOPPED",
+  "finished_utc": "2026-10-29T13:18:53.676690+00:00",
+  "resource_identifiers": "Omitted from published evidence; no effect on recorded checks."
+}

@@ -1,0 +1,8 @@
+# Direct dependencies pinned for Python 3.12+. Full resolved versions in requirements-lock.txt.
+-c requirements-lock.txt
+fastapi==0.162.0
+uvicorn==0.54.0
+httpx==0.28.1
+qdrant-client==1.20.0
+pillow==13.0.0
+python-dotenv==1.2.4

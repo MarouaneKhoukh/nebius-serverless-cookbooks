@@ -1,0 +1,11 @@
+.env
+.venv/
+__pycache__/
+.pytest_cache/
+data/
+sample_media/
+*.pyc
+
+# Machine-specific cloud resource state, not part of the published recipe.
+RUN-STATUS.md
+.DS_Store
