@@ -6,13 +6,15 @@ Find photos with **Qwen3-VL**, create missing images with **FLUX 3 Image Klein**
 
 **Powered by Nebius Serverless AI**
 
+[Try the live demo](https://nebius-serverless-search-create.vercel.app) — browse the starter photos, then connect your own Nebius Endpoint to search and create.
+
 ![Search, approve a prompt, generate an image and add it to the collection](docs/media/byo-endpoint-live.gif)
 
 [Watch the video](docs/media/byo-endpoint-live.mp4) · [Current interface](docs/media/search-create-core.png)
 
 *Real H200 recording with pauses shortened. The connection screen has since been simplified.*
 
-Both models share one Nebius GPU Endpoint. The web app runs on your computer; saved photos stay in your browser.
+Both models share one Nebius GPU Endpoint. Use the hosted demo or run the web app locally; saved photos stay in your browser.
 
 ## Before you start
 
