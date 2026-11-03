@@ -1,0 +1,320 @@
+{
+  "endpoint_id": "REDACTED_H200_ENDPOINT_ID",
+  "project_id": "REDACTED_PROJECT_ID",
+  "model": "Qwen/Qwen3-VL-Embedding-8B",
+  "instruction": "Represent the user's input.",
+  "image_preprocessing": "Pillow RGB with white background, maximum dimension 1024, JPEG quality 86; close approximation to browser canvas JPEG .86",
+  "request_budget": 16,
+  "embedding_requests_attempted": 16,
+  "generation_requests": 0,
+  "resource_mutations": 0,
+  "images": [
+    {
+      "label": "coffee beans",
+      "source_sha256": "0a3f2c40dd079917b1dcaac9aca04b1a29c7fa195afb369e186c0a5208f8e7b6",
+      "prepared_dimensions": [
+        960,
+        640
+      ],
+      "prepared_jpeg_bytes": 151222,
+      "embedding_seconds": 0.601
+    },
+    {
+      "label": "mountain lake",
+      "source_sha256": "6c6e808ba5d84473c64f7a38e4d7849f8a4fe505c69c5f0cbc6e70c442c96a18",
+      "prepared_dimensions": [
+        960,
+        640
+      ],
+      "prepared_jpeg_bytes": 95983,
+      "embedding_seconds": 0.31
+    },
+    {
+      "label": "city at night",
+      "source_sha256": "0a319a3c5134668f4fbc0ac9abb13c95e270f58a8b616a11688f96f737824fdb",
+      "prepared_dimensions": [
+        960,
+        550
+      ],
+      "prepared_jpeg_bytes": 126816,
+      "embedding_seconds": 0.296
+    },
+    {
+      "label": "duck wearing a scarf",
+      "source_sha256": "451ea928ed780dc96083fb8cf35a17d3036d653b3d540f119a26a4079ae6dc94",
+      "prepared_dimensions": [
+        1024,
+        1024
+      ],
+      "prepared_jpeg_bytes": 196860,
+      "embedding_seconds": 0.367
+    }
+  ],
+  "queries": [
+    {
+      "query": "football",
+      "embedding_seconds": 0.176,
+      "ranking": [
+        {
+          "label": "city at night",
+          "cosine": 0.1356365869704458
+        },
+        {
+          "label": "coffee beans",
+          "cosine": 0.04693500753886536
+        },
+        {
+          "label": "mountain lake",
+          "cosine": 0.03418751302544573
+        },
+        {
+          "label": "duck wearing a scarf",
+          "cosine": 0.03105540406686215
+        }
+      ]
+    },
+    {
+      "query": "soccer",
+      "embedding_seconds": 0.175,
+      "ranking": [
+        {
+          "label": "city at night",
+          "cosine": 0.1250174256008111
+        },
+        {
+          "label": "coffee beans",
+          "cosine": 0.06381357053533143
+        },
+        {
+          "label": "mountain lake",
+          "cosine": 0.045887637866227605
+        },
+        {
+          "label": "duck wearing a scarf",
+          "cosine": 0.03154659034587745
+        }
+      ]
+    },
+    {
+      "query": "a football match",
+      "embedding_seconds": 0.184,
+      "ranking": [
+        {
+          "label": "city at night",
+          "cosine": 0.15678303606388236
+        },
+        {
+          "label": "coffee beans",
+          "cosine": 0.08973501682454774
+        },
+        {
+          "label": "mountain lake",
+          "cosine": 0.065602063435721
+        },
+        {
+          "label": "duck wearing a scarf",
+          "cosine": 0.031048340575804256
+        }
+      ]
+    },
+    {
+      "query": "coffee",
+      "embedding_seconds": 0.173,
+      "ranking": [
+        {
+          "label": "coffee beans",
+          "cosine": 0.34773984086416865
+        },
+        {
+          "label": "mountain lake",
+          "cosine": 0.05804631019123029
+        },
+        {
+          "label": "city at night",
+          "cosine": 0.055165915324835606
+        },
+        {
+          "label": "duck wearing a scarf",
+          "cosine": 0.013276128283715988
+        }
+      ]
+    },
+    {
+      "query": "espresso",
+      "embedding_seconds": 0.175,
+      "ranking": [
+        {
+          "label": "coffee beans",
+          "cosine": 0.28120299107401137
+        },
+        {
+          "label": "city at night",
+          "cosine": 0.061679589963452054
+        },
+        {
+          "label": "mountain lake",
+          "cosine": 0.057286546079058864
+        },
+        {
+          "label": "duck wearing a scarf",
+          "cosine": -0.010337078457512621
+        }
+      ]
+    },
+    {
+      "query": "coffee beans",
+      "embedding_seconds": 0.173,
+      "ranking": [
+        {
+          "label": "coffee beans",
+          "cosine": 0.425544325615497
+        },
+        {
+          "label": "mountain lake",
+          "cosine": 0.049543729270493234
+        },
+        {
+          "label": "city at night",
+          "cosine": 0.035301541406162616
+        },
+        {
+          "label": "duck wearing a scarf",
+          "cosine": 0.007750838180430479
+        }
+      ]
+    },
+    {
+      "query": "mountain lake",
+      "embedding_seconds": 0.177,
+      "ranking": [
+        {
+          "label": "mountain lake",
+          "cosine": 0.4079257238070376
+        },
+        {
+          "label": "duck wearing a scarf",
+          "cosine": 0.207245693780415
+        },
+        {
+          "label": "city at night",
+          "cosine": 0.07836865300109541
+        },
+        {
+          "label": "coffee beans",
+          "cosine": 0.05246512208362013
+        }
+      ]
+    },
+    {
+      "query": "a lake in the mountains",
+      "embedding_seconds": 0.175,
+      "ranking": [
+        {
+          "label": "mountain lake",
+          "cosine": 0.4160251621750765
+        },
+        {
+          "label": "duck wearing a scarf",
+          "cosine": 0.1809403462423513
+        },
+        {
+          "label": "coffee beans",
+          "cosine": 0.074327380966232
+        },
+        {
+          "label": "city at night",
+          "cosine": 0.07192929085162011
+        }
+      ]
+    },
+    {
+      "query": "a city after dark",
+      "embedding_seconds": 0.182,
+      "ranking": [
+        {
+          "label": "city at night",
+          "cosine": 0.3599009711759719
+        },
+        {
+          "label": "mountain lake",
+          "cosine": 0.07751962834221698
+        },
+        {
+          "label": "coffee beans",
+          "cosine": 0.059198083279825724
+        },
+        {
+          "label": "duck wearing a scarf",
+          "cosine": -0.0009528162030084075
+        }
+      ]
+    },
+    {
+      "query": "a duck wearing a scarf",
+      "embedding_seconds": 0.177,
+      "ranking": [
+        {
+          "label": "duck wearing a scarf",
+          "cosine": 0.46688996506854485
+        },
+        {
+          "label": "city at night",
+          "cosine": 0.053106651665834975
+        },
+        {
+          "label": "mountain lake",
+          "cosine": 0.03484419331822284
+        },
+        {
+          "label": "coffee beans",
+          "cosine": -0.02025493842025285
+        }
+      ]
+    },
+    {
+      "query": "dog",
+      "embedding_seconds": 0.18,
+      "ranking": [
+        {
+          "label": "duck wearing a scarf",
+          "cosine": 0.11122083420642716
+        },
+        {
+          "label": "city at night",
+          "cosine": 0.07021914454181885
+        },
+        {
+          "label": "mountain lake",
+          "cosine": 0.046287155782552374
+        },
+        {
+          "label": "coffee beans",
+          "cosine": 0.010022814006767489
+        }
+      ]
+    },
+    {
+      "query": "red car",
+      "embedding_seconds": 0.177,
+      "ranking": [
+        {
+          "label": "city at night",
+          "cosine": 0.07974010694784951
+        },
+        {
+          "label": "duck wearing a scarf",
+          "cosine": 0.07463632103175794
+        },
+        {
+          "label": "coffee beans",
+          "cosine": 0.050759319538989184
+        },
+        {
+          "label": "mountain lake",
+          "cosine": 0.016716683729741576
+        }
+      ]
+    }
+  ],
+  "status": "complete"
+}

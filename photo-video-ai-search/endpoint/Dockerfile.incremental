@@ -1,0 +1,6 @@
+# Optional development shortcut after a full dependency image has been built.
+# The standard Dockerfile remains the reproducible public-base build path.
+ARG RUNTIME_BASE=nebius-media-search-flux3:local
+FROM ${RUNTIME_BASE}
+COPY endpoint/ /opt/cookbook/endpoint/
+ENV GPU_TELEMETRY_PATH=/run/cookbook/gpu-telemetry.json

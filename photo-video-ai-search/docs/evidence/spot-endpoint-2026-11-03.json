@@ -1,0 +1,102 @@
+{
+  "scope": "Bounded Spot H200 startup attempts; not a successful Spot inference demonstration.",
+  "resource_identifiers": "Account-specific identifiers, managed URLs and private addresses omitted.",
+  "region": "eu-north1",
+  "platform": "gpu-h200-sxm",
+  "preset": "1gpu-16vcpu-200gb",
+  "disk_gib": 500,
+  "runtime_base_image": "vllm/vllm-openai:v0.19.1@sha256:2622f38a0aa646c15ccc27bd5033911a58fd94ac69fd8f86aba0692d77cfe5b9",
+  "create_requested_utc": "2026-11-03T10:00:55.913754+00:00",
+  "creation_succeeded": true,
+  "preemptible": true,
+  "gpu_hourly_cap_usd": 2.0,
+  "pricing": {
+    "quoted_at_utc": "2026-11-03T10:00:58.252846+00:00",
+    "currency": "USD",
+    "tax_included": false,
+    "spot_compute_hourly_usd": "1.4",
+    "regular_compute_hourly_usd": "5.4",
+    "disk_hourly_usd": "0.048611",
+    "spot_plus_disk_hourly_usd": "1.448611",
+    "regular_plus_disk_hourly_usd": "5.448611",
+    "saving_percent_including_disk": "73.41320567755708748523247485",
+    "caveat": "Dated calculator estimate, not an invoice, guaranteed current price, or measured cost per image. Spot prices and capacity can change; disk is separate from the per-GPU-hour cap."
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "monitor_started_at": "2026-11-03T10:02:51.598348+00:00",
+      "finished_at": "2026-11-03T10:17:31.939210+00:00",
+      "sample_count": 17,
+      "observed_states": [
+        "IMAGE_PULLING",
+        "RUNNING",
+        "STOPPED"
+      ],
+      "phase_markers_observed": [
+        "checking_gpu",
+        "package_metadata",
+        "source_download_tools",
+        "isolated_environment",
+        "pinned_source",
+        "official_source",
+        "fetching_source",
+        "selecting_source",
+        "installing_packages",
+        "checking_embedding_packages",
+        "checking_generation_packages",
+        "runtime_bootstrap_complete",
+        "preparing_generation",
+        "downloading_classifier_weights",
+        "generation_weights_ready",
+        "starting_embedding",
+        "starting_generation"
+      ],
+      "failure_code": "Preempted",
+      "result": "resource_not_running",
+      "inference_performed": false,
+      "regular_endpoint_modified": false,
+      "both_model_apis_ready": false
+    },
+    {
+      "attempt": 2,
+      "monitor_started_at": "2026-11-03T10:18:42.630319+00:00",
+      "finished_at": "2026-11-03T10:21:28.133642+00:00",
+      "sample_count": 4,
+      "observed_states": [
+        "STARTING",
+        "STOPPED"
+      ],
+      "phase_markers_observed": [],
+      "failure_code": "Preempted",
+      "result": "resource_not_running",
+      "inference_performed": false,
+      "regular_endpoint_modified": false,
+      "both_model_apis_ready": false
+    }
+  ],
+  "final": {
+    "checked_utc": "2026-11-03T10:21:46.805711+00:00",
+    "spot_state": "STOPPED",
+    "spot_state_code": "Preempted",
+    "regular_state": "RUNNING",
+    "spot_inference_validated": false,
+    "demo_switched_to_spot": false,
+    "regular_model_health": {
+      "checked_utc": "2026-11-03T10:22:19.661835+00:00",
+      "models": {
+        "embedding": {
+          "health_http": 200,
+          "models_http": 200,
+          "correct_model": true
+        },
+        "generation": {
+          "health_http": 200,
+          "models_http": 200,
+          "correct_model": true
+        }
+      },
+      "ready": true
+    }
+  }
+}

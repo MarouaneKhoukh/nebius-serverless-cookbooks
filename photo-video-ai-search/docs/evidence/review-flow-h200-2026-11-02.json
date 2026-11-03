@@ -1,0 +1,117 @@
+{
+  "observed_epoch": 1793633737.056439,
+  "job_id": "26cecd30-ce33-4d72-9f99-b9bfa0bb29f2",
+  "status_before_save": "ready",
+  "points_before_save": 8,
+  "preview_requires_session_http": 403,
+  "other_session_preview_http": 404,
+  "prompt": "A jade-green ceramic teapot shaped like a sleepy dragon, curled tail handle, on a wooden tea tray beside a small white cup, soft morning window light, product photograph.",
+  "generation_created_epoch": 1793633691.248116,
+  "image_embedded_before_save": false,
+  "checked_utc": "2026-11-02T15:37:51.537453+00:00",
+  "endpoint_id": "REDACTED_H200_ENDPOINT_ID",
+  "project_id": "REDACTED_PROJECT_ID",
+  "gpu": "H200",
+  "search_only_and_cancel": {
+    "jobs_before": 5,
+    "jobs_after": 5,
+    "generated_images": 0
+  },
+  "saved": {
+    "status": "saved",
+    "item_id": "5825d26c-716e-5308-a59f-ed69c02624dc",
+    "points_after_save": 9,
+    "retrieval_rank": 1,
+    "retrieval_query": "a ceramic teapot shaped like a sleepy dragon",
+    "ui_similarity_rounded": 0.527
+  },
+  "discarded": {
+    "id": "cf61e323-d0a1-436f-b638-6593a0269a09",
+    "status": "discarded",
+    "points_after_discard": 9,
+    "private_preview_removed": true
+  },
+  "generation_requests_before": 5,
+  "generation_requests_after": 7,
+  "legacy_saved_jobs_preserved": 5,
+  "automated_checks": {
+    "passed": 46,
+    "subtests_passed": 13,
+    "warnings": 1,
+    "real_local_qdrant": true
+  },
+  "gpu_metrics": {
+    "observed_epoch": 1793633868.154849,
+    "http_status": 200,
+    "available": 1,
+    "stale": 0,
+    "phase_code": 5,
+    "latest_sample_age_seconds": 0.453,
+    "error_count": 0,
+    "error_code": 0,
+    "memory_used_mib": 108596.0,
+    "memory_total_mib": 143771.0,
+    "memory_free_mib": 35175.0,
+    "utilization_gpu_percent": 0.0,
+    "overall": {
+      "sample_count": 5248,
+      "sampled_peak_memory_used_mib": 108596.0,
+      "sampled_peak_utilization_gpu_percent": 100.0
+    },
+    "phase_peaks": {
+      "startup": {
+        "sample_count": 1070,
+        "sampled_peak_memory_used_mib": 98628.0,
+        "sampled_peak_utilization_gpu_percent": 100.0
+      },
+      "weight_download": {
+        "sample_count": 201,
+        "sampled_peak_memory_used_mib": 0.0,
+        "sampled_peak_utilization_gpu_percent": 0.0
+      },
+      "embedding_startup": {
+        "sample_count": 117,
+        "sampled_peak_memory_used_mib": 36629.0,
+        "sampled_peak_utilization_gpu_percent": 13.0
+      },
+      "generation_startup": {
+        "sample_count": 750,
+        "sampled_peak_memory_used_mib": 98628.0,
+        "sampled_peak_utilization_gpu_percent": 100.0
+      },
+      "idle": {
+        "sample_count": 4037,
+        "sampled_peak_memory_used_mib": 108596.0,
+        "sampled_peak_utilization_gpu_percent": 15.0
+      },
+      "embedding": {
+        "sample_count": 50,
+        "sampled_peak_memory_used_mib": 108596.0,
+        "sampled_peak_utilization_gpu_percent": 15.0
+      },
+      "generation": {
+        "sample_count": 91,
+        "sampled_peak_memory_used_mib": 108596.0,
+        "sampled_peak_utilization_gpu_percent": 99.0
+      }
+    },
+    "last_operations": {
+      "embedding": {
+        "sample_count": 2,
+        "sampled_peak_memory_used_mib": 108596.0,
+        "sampled_peak_utilization_gpu_percent": 0.0,
+        "sequence": 25,
+        "duration_seconds": 0.1066,
+        "completed": 20
+      },
+      "generation": {
+        "sample_count": 11,
+        "sampled_peak_memory_used_mib": 108596.0,
+        "sampled_peak_utilization_gpu_percent": 99.0,
+        "sequence": 24,
+        "duration_seconds": 9.0826,
+        "completed": 5
+      }
+    }
+  }
+}

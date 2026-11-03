@@ -1,0 +1,81 @@
+{
+  "endpoint_id": "REDACTED_H200_ENDPOINT_ID",
+  "project_id": "REDACTED_PROJECT_ID",
+  "endpoint_state": "RUNNING",
+  "real_model_calls": true,
+  "queries": [
+    {
+      "query": "coffee",
+      "top_id": "coffee-beans.jpg",
+      "match_basis": "named",
+      "cosine_similarity": 0.3456877679185665,
+      "rank": 1
+    },
+    {
+      "query": "a lake in the mountains",
+      "top_id": "mountain-lake.jpg",
+      "match_basis": "semantic",
+      "cosine_similarity": 0.42031629029893613,
+      "rank": 1
+    },
+    {
+      "query": "a city after dark",
+      "top_id": "city-at-night.jpg",
+      "match_basis": "semantic",
+      "cosine_similarity": 0.3592211179319558,
+      "rank": 1
+    }
+  ],
+  "embedding_requests": 9,
+  "bad_token_http": 401,
+  "connection": {
+    "embedding_model": "Qwen/Qwen3-VL-Embedding-8B",
+    "generation_model": "black-forest-labs/flux-3-image-klein",
+    "dimensions": 4096
+  },
+  "generation": {
+    "succeeded": true,
+    "size": [
+      1024,
+      1024
+    ],
+    "seconds": 11.4,
+    "model": "black-forest-labs/flux-3-image-klein",
+    "prompt": "A tiny yellow rubber duck wearing a blue knitted scarf on a smooth pebble beside a mountain stream, natural morning light, close-up photograph",
+    "subsequent_embedding_succeeded": true,
+    "image_text_cosine": 0.6651349962662372
+  },
+  "success": true,
+  "browser_validation": {
+    "connection": "Ready \u00b7 5 photos",
+    "collection_count": "5 photos",
+    "search_heading": "Matches for \u201ccoffee\u201d",
+    "first_result_title": "Coffee beans",
+    "starter_indexed": 3,
+    "upload_succeeded": true,
+    "photos_before_save": 4,
+    "photos_after_save": 5,
+    "photos_after_discard": 5,
+    "reload_and_reconnect_preserved_photos": true,
+    "token_exposed_in_capture": false,
+    "real_browser_generations": 2,
+    "generated_saved_query": "robot barista",
+    "generated_saved_rank": 1,
+    "discarded_prompt": "A violet glass pineapple on a clean white studio table, soft shadows, product photograph.",
+    "success": true
+  },
+  "automated_checks": {
+    "node_passed": 24,
+    "python_passed": 64,
+    "python_subtests_passed": 13,
+    "python_warning_count": 1
+  },
+  "hosting": {
+    "worker_build": "passed",
+    "esm_validation": "passed",
+    "archive_packaged": true,
+    "published": false,
+    "blocker": "Automatic approval review rejected credential-bearing publisher input; explicit approval pending."
+  },
+  "checked_utc": "2026-11-02T16:39:10.297910+00:00"
+}

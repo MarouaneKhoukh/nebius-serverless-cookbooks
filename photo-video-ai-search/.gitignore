@@ -1,9 +1,11 @@
 .env
+**/.env
 .venv/
 __pycache__/
 .pytest_cache/
 data/
 sample_media/
+sample_images/
 *.pyc
 
 # Machine-specific cloud resource state, not part of the published recipe.

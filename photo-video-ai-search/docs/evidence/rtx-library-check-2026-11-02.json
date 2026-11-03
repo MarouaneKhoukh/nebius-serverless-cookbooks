@@ -1,0 +1,76 @@
+{
+  "started_utc": "2026-11-02T13:29:20+00:00",
+  "endpoint_id": "REDACTED_RTX_ENDPOINT_ID",
+  "success": true,
+  "generation_submissions": 0,
+  "initial_points": 1,
+  "ingestion": [
+    {
+      "pass": 1,
+      "exit_code": 0,
+      "duration_seconds": 2.632,
+      "indexed": 3,
+      "skipped": 0,
+      "failed_sources": 0,
+      "collection_points": 4
+    },
+    {
+      "pass": 2,
+      "exit_code": 0,
+      "duration_seconds": 0.042,
+      "indexed": 0,
+      "skipped": 3,
+      "failed_sources": 0,
+      "collection_points": 4
+    }
+  ],
+  "searches": [
+    {
+      "case": "coffee",
+      "http_status": 200,
+      "duration_seconds": 0.794,
+      "match_found": true,
+      "best_score": 0.569435,
+      "result_count": 1,
+      "top_score": 0.569435,
+      "top_generated": false,
+      "expected_top_result": true
+    },
+    {
+      "case": "mountains",
+      "http_status": 200,
+      "duration_seconds": 0.813,
+      "match_found": true,
+      "best_score": 0.5874336,
+      "result_count": 1,
+      "top_score": 0.5874336,
+      "top_generated": false,
+      "expected_top_result": true
+    },
+    {
+      "case": "city",
+      "http_status": 200,
+      "duration_seconds": 0.803,
+      "match_found": true,
+      "best_score": 0.44402227,
+      "result_count": 1,
+      "top_score": 0.44402227,
+      "top_generated": false,
+      "expected_top_result": true
+    },
+    {
+      "case": "generated_robot",
+      "http_status": 200,
+      "duration_seconds": 0.799,
+      "match_found": true,
+      "best_score": 0.6995379,
+      "result_count": 1,
+      "top_score": 0.6995379,
+      "top_generated": true,
+      "expected_top_result": true
+    }
+  ],
+  "final_points": 4,
+  "finished_utc": "2026-11-02T13:29:27+00:00",
+  "source_sha256": "a44d6c0ecf3989d8e9609b078d355f93cea3ad4ba07a14348f5032a05304f680"
+}

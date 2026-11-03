@@ -6,4 +6,4 @@ Practical recipes for building AI applications with Nebius Serverless AI.
 
 | Cookbook | What you build |
 | --- | --- |
-| [Build AI Search for Your Photos and Videos](photo-video-ai-search/README.md) | Search photos and video clips by description with Qwen3-VL Embedding and Qdrant. |
+| [Search Your Photos and Create New Images](photo-video-ai-search/README.md) | Connect your Nebius Endpoint, search photos with Qwen3-VL, and create missing images with FLUX. Includes Regular/Spot setup and an optional Qdrant version. |

@@ -1,0 +1,59 @@
+{
+  "checked_at": "2026-11-02",
+  "origin": "http://127.0.0.1:8085",
+  "endpoint_id": "REDACTED_H200_ENDPOINT_ID",
+  "saved_photos": 5,
+  "generation_connected": false,
+  "generation_requests": 0,
+  "photos_added_or_removed": 0,
+  "checks": [
+    {
+      "query": "football",
+      "heading": "No matching photos for “football”",
+      "result_cards": 0,
+      "diagnostic_rows": [
+        "City at night0.135 · Below match threshold",
+        "Coffee beans0.045 · Below match threshold",
+        "Mountain lake0.034 · Below match threshold",
+        "live generated api check0.031 · Below match threshold",
+        "A small teal robot barista pouring espresso into a white ceramic cup in a warm wood-paneled cafe, natural window light, realistic photograph.0.016 · Below match threshold"
+      ]
+    },
+    {
+      "query": "espresso",
+      "heading": "Matches for “espresso”",
+      "result_cards": 2,
+      "visible_titles": [
+        "A small teal robot barista pouring espresso into a white ceramic cup in a warm wood-paneled cafe, natural window light, realistic photograph.",
+        "Coffee beans"
+      ],
+      "coffee_match_label": "Visual match"
+    },
+    {
+      "query": "coffee",
+      "heading": "Matches for “coffee”",
+      "visible_titles": [
+        "Coffee beans",
+        "A small teal robot barista pouring espresso into a white ceramic cup in a warm wood-paneled cafe, natural window light, realistic photograph."
+      ],
+      "result_cards": 2
+    },
+    {
+      "query": "a lake in the mountains",
+      "heading": "Matches for “a lake in the mountains”",
+      "visible_titles": [
+        "Mountain lake"
+      ],
+      "result_cards": 1
+    },
+    {
+      "query": "a city after dark",
+      "heading": "Matches for “a city after dark”",
+      "visible_titles": [
+        "City at night"
+      ],
+      "result_cards": 1
+    }
+  ],
+  "back_to_collection_cards": 5
+}

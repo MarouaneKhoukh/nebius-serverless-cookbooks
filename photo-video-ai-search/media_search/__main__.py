@@ -71,17 +71,35 @@ def main():
     p.add_argument("--force", action="store_true", help="Re-embed existing deterministic points.")
     p = sub.add_parser("check-endpoint", help="Wait for readiness, then request one text embedding.")
     p.add_argument("--timeout", type=int, default=900)
+    p = sub.add_parser("check-generation", help="Wait for FLUX readiness without generating an image.")
+    p.add_argument("--timeout", type=int, default=1800)
     p = sub.add_parser("search", help="Embed a text query and return matching media.")
     p.add_argument("query")
     p.add_argument("--kind", choices=["all", "image", "video"], default="all")
-    sub.add_parser("serve", help="Start local gallery on http://127.0.0.1:8080.")
+    p = sub.add_parser("serve", help="Start the gallery (loopback by default).")
+    p.add_argument("--host", default="127.0.0.1")
+    p.add_argument("--port", type=int, default=8080)
     args = parser.parse_args()
     settings = Settings.from_env()
     try:
         if args.command == "serve":
             import uvicorn
             from .app import create_app
-            uvicorn.run(create_app(settings), host="127.0.0.1", port=8080)
+            uvicorn.run(create_app(settings), host=args.host, port=args.port,
+                        proxy_headers=settings.public_demo,
+                        forwarded_allow_ips="*" if settings.public_demo else "127.0.0.1")
+            return 0
+        if args.command == "check-generation":
+            from .generation import Generator
+            if not 1 <= args.timeout <= 1800:
+                raise ValueError("--timeout must be between 1 and 1800 seconds.")
+            generator = Generator(settings)
+            try:
+                generator.wait_ready(args.timeout)
+                print(json.dumps({"ready": True, "model": settings.generation_model,
+                                  "generation_executed": False}))
+            finally:
+                generator.close()
             return 0
         if args.command == "ingest":
             if args.max_files < 1:

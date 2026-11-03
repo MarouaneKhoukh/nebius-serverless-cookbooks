@@ -40,7 +40,7 @@ class Store:
     def item(point):
         payload = point.payload or {}
         return {"id": str(point.id), **{key: payload.get(key) for key in
-                ("kind", "title", "source_name", "start_seconds", "end_seconds")},
+                ("kind", "title", "source_name", "start_seconds", "end_seconds", "generated", "generation_model", "prompt", "generated_at")},
                 "media_url": "/media/" + quote(payload["media_path"], safe="/"),
                 "thumbnail_url": "/media/" + quote(payload["thumbnail_path"], safe="/"),
                 "score": getattr(point, "score", None)}

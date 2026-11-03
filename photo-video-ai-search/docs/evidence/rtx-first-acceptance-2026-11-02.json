@@ -1,0 +1,83 @@
+{
+  "status": "first acceptance pass; subsequent run and verified shutdown recorded in rtx-shared-gpu-2026-11-02.json",
+  "date": "2026-11-02",
+  "endpoint_id": "REDACTED_RTX_ENDPOINT_ID",
+  "gpu": "NVIDIA RTX PRO 6000 Blackwell",
+  "deployment_provenance": {
+    "boot_image": "vllm/vllm-openai:v0.19.1",
+    "runtime_setup": "exact cookbook endpoint sources injected; frozen 204-package generation environment bootstrapped at startup",
+    "custom_docker_image_booted_on_gpu": false
+  },
+  "access_checks": [
+    {
+      "role": "embedding",
+      "unauthenticated_status": 401,
+      "authenticated_status": 200
+    },
+    {
+      "role": "generation",
+      "unauthenticated_status": 401,
+      "authenticated_status": 200
+    }
+  ],
+  "started_utc": "2026-11-02T13:25:25+00:00",
+  "finished_utc": "2026-11-02T13:27:06+00:00",
+  "success": true,
+  "models": {
+    "embedding": "Qwen/Qwen3-VL-Embedding-8B",
+    "generation": "black-forest-labs/flux-3-image-klein"
+  },
+  "initial_points": 0,
+  "initial_images": 0,
+  "no_match_search": {
+    "match_found": false,
+    "result_count": 0,
+    "best_score": null
+  },
+  "generation": {
+    "status_transitions": [
+      "running",
+      "succeeded"
+    ],
+    "submission_count": 1,
+    "duration_seconds": 50.229,
+    "generated": true,
+    "generation_model": "black-forest-labs/flux-3-image-klein"
+  },
+  "generated_media": {
+    "bytes": 262810,
+    "dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "c0bc65e2e69334a1b1de785afb952c6b8ff282f731dd83aef9f9dd6d7dee976b"
+  },
+  "subsequent_search": {
+    "match_found": true,
+    "result_count": 1,
+    "best_score": 0.6995379,
+    "generated_item_returned": true,
+    "generated_item_rank": 1
+  },
+  "final_points": 1,
+  "total_acceptance_duration_seconds": 100.784,
+  "first_generation_gateway_operation": {
+    "sample_count": 45,
+    "sampled_peak_memory_used_mib": 81663.0,
+    "sampled_peak_utilization_gpu_percent": 98.0,
+    "sequence": 2,
+    "duration_seconds": 43.7092,
+    "completed": 1
+  },
+  "gpu_observation": {
+    "reported_total_mib": 97887.0,
+    "sampled_startup_peak_used_mib": 73509.0,
+    "sampled_peak_used_mib_through_first_acceptance": 81663.0,
+    "free_mib_at_post_acceptance_observation": 16224.0,
+    "measurement": "whole GPU sampled nvidia-smi; not a CUDA allocator high-water mark or a final stress-test maximum"
+  },
+  "source_sha256": {
+    "baseline.json": "cf8e56c6fd01a9d12f4a2937cf6a08bc8c90fd22b46c08955a69f1e4957c64c5",
+    "acceptance-1793625925.json": "474e05fee345a178b72a6fcddcdaf0d87eeb38ba19edcb22e4af7f4d15605601"
+  }
+}

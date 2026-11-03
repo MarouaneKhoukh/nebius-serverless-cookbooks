@@ -1,0 +1,62 @@
+name: nebius-search-create
+services:
+  caddy:
+    image: caddy:2.10.2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN:?Set DOMAIN to your real DNS name}
+      ACME_EMAIL: ${ACME_EMAIL:?Set ACME_EMAIL}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - web
+  web:
+    build:
+      context: ..
+      dockerfile: deploy/web.Dockerfile
+    restart: unless-stopped
+    # Only Caddy exposes this service. Uvicorn trusts forwarded IPs from Caddy.
+    environment:
+      PUBLIC_DEMO: "true"
+      EMBEDDING_BASE_URL: ${EMBEDDING_BASE_URL:?Set the port-8000 managed URL}
+      EMBEDDING_API_KEY: ${EMBEDDING_API_KEY:?Set the Endpoint token}
+      GENERATION_BASE_URL: ${GENERATION_BASE_URL:?Set the port-8001 managed URL}
+      GENERATION_API_KEY: ${GENERATION_API_KEY:?Set the Endpoint token}
+      GENERATION_MODEL: black-forest-labs/flux-3-image-klein
+      QDRANT_URL: http://qdrant:6333
+      QDRANT_API_KEY: ${QDRANT_API_KEY:?Set a random private database token}
+      QDRANT_COLLECTION: photo_video_qwen3vl8b_v1
+      DATA_DIR: /data
+      MATCH_THRESHOLD: ${MATCH_THRESHOLD:-0.25}
+      MAX_GENERATIONS_PER_DAY: ${MAX_GENERATIONS_PER_DAY:-20}
+      SEARCH_REQUESTS_PER_HOUR: ${SEARCH_REQUESTS_PER_HOUR:-120}
+      GENERATION_REQUESTS_PER_HOUR_PER_IP: ${GENERATION_REQUESTS_PER_HOUR_PER_IP:-3}
+      DEMO_USERNAME: ${DEMO_USERNAME:-demo}
+      DEMO_PASSWORD: ${DEMO_PASSWORD:-}
+    volumes:
+      - media_data:/data
+    depends_on:
+      - qdrant
+    init: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+  qdrant:
+    image: qdrant/qdrant:v1.20.0
+    restart: unless-stopped
+    environment:
+      QDRANT__SERVICE__API_KEY: ${QDRANT_API_KEY:?Set a random private database token}
+      QDRANT__TELEMETRY_DISABLED: "true"
+    volumes:
+      - qdrant_data:/qdrant/storage
+volumes:
+  media_data:
+  qdrant_data:
+  caddy_data:
+  caddy_config:

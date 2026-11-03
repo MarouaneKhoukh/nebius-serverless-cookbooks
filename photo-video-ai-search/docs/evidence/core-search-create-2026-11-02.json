@@ -1,0 +1,25 @@
+{
+  "date": "2026-11-02",
+  "origin": "http://127.0.0.1:8085",
+  "endpoint_id": "REDACTED_H200_ENDPOINT_ID",
+  "photos_before": 5,
+  "photos_after": 5,
+  "primary_create_action_visible_before_connection": true,
+  "creation_description": "a handmade ceramic teapot on a wooden table",
+  "direct_creation_retained_through_setup": true,
+  "partial_status": "Search ready · Creation not connected",
+  "complete_status": "Search + creation ready",
+  "real_embedding_connection_and_indexing": true,
+  "real_generation_model_check": true,
+  "review_original_description_verified": true,
+  "review_cancelled": true,
+  "new_generation_requests": 0,
+  "photos_added_or_removed": 0,
+  "cloud_resource_mutations": 0,
+  "final_search": "coffee",
+  "final_result_titles": [
+    "Coffee beans",
+    "A small teal robot barista pouring espresso into a white ceramic cup in a warm wood-paneled cafe, natural window light, realistic photograph."
+  ],
+  "final_state": "both APIs connected; no prompt or preview pending"
+}

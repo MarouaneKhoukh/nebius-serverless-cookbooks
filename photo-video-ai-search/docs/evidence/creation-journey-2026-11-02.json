@@ -1,0 +1,22 @@
+{
+  "date": "2026-11-02",
+  "origin": "http://127.0.0.1:8085",
+  "endpoint_id": "REDACTED_H200_ENDPOINT_ID",
+  "photos_before": 5,
+  "photos_after": 5,
+  "query": "football",
+  "no_match_cards": 0,
+  "no_match_asks_before_connection": true,
+  "decline_keeps_search_ready": true,
+  "cancel_connection_keeps_search_ready": true,
+  "yes_opens_generation_only_form": true,
+  "generation_connection_uses_existing_search_token": true,
+  "real_generation_model_check_succeeded": true,
+  "success_opens_review_with_query": "football",
+  "already_connected_skips_form": true,
+  "prompt_review_cancelled": true,
+  "generation_requests": 0,
+  "photos_added_or_removed": 0,
+  "cloud_resource_mutations": 0,
+  "final_state": "both APIs connected; no-match question visible; no prompt or preview pending"
+}

@@ -1,0 +1,13 @@
+{
+  "embedding_image": "vllm/vllm-openai:v0.19.1",
+  "embedding_model": "Qwen/Qwen3-VL-Embedding-8B",
+  "embedding_revision": "2c4565515e0f265c6511776e7193b22c0968ddc7",
+  "flux_source": "https://github.com/black-forest-labs/flux-3-image-klein.git",
+  "flux_source_revision": "bfc8889a4497f846416f253a3972a1941ac698b9",
+  "generation_model": "black-forest-labs/flux-3-image-klein",
+  "generation_revision": "337337621b8526e120f2275d250242f4a6bedd75",
+  "upsampler_model": "black-forest-labs/flux-3-image-klein-pup",
+  "upsampler_revision": "3f3edb52b2c55de0d49feab28598b68f7f8e4830",
+  "classifier_model": "Falconsai/nsfw_image_detection",
+  "classifier_revision": "96cb0d0342c7afb80cab76ecc58b265fa44da256"
+}

@@ -1,0 +1,12 @@
+.env
+**/.env
+.venv
+__pycache__
+.pytest_cache
+data
+sample_media
+sample_images
+.git
+RUN-STATUS.md
+docs/media
+examples

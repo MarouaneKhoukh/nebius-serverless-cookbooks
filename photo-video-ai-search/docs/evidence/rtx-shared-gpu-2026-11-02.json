@@ -1,0 +1,298 @@
+{
+  "status": "accepted; scoped Endpoint verified STOPPED",
+  "date": "2026-11-02",
+  "checked_utc": "2026-11-02T13:37:32.771263+00:00",
+  "endpoint_id": "REDACTED_RTX_ENDPOINT_ID",
+  "deployment": {
+    "runtime_base_image": "vllm/vllm-openai:v0.19.1@sha256:2622f38a0aa646c15ccc27bd5033911a58fd94ac69fd8f86aba0692d77cfe5b9",
+    "setup": "cookbook Endpoint source injection plus frozen generation dependency bootstrap",
+    "custom_registry_image_booted_on_gpu": false,
+    "injected_runtime_sources": {
+      "endpoint/supervise.py": {
+        "sha256": "b4b6e85f23dccfe7e70e7cfd7f29e5bf4d493dc8d30c5cf8c68b56f262e8461b",
+        "bytes": 9348
+      },
+      "endpoint/gateway.py": {
+        "sha256": "c3487171a19027d1d86ea8356b9a629e121c821acdf7905969c9177bdf3f5ba6",
+        "bytes": 6157
+      },
+      "endpoint/gpu_telemetry.py": {
+        "sha256": "2599ae3512fee9cac77f873c5a72a14a5c45321a789236aecb35848e9793342c",
+        "bytes": 10040
+      },
+      "endpoint/download_weights.py": {
+        "sha256": "987be78818b73a684259885231509f5519d7236ecdc821730db668186131e5f1",
+        "bytes": 1557
+      },
+      "endpoint/flux_service.py": {
+        "sha256": "099de3a89670cf4e08efde37bf0fd32276f62f1b05eba139139c0d23db0fbcdf",
+        "bytes": 3906
+      },
+      "endpoint/versions.json": {
+        "sha256": "6c808e462b11ba3e1c36871247b3412a37026e40f8c87bb332d01d4451bcdb14",
+        "bytes": 710
+      }
+    },
+    "bootstrap_artifact_fingerprints": {
+      "bootstrap_script": {
+        "sha256": "f15659fc01f84f11030cb7f06a8769dd9b84ee88f26ee62059d3efb3207b2034",
+        "bytes": 4960
+      },
+      "frozen_generation_dependencies": {
+        "sha256": "f4c534f6f5386502df4e85fabbb51e779a54a099d31f04a483f71ac66dcfadfd",
+        "bytes": 4255,
+        "package_count": 204
+      }
+    },
+    "pinned_upstream_versions": {
+      "embedding_image": "vllm/vllm-openai:v0.19.1",
+      "embedding_model": "Qwen/Qwen3-VL-Embedding-8B",
+      "embedding_revision": "2c4565515e0f265c6511776e7193b22c0968ddc7",
+      "flux_source": "https://github.com/black-forest-labs/flux-3-image-klein.git",
+      "flux_source_revision": "bfc8889a4497f846416f253a3972a1941ac698b9",
+      "generation_model": "black-forest-labs/flux-3-image-klein",
+      "generation_revision": "337337621b8526e120f2275d250242f4a6bedd75",
+      "upsampler_model": "black-forest-labs/flux-3-image-klein-pup",
+      "upsampler_revision": "3f3edb52b2c55de0d49feab28598b68f7f8e4830",
+      "classifier_model": "Falconsai/nsfw_image_detection",
+      "classifier_revision": "96cb0d0342c7afb80cab76ecc58b265fa44da256"
+    }
+  },
+  "success": true,
+  "gpu_count": 1,
+  "gpu_platform": "NVIDIA RTX PRO 6000 Blackwell",
+  "auth": {
+    "embedding": {
+      "without_token": 401,
+      "with_token": 200
+    },
+    "generation": {
+      "without_token": 401,
+      "with_token": 200
+    }
+  },
+  "models": {
+    "embedding": [
+      "Qwen/Qwen3-VL-Embedding-8B"
+    ],
+    "generation": [
+      "black-forest-labs/flux-3-image-klein"
+    ]
+  },
+  "generation_jobs": [
+    {
+      "id": "aa7091f5-fd7f-4732-85aa-130a2d73a615",
+      "status": "succeeded",
+      "created_epoch": 1793625974.849503,
+      "item_id": "71dc3baa-a372-5d0e-83dc-56d661addbf1",
+      "generated": true,
+      "generation_model": "black-forest-labs/flux-3-image-klein"
+    },
+    {
+      "id": "05848446-e132-47b4-945f-1d2c999ac8e8",
+      "status": "succeeded",
+      "created_epoch": 1793626193.655894,
+      "item_id": "edf960d6-6e5c-5f43-a6b9-b0dd80019539",
+      "generated": true,
+      "generation_model": "black-forest-labs/flux-3-image-klein"
+    }
+  ],
+  "second_generated_image_retrieval": {
+    "http_status": 200,
+    "duration_seconds": 0.8112,
+    "match_found": true,
+    "best_score": 0.66394484,
+    "generated_item_rank": 1,
+    "query_sha256": "cddb81460c6d3a296b6543badc2aabfd28e43775219f2e8844c9254f098cf924"
+  },
+  "final_gallery_images": 5,
+  "measured_generation_operations": [
+    {
+      "sample_count": 45,
+      "sampled_peak_memory_used_mib": 81663.0,
+      "sampled_peak_utilization_gpu_percent": 98.0,
+      "sequence": 2,
+      "duration_seconds": 43.7092,
+      "completed": 1
+    },
+    {
+      "sample_count": 22,
+      "sampled_peak_memory_used_mib": 82689.0,
+      "sampled_peak_utilization_gpu_percent": 99.0,
+      "sequence": 14,
+      "duration_seconds": 19.8432,
+      "completed": 2
+    }
+  ],
+  "notes": [
+    "Whole-device one-second nvidia-smi samples and operation boundary samples; shorter spikes can be missed.",
+    "Gateway duration includes boundary telemetry and upstream inference; it is not a pure kernel benchmark.",
+    "Two generations at 1024x1024 with serialized embedding/generation operations; no third model tested.",
+    "GPU run used pinned public vLLM base, injected source and frozen package bootstrap; custom image not GPU booted."
+  ],
+  "cloud_shutdown": {
+    "endpoint_id": "REDACTED_RTX_ENDPOINT_ID",
+    "state": "STOPPED",
+    "verified_utc": "2026-11-02T13:39:11.312314+00:00",
+    "stop_mutations": 1,
+    "deadline_guard_exited": true
+  },
+  "gpu": {
+    "observed_epoch": 1793626654.5002902,
+    "http_status": 200,
+    "available": 1,
+    "stale": 0,
+    "phase_code": 5,
+    "latest_sample_age_seconds": 0.601,
+    "error_count": 0,
+    "error_code": 0,
+    "memory_used_mib": 82689.0,
+    "memory_total_mib": 97887.0,
+    "memory_free_mib": 15198.0,
+    "utilization_gpu_percent": 0.0,
+    "overall": {
+      "sample_count": 1298,
+      "sampled_peak_memory_used_mib": 82689.0,
+      "sampled_peak_utilization_gpu_percent": 100.0
+    },
+    "phase_peaks": {
+      "startup": {
+        "sample_count": 470,
+        "sampled_peak_memory_used_mib": 73509.0,
+        "sampled_peak_utilization_gpu_percent": 100.0
+      },
+      "weight_download": {
+        "sample_count": 191,
+        "sampled_peak_memory_used_mib": 0.0,
+        "sampled_peak_utilization_gpu_percent": 0.0
+      },
+      "embedding_startup": {
+        "sample_count": 131,
+        "sampled_peak_memory_used_mib": 25211.0,
+        "sampled_peak_utilization_gpu_percent": 13.0
+      },
+      "generation_startup": {
+        "sample_count": 146,
+        "sampled_peak_memory_used_mib": 73509.0,
+        "sampled_peak_utilization_gpu_percent": 100.0
+      },
+      "idle": {
+        "sample_count": 680,
+        "sampled_peak_memory_used_mib": 82689.0,
+        "sampled_peak_utilization_gpu_percent": 32.0
+      },
+      "embedding": {
+        "sample_count": 81,
+        "sampled_peak_memory_used_mib": 82689.0,
+        "sampled_peak_utilization_gpu_percent": 61.0
+      },
+      "generation": {
+        "sample_count": 67,
+        "sampled_peak_memory_used_mib": 82689.0,
+        "sampled_peak_utilization_gpu_percent": 99.0
+      }
+    },
+    "last_operations": {
+      "embedding": {
+        "sample_count": 2,
+        "sampled_peak_memory_used_mib": 82689.0,
+        "sampled_peak_utilization_gpu_percent": 61.0,
+        "sequence": 16,
+        "duration_seconds": 0.1255,
+        "completed": 14
+      },
+      "generation": {
+        "sample_count": 22,
+        "sampled_peak_memory_used_mib": 82689.0,
+        "sampled_peak_utilization_gpu_percent": 99.0,
+        "sequence": 14,
+        "duration_seconds": 19.8432,
+        "completed": 2
+      }
+    }
+  },
+  "photo_library": {
+    "started_utc": "2026-11-02T13:29:20+00:00",
+    "success": true,
+    "generation_submissions": 0,
+    "initial_points": 1,
+    "ingestion": [
+      {
+        "pass": 1,
+        "exit_code": 0,
+        "duration_seconds": 2.632,
+        "indexed": 3,
+        "skipped": 0,
+        "failed_sources": 0,
+        "collection_points": 4
+      },
+      {
+        "pass": 2,
+        "exit_code": 0,
+        "duration_seconds": 0.042,
+        "indexed": 0,
+        "skipped": 3,
+        "failed_sources": 0,
+        "collection_points": 4
+      }
+    ],
+    "searches": [
+      {
+        "case": "coffee",
+        "http_status": 200,
+        "duration_seconds": 0.794,
+        "match_found": true,
+        "best_score": 0.569435,
+        "result_count": 1,
+        "top_score": 0.569435,
+        "top_generated": false,
+        "expected_top_result": true
+      },
+      {
+        "case": "mountains",
+        "http_status": 200,
+        "duration_seconds": 0.813,
+        "match_found": true,
+        "best_score": 0.5874336,
+        "result_count": 1,
+        "top_score": 0.5874336,
+        "top_generated": false,
+        "expected_top_result": true
+      },
+      {
+        "case": "city",
+        "http_status": 200,
+        "duration_seconds": 0.803,
+        "match_found": true,
+        "best_score": 0.44402227,
+        "result_count": 1,
+        "top_score": 0.44402227,
+        "top_generated": false,
+        "expected_top_result": true
+      },
+      {
+        "case": "generated_robot",
+        "http_status": 200,
+        "duration_seconds": 0.799,
+        "match_found": true,
+        "best_score": 0.6995379,
+        "result_count": 1,
+        "top_score": 0.6995379,
+        "top_generated": true,
+        "expected_top_result": true
+      }
+    ],
+    "final_points": 4,
+    "finished_utc": "2026-11-02T13:29:27+00:00"
+  },
+  "source_sha256": {
+    "final_check": "dd6c07f0ee177cc555af4c1a4acfd511008747998ee58b7e0b06ad9bb496aa84",
+    "source_manifest": "bde7ec7666509735c921df9716f12daea103314572c1784c949c061e73846302"
+  },
+  "custom_image": {
+    "build_import_checked": true,
+    "push_succeeded": true,
+    "digest": "sha256:17f6d08f155237bd8bfbb871a09f5752986096de06c363bfb05e78767e010185",
+    "gpu_boot_tested": false
+  }
+}
