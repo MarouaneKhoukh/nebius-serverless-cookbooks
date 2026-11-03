@@ -149,6 +149,118 @@ test("generation requires approval, dedupes in-flight, does not persist image re
   assert.equal(calls.length, 1);
 });
 
+test("only explicit FLUX content-check refusals are described as model declines", async t => {
+  const refusalBodies = [
+    { detail: "This request or its output was declined by the model's content checks." },
+    { detail: "The model declined the request or its output. Try a different description." },
+    { code: "model_declined", detail: "private prompt " + token },
+    { error: { code: "model_declined", message: "private prompt " + token } },
+    { detail: { code: "model_declined", message: "private prompt " + token } },
+  ];
+  for (const status of [400, 422]) for (const [index, upstreamBody] of refusalBodies.entries()) {
+    await t.test(`explicit refusal ${status}/${index}`, async () => {
+      let calls = 0;
+      const app = createHandler({ fetchImpl: async () => {
+        calls++;
+        return new Response(JSON.stringify(upstreamBody), { status, headers: { "Content-Type": "application/json" } });
+      } });
+      const result = await app.fetch(request("/api/generate", { base_url: generation, token,
+        prompt: "A plain ceramic cup", approved: true, request_id: crypto.randomUUID() }));
+      assert.equal(result.status, 422);
+      const body = await result.json();
+      assert.equal(body.code, "model_declined");
+      assert.match(body.detail, /FLUX’s content checks/);
+      assert(!JSON.stringify(body).includes(token));
+      assert(!JSON.stringify(body).includes("private prompt"));
+      assert.equal(calls, 1, "A refusal must not be retried automatically.");
+    });
+  }
+});
+
+test("unknown 400/422 responses are request errors without inventing a refusal or exposing upstream content", async t => {
+  const privatePrompt = "private test prompt about a ceramic cup";
+  const changes = [
+    { label: "unknown detail", value: { detail: privatePrompt + token } },
+    { label: "schema validation", value: { detail: [{ type: "literal_error", input: privatePrompt + token }] } },
+    { label: "unknown code", value: { code: "invalid_argument", message: privatePrompt + token } },
+    { label: "refusal-like substring", value: { detail: "This request or its output was declined by the model's content checks. " + token } },
+    { label: "null JSON", value: null },
+    { label: "array JSON", value: [{ code: "model_declined" }] },
+  ];
+  for (const status of [400, 422]) for (const change of changes) await t.test(`${status}: ${change.label}`, async () => {
+    let calls = 0;
+    const app = createHandler({ fetchImpl: async () => {
+      calls++;
+      return new Response(JSON.stringify(change.value), { status, headers: { "Content-Type": "application/json" } });
+    } });
+    const result = await app.fetch(request("/api/generate", { base_url: generation, token,
+      prompt: privatePrompt, approved: true, request_id: crypto.randomUUID() }));
+    assert.equal(result.status, 422);
+    const body = await result.json();
+    assert.equal(body.code, "model_request_invalid");
+    assert.match(body.detail, /request format or settings/);
+    assert(!JSON.stringify(body).includes(token));
+    assert(!JSON.stringify(body).includes(privatePrompt));
+    assert(!/declin|unavailable/i.test(body.detail));
+    assert.equal(calls, 1);
+  });
+});
+
+test("refusal diagnostics preserve only allowlisted stages and categories", async t => {
+  for (const [stage, category] of [["prompt", "copyright_or_public_figure"], ["output", "adult_content"], [token, token]]) {
+    await t.test(stage === token ? "unrecognized diagnostics" : stage, async () => {
+      const app = createHandler({ fetchImpl: async () => Response.json({
+        detail: { code: "model_declined", stage, category, message: "private " + token },
+      }, { status: 400 }) });
+      const result = await app.fetch(request("/api/generate", { base_url: generation, token,
+        prompt: "A plain ceramic cup", approved: true, request_id: crypto.randomUUID() }));
+      const body = await result.json();
+      assert.equal(result.status, 422);
+      assert.equal(body.stage, stage === token ? "unknown" : stage);
+      assert.equal(body.category, category === token ? "unknown" : category);
+      assert(!JSON.stringify(body).includes(token));
+      if (stage === "prompt") assert.match(body.detail, /prompt check/);
+      if (stage === "output") assert.match(body.detail, /created an image/);
+    });
+  }
+});
+
+test("malformed, oversized and interrupted error bodies are bounded and never reflected", async t => {
+  const sensitive = "private prompt " + token;
+  const bodies = [
+    { label: "invalid JSON", make: () => new Response("{broken " + sensitive, { status: 400, headers: { "Content-Type": "application/json" } }) },
+    { label: "non-JSON", make: () => new Response(sensitive, { status: 400, headers: { "Content-Type": "text/html" } }) },
+    { label: "missing content type", make: () => new Response(JSON.stringify({ code: "model_declined" }), { status: 400 }) },
+    { label: "declared oversize", make: () => new Response(JSON.stringify({ code: "model_declined", detail: sensitive }), { status: 400, headers: { "Content-Type": "application/json", "Content-Length": String(16 * 1024 + 1) } }) },
+    { label: "streamed oversize", make: () => new Response(JSON.stringify({ code: "model_declined", detail: sensitive.repeat(1024) }), { status: 400, headers: { "Content-Type": "application/json" } }) },
+    { label: "broken stream", make: () => new Response(new ReadableStream({ start(controller) { controller.error(new Error(sensitive)); } }), { status: 422, headers: { "Content-Type": "application/json" } }) },
+  ];
+  for (const body of bodies) await t.test(body.label, async () => {
+    const app = createHandler({ fetchImpl: async () => body.make() });
+    const result = await app.fetch(request("/api/generate", { base_url: generation, token,
+      prompt: "A plain ceramic cup", approved: true, request_id: crypto.randomUUID() }));
+    assert.equal(result.status, 422);
+    const payload = await result.json();
+    assert.equal(payload.code, "model_request_invalid");
+    assert(!JSON.stringify(payload).includes(token));
+    assert(!JSON.stringify(payload).includes("private prompt"));
+  });
+});
+
+test("embedding and model-list validation failures cannot be mistaken for FLUX refusal", async () => {
+  const app = createHandler({ fetchImpl: async () => new Response(JSON.stringify({ code: "model_declined" }), {
+    status: 400, headers: { "Content-Type": "application/json" },
+  }) });
+  for (const [path, body] of [
+    ["/api/embed", { base_url: embedding, token, kind: "text", text: "coffee" }],
+    ["/api/connect-generation", { generation_url: generation, token }],
+  ]) {
+    const result = await app.fetch(request(path, body));
+    assert.equal(result.status, 422);
+    assert.equal((await result.json()).code, "model_request_invalid");
+  }
+});
+
 test("no ambient owner credentials, cross-site calls, arbitrary paths or private files", async () => {
   let called = false;
   const app = createHandler({ assets: { "/index.html": { type: "text/html", body: btoa("real app shell") } }, fetchImpl: async () => { called = true; } });

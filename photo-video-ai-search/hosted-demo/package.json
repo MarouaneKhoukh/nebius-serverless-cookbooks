@@ -5,7 +5,8 @@
   "engines": { "node": ">=22" },
   "scripts": {
     "start": "node server.mjs",
-    "build": "node scripts/build.mjs",
+    "build": "node scripts/build-static.mjs",
+    "build:worker": "node scripts/build.mjs",
     "test": "node --test tests/*.test.mjs"
   }
 }

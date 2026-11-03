@@ -230,7 +230,7 @@ Open **[http://127.0.0.1:8085](http://127.0.0.1:8085/)** on this computer. Keep 
 1. Search **coffee**. Connect with your **port-8000 public HTTPS URL** and **Endpoint token**; choose **Connect and index photos**. Wait for the three starter photos to be indexed.
 2. Confirm **Coffee beans** appears. Try **espresso**, then **football**: the starter collection should show **No matching photos** for football.
 3. Choose **Yes, create an image**, or enter a description and choose **Create an image**. Connect the **port-8001 URL** when asked; the same Endpoint token is reused.
-4. Review/edit the prompt → **Approve and generate** → inspect the unsaved preview.
+4. Review/edit the photo brief. Short searches get an editable starting draft. Choose **Approve and generate**, then inspect the unsaved preview.
 5. Choose **Add to collection** to make it searchable, or **Discard** to leave the collection unchanged. Search for an image you saved.
 
 Use base URLs **without `/v1`**. The Endpoint token is different from your Nebius account or Hugging Face token. If you lost it, open **Endpoint Overview → View code** and copy only its `--token` value; do not run that example's create command.

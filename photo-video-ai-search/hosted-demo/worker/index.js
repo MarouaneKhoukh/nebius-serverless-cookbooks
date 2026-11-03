@@ -5,6 +5,11 @@ const DIMENSIONS = 4096;
 const MAX_REQUEST = 3 * 1024 * 1024;
 const MAX_IMAGE = 2 * 1024 * 1024;
 const MAX_RESPONSE = 12 * 1024 * 1024;
+const MAX_ERROR_RESPONSE = 16 * 1024;
+const CONTENT_CHECK_DETAILS = new Set([
+  "This request or its output was declined by the model's content checks.",
+  "The model declined the request or its output. Try a different description.",
+]);
 const headers = {
   "Cache-Control": "no-store",
   "X-Content-Type-Options": "nosniff",
@@ -13,7 +18,7 @@ const headers = {
 };
 
 class ApiError extends Error {
-  constructor(status, message, code = "request_failed") { super(message); this.status = status; this.code = code; }
+  constructor(status, message, code = "request_failed", refusal = null) { super(message); this.status = status; this.code = code; this.refusal = refusal; }
 }
 
 function json(value, status = 200) {
@@ -63,6 +68,30 @@ async function boundedBytes(response, maximum) {
   return result;
 }
 
+async function contentCheckRefusal(response) {
+  // An HTTP 400 alone does not establish moderation. Accept only the runtime's
+  // explicit refusal marker or its exact legacy messages, never arbitrary text.
+  try {
+    if (!/^application\/(?:[a-z0-9.+-]+\+)?json(?:\s*;|$)/i.test(response.headers.get("Content-Type") || "")) {
+      await response.body?.cancel().catch(() => {});
+      return null;
+    }
+    const data = JSON.parse(new TextDecoder().decode(await boundedBytes(response, MAX_ERROR_RESPONSE)));
+    if (!data || typeof data !== "object" || Array.isArray(data)) return null;
+    const detail = data.detail?.code === "model_declined" ? data.detail
+      : data.error?.code === "model_declined" ? data.error : data;
+    if (detail.code !== "model_declined" && !CONTENT_CHECK_DETAILS.has(data.detail)) return null;
+    return {
+      stage: ["prompt", "reference", "output"].includes(detail.stage) ? detail.stage : "unknown",
+      category: ["copyright_or_public_figure", "adult_content"].includes(detail.category) ? detail.category : "unknown",
+    };
+  } catch {
+    // Error bodies can contain prompts, tokens or diagnostics. Neither parse
+    // failures nor upstream text are reflected back to the visitor.
+    return null;
+  }
+}
+
 async function bodyJSON(request) {
   if (!request.headers.get("Content-Type")?.toLowerCase().startsWith("application/json")) {
     throw new ApiError(415, "Use an application/json request.");
@@ -108,7 +137,12 @@ export function normalizedVector(data) {
   return vector.map(v => v / norm);
 }
 
-export function createHandler({ assets = {}, fetchImpl = globalThis.fetch, now = Date.now } = {}) {
+export function createHandler({
+  assets = {}, fetchImpl = globalThis.fetch, now = Date.now,
+  clientIdentity = request => request.headers.get("CF-Connecting-IP") || "local",
+  maxGenerationResponse = 6 * 1024 * 1024,
+  maxGeneratedPNG = 4 * 1024 * 1024,
+} = {}) {
   // Only short-lived, in-flight deduplication. This is not a durable job queue.
   const generations = new Map();
   const rates = new Map();
@@ -121,10 +155,20 @@ export function createHandler({ assets = {}, fetchImpl = globalThis.fetch, now =
         ...(body ? { body: JSON.stringify(body) } : {}), signal: AbortSignal.timeout(timeout) });
     } catch { throw new ApiError(503, "The Endpoint could not be reached. Check its public URL and that both models are ready.", "endpoint_unavailable"); }
     if (!response.ok) {
+      if ([400, 422].includes(response.status)) {
+        const refusal = path === "/v1/images/generations" ? await contentCheckRefusal(response) : null;
+        if (refusal) {
+          const reason = refusal.stage === "prompt" ? "FLUX’s prompt check blocked this description."
+            : refusal.stage === "output" ? "FLUX created an image, but its content check blocked the result."
+            : "FLUX’s content checks blocked the prompt or generated image.";
+          throw new ApiError(422, reason + " This can happen with everyday requests too. Nothing was added to your collection. Edit the description and approve a new attempt.", "model_declined", refusal);
+        }
+        await response.body?.cancel().catch(() => {});
+        throw new ApiError(422, "The model API rejected the request format or settings. Check the Endpoint’s model service and try again.", "model_request_invalid");
+      }
       await response.body?.cancel().catch(() => {});
       if ([401, 403].includes(response.status)) throw new ApiError(401, "The Endpoint rejected this token. Copy its Endpoint authentication token and try again.", "authentication_failed");
       if (response.status === 429) throw new ApiError(429, "The GPU is busy. Wait for the current request to finish, then try again.", "gpu_busy");
-      if (response.status === 400) throw new ApiError(422, "The model declined this input or its output. Review the description and try again.", "model_declined");
       if (response.status >= 300 && response.status < 400) throw new ApiError(422, "The Endpoint redirected this request. Copy its managed public URL again.", "redirect_rejected");
       throw new ApiError(503, "The model API is unavailable. Check the Endpoint is running and its model startup has finished.", "model_unavailable");
     }
@@ -146,7 +190,7 @@ export function createHandler({ assets = {}, fetchImpl = globalThis.fetch, now =
   function charge(request, generation = false) {
     const minute = Math.floor(now() / 60000);
     if (rates.size > 2048) for (const [key, entry] of rates) if (entry.minute !== minute) rates.delete(key);
-    const identity = request.headers.get("CF-Connecting-IP") || "local";
+    const identity = clientIdentity(request);
     const key = (generation ? "generation:" : "inference:") + identity;
     const entry = rates.get(key);
     const count = entry?.minute === minute ? entry.count : 0;
@@ -183,9 +227,9 @@ export function createHandler({ assets = {}, fetchImpl = globalThis.fetch, now =
     entry.promise = (async () => {
       const data = await upstream(base, token, "/v1/images/generations", {
         model: GENERATION_MODEL, prompt, n: 1, size: "1024x1024", response_format: "b64_json",
-      }, 240000, 6 * 1024 * 1024);
+      }, 240000, maxGenerationResponse);
       const value = data?.data?.length === 1 ? data.data[0]?.b64_json : null;
-      if (typeof value !== "string" || value.length > 4 * 1024 * 1024 * 4 / 3 + 8 || value.length % 4 !== 0
+      if (typeof value !== "string" || value.length > Math.ceil(maxGeneratedPNG / 3) * 4 || value.length % 4 !== 0
           || !/^[A-Za-z0-9+/]+={0,2}$/.test(value) || !value.startsWith("iVBORw0KGgo")) {
         throw new ApiError(502, "The generation API did not return a valid PNG image.");
       }
@@ -252,7 +296,7 @@ export function createHandler({ assets = {}, fetchImpl = globalThis.fetch, now =
       }
       return json(await generate(body, request));
     } catch (error) {
-      if (error instanceof ApiError) return json({ detail: error.message, code: error.code }, error.status);
+      if (error instanceof ApiError) return json({ detail: error.message, code: error.code, ...(error.refusal || {}) }, error.status);
       // Do not serialize SDK errors, credentials, prompt contents or image data.
       return json({ detail: "The request could not be completed. Check the connection and try again.", code: "request_failed" }, 500);
     }

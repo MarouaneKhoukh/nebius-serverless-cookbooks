@@ -1,0 +1,6 @@
+.env*
+.openai/
+*.log
+node_modules/
+tests/
+dist/

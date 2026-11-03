@@ -1,0 +1,29 @@
+{
+  "scope": "Two separately approved football image requests through the production Vercel relay to the existing Regular H200. All official FLUX checks active.",
+  "results": [
+    {
+      "case": "brief",
+      "prompt": "A high-quality stock photograph of football, with a clearly visible main subject and natural lighting. Use generic equipment and original designs.",
+      "status": 200,
+      "seconds": 14.49,
+      "png_bytes": 1717833,
+      "dimensions": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "case": "specific",
+      "prompt": "A realistic stock photograph of a plain black-and-white football resting on green grass on an empty playing field, close-up view, soft daylight.",
+      "status": 200,
+      "seconds": 11.82,
+      "png_bytes": 1804396,
+      "dimensions": [
+        1024,
+        1024
+      ]
+    }
+  ],
+  "conclusion": "Both revised descriptions produced valid1024x1024PNG images. The brief case exactly matches the editable initial draft for the football query. This small observation is not a reliability guarantee; the original single-word refusal stage remains unknown.",
+  "no_retries_or_saves": true
+}

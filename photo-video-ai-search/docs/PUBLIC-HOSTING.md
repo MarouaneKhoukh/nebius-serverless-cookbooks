@@ -12,6 +12,14 @@ Publish `hosted-demo/` so readers can open an HTTPS app, connect their own Nebiu
 
 The web app starts disconnected. Publishing it does not publish your Endpoint token or gallery. Each visitor needs the compatible Endpoint described in the [cookbook](../README.md).
 
+## Publish on Vercel
+
+[Open the live demo](https://nebius-serverless-search-create.vercel.app). Visitors can browse the three starter photos immediately; search and creation require their own running Nebius Endpoint URLs and token.
+
+To deploy your own copy, follow the [Vercel deployment guide](../hosted-demo/DEPLOY.md). Use `photo-video-ai-search/hosted-demo` as the project root, `npm run build`, output directory `dist`, and Fluid Compute. The included Node API forwards bounded requests; no inference credentials or model weights are deployed.
+
+The public page, assets, health route and connection/error screens were checked on **3 November 2026**. Authenticated inference and generation through the hosted origin remain untested. See the [validation record](../VALIDATION.md#vercel-public-deployment-3-november-2026).
+
 ## Publish with a Sites agent
 
 Enable the Sites plugin in a compatible agent, open the cookbook directory, and give it this prompt:

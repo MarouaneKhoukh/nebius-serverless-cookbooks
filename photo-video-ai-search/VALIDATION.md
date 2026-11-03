@@ -1,6 +1,29 @@
 # Validation record
 
-Updated **3 November 2026**. The current browser-connected demo passed **37 Node checks**, a real H200 connection/generation journey, and the creation/relevance refinements below. The unchanged persistent Python/Qdrant implementation previously passed **68 checks and 13 subtests** against real local Qdrant. Earlier Python browser, RTX and search-only results are preserved below as historical evidence.
+Updated **3 November 2026**. The current browser-connected demo passed **78 Node checks**; the Endpoint runtime passed **19 offline checks**. The Vercel demo completed one successful real generation and rejected the single-word football request. The revised photo-brief flow then completed two successful real football generations through Vercel. The earlier local H200 connection/generation journey and creation/relevance refinements are recorded below. The unchanged persistent Python/Qdrant implementation previously passed **68 checks and 13 subtests** against real local Qdrant. Earlier Python browser, RTX and search-only results are preserved below as historical evidence.
+
+## Vercel public deployment: 3 November 2026
+
+Published at **https://nebius-serverless-search-create.vercel.app**. The static frontend and same-origin Node relay contain no operator Endpoint URLs, shared GPU token, model weights or inference credentials. Visitors supply their own connection details; tokens remain in tab memory and are forwarded only for the requested model calls.
+
+| Check | Observed result |
+| --- | --- |
+| Automated checks and build | **42 Node tests passed**; `npm run build` produced static assets in `dist/`. The Vercel checks cover health/model request wiring, managed-URL and cross-origin restrictions, Vercel-IP throttling, generation response bounds and static-only publication. These use synthetic fixtures, not real model inference. |
+| Public HTTP access | Anonymous requests to the root page, public assets and `/health` returned **200**. The health response was `{"ok":true}` and made no model request. |
+| Public API boundaries | An invalid destination URL returned **422**; a cross-origin request returned **403**. A deliberately invalid token sent through the hosted relay to the existing Nebius Endpoint returned **401** with a safe authentication error. No valid inference credentials were supplied and no inference was run for these checks. |
+| Actual hosted browser | The page displayed the authentic Nebius logo, **Powered by Nebius Serverless AI**, and three starter photos. Search opened the bring-your-own Endpoint connection form. |
+| Local compatibility | The original Node preview served its branded page and health check on a temporary loopback port, then stopped. The existing local demo was not interrupted. |
+| Hosted generation follow-up | Two approved requests: **football → 422/model_declined in 13.87 s**; a green ceramic teapot → **200**, valid **1024×1024 PNG** in **12.11 s**. These are individual observations. [Sanitized results](docs/evidence/hosted-generation-2026-11-03.json). |
+| Revised football brief | The exact editable default draft returned **200** with a **1024×1024 PNG in14.49 s**. A separate specific ball-on-grass brief returned **200** in **11.82 s**. Both actual images were visually checked. [Sanitized results](docs/evidence/football-photo-brief-2026-11-03.json). |
+| Remaining validation | A full automated hosted search/index/save/retrieval journey and broader prompt-reliability evaluation remain open. The service currently hides which content check rejected the original one-word prompt. |
+
+No Nebius resources were created, started, stopped or reconfigured for this publication. The Vercel relay has a 300-second configured duration with Fluid Compute, a 240-second generation timeout and bounded payloads below the platform's 4.5 MB response ceiling. Rate limiting and generation deduplication are per-instance best effort. [Deployment instructions and limits](hosted-demo/DEPLOY.md).
+
+## Generation refusal handling and photo briefs: 3 November 2026
+
+The relay previously called every upstream HTTP400 a model refusal and treated schema422 as unavailable. It now recognizes only explicit known/structured refusal markers, sanitizes all other model errors, and carries allowlisted stage/category labels when provided. Short search subjects become a visible, editable stock-photo brief; detailed descriptions and previously approved prompts remain unchanged. Reviewing a failure preserves the exact approved text and never retries automatically. The 78 app checks cover these contracts. Two separately approved live football-brief generations succeeded with all content checks active; this small sample is not a general reliability claim.
+
+The cookbook runtime now returns safe prompt/reference/output labels for official FLUX refusals, with all official content checks still enabled. Its 19 offline checks pass. **This runtime change is not installed on the existing running H200**: that deployment has no configured SSH key or runtime-update route. The existing Endpoint remains unchanged; its legacy refusals have an unknown stage. Readers building the included image get the updated diagnostics.
 
 ## Spot H200 startup test: 3 November 2026
 
@@ -60,13 +83,13 @@ The `hosted-demo/` app starts without an author's Endpoint credentials. Each vis
 | Hosted-app fixtures | **37 Node checks passed**, covering the proxy and browser state contracts. They include wrong models/dimensions, rejected tokens, URL/redirect restrictions, bounded input/output, the create-first generation connection flow, explicit generation approval, in-flight duplicate handling, private unsaved previews, Save/Discard, reconnect, IndexedDB failure, the 20-photo concurrency limit, disconnect-during-storage races, absent-query abstention and synonym/name retrieval. These fixtures establish no general semantic quality. |
 | Persistent implementation | **68 Python checks and 13 subtests passed** against real local Docker Qdrant, including Python/browser ranking parity, captured positive/absent-query scores and the actual optional-interface empty/browse event journey. One existing upstream Starlette deprecation warning. |
 | Hosting artifact | The standalone Worker was built and its ESM export validated. A deployment archive was packaged with the Site manifest and embedded public assets. It contains no visitor credential or model weights. |
-| Publication | **Not published.** Automatic approval review rejected transferring the short-lived Sites repository credential into the official publisher's tool input. Explicit user approval is pending. No live public URL is claimed. |
+| Publication | **Published on Vercel on 3 November 2026**, with public page/API-boundary checks recorded above. The earlier Sites attempt did not publish because automatic approval review rejected transferring its short-lived repository credential into the publisher's tool input. |
 
-The actual API and browser evidence is in [`docs/evidence/byo-endpoint-api-2026-11-02.json`](docs/evidence/byo-endpoint-api-2026-11-02.json). Current screenshots and recordings are documented in [capture provenance](docs/media/CAPTURE.md). The complete new-UI browser journey used the real H200 through the local proxy. A deployed-host origin check remains pending; local browser and API tests do not establish a successful public deployment.
+The actual API and browser evidence is in [`docs/evidence/byo-endpoint-api-2026-11-02.json`](docs/evidence/byo-endpoint-api-2026-11-02.json). Current screenshots and recordings are documented in [capture provenance](docs/media/CAPTURE.md). The complete new-UI browser journey used the real H200 through the local proxy. Public Vercel HTTP/UI and API-boundary checks plus the two approved generation requests are recorded above; a complete hosted browser generation/save journey remains pending.
 
 Search combines Qwen's visual/text similarity with whole-word evidence from descriptive names. It does not relabel cosine values as confidence or present a fixed cutoff as a fact about whether a photo matches. A complete descriptive-name match or cosine at least **0.25** qualifies for display. Rejected candidates remain outside the gallery, including when no result qualifies.
 
-Browser photos are device-local and do not sync across devices. Clearing site data removes them. Credentials are not persisted; refreshing requires reconnecting and re-indexing. Generation is synchronous and has no durable exactly-once guarantee across Worker instances; uncertain responses require explicit review and warn that another request may create another image. No shared GPU token, paid GPU resource, external CPU server or domain was created for visitors. The user's existing H200 Endpoint was not stopped or changed.
+Browser photos are device-local and do not sync across devices. Clearing site data removes them. Credentials are not persisted; refreshing requires reconnecting and re-indexing. Generation is synchronous and has no durable exactly-once guarantee across function instances; uncertain responses require explicit review and warn that another request may create another image. No shared GPU token or paid Nebius GPU resource was created for visitors. Vercel serves the web app and CPU relay. The user's existing H200 Endpoint was not stopped or changed.
 
 ## Earlier Python approval and review workflow: H200
 

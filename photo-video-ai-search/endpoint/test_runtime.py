@@ -5,10 +5,13 @@ Requires the cookbook's existing FastAPI/httpx development environment.
 """
 import concurrent.futures
 import importlib.util
+import sys
 import tempfile
 import threading
 import unittest
+from contextlib import nullcontext
 from pathlib import Path
+from types import ModuleType, SimpleNamespace
 from unittest.mock import patch
 
 import httpx
@@ -127,6 +130,122 @@ class RuntimeTests(unittest.TestCase):
         self.assertEqual(result.status_code, 500)
         self.assertNotIn("private", result.text)
         self.assertNotIn("secret", result.text)
+
+    def test_official_refusal_messages_have_safe_specific_diagnostics(self):
+        cases = [
+            ("The prompt may name a copyrighted character, a brand or a public figure.",
+             "prompt", "copyright_or_public_figure"),
+            ("The generated image may show a copyrighted character, a brand or a public figure, so it was not returned. Try another prompt or seed.",
+             "output", "copyright_or_public_figure"),
+            ("The generated image may show nudity or other adult content, so it was not returned. Try another prompt or seed.",
+             "output", "adult_content"),
+            ("Reference image 1 may show nudity or other adult content.", "reference", "adult_content"),
+            ("Reference image 12 may show a copyrighted character, a brand or a public figure.",
+             "reference", "copyright_or_public_figure"),
+        ]
+        for message, stage, category in cases:
+            with self.subTest(stage=stage, category=category):
+                self.assertEqual(flux_service.refusal_diagnostic(Exception(message)), {
+                    "stage": stage, "category": category,
+                })
+        for message in [
+            "private prompt: football; token=secret",
+            "The prompt may name a copyrighted character, a brand or a public figure. private prompt",
+            "The generated image may show private media, so it was not returned. Try another prompt or seed.",
+        ]:
+            self.assertEqual(flux_service.refusal_diagnostic(Exception(message)), {
+                "stage": "unknown", "category": "unknown",
+            })
+
+    def test_generation_refusal_retains_checks_and_releases_generation_lock(self):
+        class Refused(Exception):
+            pass
+
+        calls = []
+        generate_module = ModuleType("flux3.generate")
+        generate_module.Refused = Refused
+
+        def generate(*args, **kwargs):
+            calls.append(kwargs)
+            raise Refused("The prompt may name a copyrighted character, a brand or a public figure.")
+
+        generate_module.generate = generate
+        safety_module = ModuleType("flux3.safety")
+        safety_module.exif = lambda model: None
+        fake_modules = {
+            "torch": SimpleNamespace(inference_mode=nullcontext),
+            "flux3": ModuleType("flux3"), "flux3.generate": generate_module, "flux3.safety": safety_module,
+        }
+        with patch.dict(sys.modules, fake_modules), patch.object(flux_service, "models", object()):
+            client = TestClient(flux_service.app)
+            for _ in range(2):
+                result = client.post("/v1/images/generations", json={"prompt": "private prompt"})
+                self.assertEqual(result.status_code, 400)
+                self.assertEqual(result.json()["detail"]["code"], "model_declined")
+                self.assertEqual(result.json()["detail"]["stage"], "prompt")
+                self.assertNotIn("private prompt", result.text)
+        self.assertEqual(len(calls), 2, "A refusal must release the local generation lock.")
+        self.assertTrue(all(call["safety"] is True and call["pup"] is True for call in calls))
+
+    def test_gateway_exposes_only_allowlisted_refusal_labels(self):
+        for labels, expected in [
+            ({"stage": "output", "category": "adult_content"}, {"stage": "output", "category": "adult_content"}),
+            ({"stage": "private prompt", "category": "secret"}, {"stage": "unknown", "category": "unknown"}),
+            ({"stage": ["output"], "category": {"secret": True}}, {"stage": "unknown", "category": "unknown"}),
+        ]:
+            backend_response = httpx.Response(400, json={"detail": {
+                "code": "model_declined", "message": "private prompt / secret", "unexpected": "secret", **labels,
+            }, "prompt": "secret"})
+
+            class Backend:
+                def __init__(self, **kwargs):
+                    pass
+                def __enter__(self):
+                    return self
+                def __exit__(self, *args):
+                    pass
+                def post(self, *args, **kwargs):
+                    return backend_response
+
+            with tempfile.TemporaryDirectory() as folder, patch.dict("os.environ", {"GPU_LOCK_PATH": folder + "/gpu.lock"}):
+                client = TestClient(gateway.create_app("generation"))
+                with patch.object(gateway.httpx, "Client", Backend):
+                    result = client.post("/v1/images/generations", json={"prompt": "a cabin"})
+            self.assertEqual(result.status_code, 400)
+            payload = result.json()
+            self.assertEqual(set(payload), {"detail", "code", "stage", "category"})
+            self.assertEqual(payload["code"], "model_declined")
+            self.assertEqual({key: payload[key] for key in expected}, expected)
+            self.assertNotIn("private", result.text)
+            self.assertNotIn("secret", result.text)
+
+    def test_other_bad_requests_are_not_reported_as_model_refusals(self):
+        for response in [
+            httpx.Response(400, text="private prompt / secret"),
+            httpx.Response(400, json={"detail": "private prompt / secret"}),
+            httpx.Response(400, json={"detail": {"code": "invalid_request", "stage": "output"}}),
+            httpx.Response(422, json={"detail": {"code": "model_declined", "stage": "output"}}),
+        ]:
+            self.assertIsNone(gateway.model_declined_diagnostic(response))
+
+            class Backend:
+                def __init__(self, **kwargs):
+                    pass
+                def __enter__(self):
+                    return self
+                def __exit__(self, *args):
+                    pass
+                def post(self, *args, **kwargs):
+                    return response
+
+            with tempfile.TemporaryDirectory() as folder, patch.dict("os.environ", {"GPU_LOCK_PATH": folder + "/gpu.lock"}):
+                client = TestClient(gateway.create_app("generation"))
+                with patch.object(gateway.httpx, "Client", Backend):
+                    result = client.post("/v1/images/generations", json={"prompt": "a cabin"})
+            self.assertEqual(result.status_code, response.status_code)
+            self.assertNotIn("model_declined", result.text)
+            self.assertNotIn("private", result.text)
+            self.assertNotIn("secret", result.text)
 
     def test_invalid_json_rejected_without_backend(self):
         with tempfile.TemporaryDirectory() as folder, patch.dict("os.environ", {"GPU_LOCK_PATH": folder + "/gpu.lock"}):

@@ -357,7 +357,7 @@
       const query = pendingQuery;
       const creation = pendingCreation;
       pendingCreation = null;
-      if (creation) startCreation(creation.query, creation.text);
+      if (creation) startCreation(creation.query, creation.text, creation.options);
       else if (query) await search(query);
     } catch (error) {
       if (epoch !== connectionEpoch) return;
@@ -528,16 +528,16 @@
     }
   }
 
-  function startCreation(query = lastSearch && lastSearch.query, text = query) {
+  function startCreation(query = lastSearch && lastSearch.query, text = query, options = {}) {
     if (!query || searching || generationBusy || preview && !preview.saved || connecting || indexing || uploading || !initialized) return;
     if (!connection || !connection.ready) {
       pendingQuery = "";
-      openConnect({ query, text });
+      openConnect({ query, text, options });
       return;
     }
     cancelCreationIntent();
-    generationIntent = { query, text, search: searchEpoch, connection: connectionEpoch };
-    if (connection.generation_url) { reviewPrompt(query, text); return; }
+    generationIntent = { query, text, options, search: searchEpoch, connection: connectionEpoch };
+    if (connection.generation_url) { reviewPrompt(query, text, options); return; }
     $("generation-connect-description").textContent = `Add your FLUX Endpoint to create an image of “${query}”. You’ll review the prompt before anything is generated.`;
     $("flux-token-options").open = false;
     $("generation-dialog").showModal();
@@ -582,7 +582,7 @@
       $("generation-dialog").close();
       $("flux-url").value = "";
       $("flux-token").value = "";
-      reviewPrompt(intent.query, intent.text);
+      reviewPrompt(intent.query, intent.text, intent.options);
     } catch (error) {
       if (epoch !== generationConnectEpoch || intent !== generationIntent) return;
       $("generation-connect-error").textContent = error.name === "AbortError" ? "The FLUX Endpoint took too long. Check that it is running, then try again." : error.message;
@@ -596,12 +596,25 @@
     }
   }
 
-  function reviewPrompt(query = lastSearch && lastSearch.query, text = query) {
+  function initialPromptDraft(text) {
+    const words = text.trim().split(/\s+/);
+    // A short subject benefits from a visible image brief. Respect sentences,
+    // explicit visual briefs, and all text that the user has already approved.
+    const visualBrief = /\b(?:photo(?:graph)?|illustration|portrait|painting|render|drawing|sketch)\b/i.test(text) && words.length > 1;
+    const isSubject = words.length <= 4 && !/[.!?;:\n]/.test(text) && !visualBrief && !/^(?:create|generate|draw|make|show)\b/i.test(text);
+    return isSubject
+      ? { text: `A high-quality stock photograph of ${text}, with a clearly visible main subject and natural lighting. Use generic equipment and original designs.`, drafted: true }
+      : { text, drafted: false };
+  }
+
+  function reviewPrompt(query = lastSearch && lastSearch.query, text = query, options = {}) {
     if (!query || generationBusy || preview && !preview.saved) return;
-    if (!connection || !connection.ready || !connection.generation_url) { startCreation(query, text); return; }
+    if (!connection || !connection.ready || !connection.generation_url) { startCreation(query, text, options); return; }
     generationIntent = null;
     draft = { query, request_id: crypto.randomUUID() };
-    $("generation-prompt").value = text;
+    const prepared = options.preserve ? { text, drafted: false } : initialPromptDraft(text);
+    $("generation-prompt").value = prepared.text;
+    $("prompt-draft-note").hidden = !prepared.drafted;
     $("generation-warning").hidden = !generationAmbiguous;
     $("prompt-review").hidden = false;
     $("generation-status").hidden = true;
@@ -653,7 +666,10 @@
     } catch (error) {
       const preflight = new Set(["invalid_url", "invalid_token", "approval_required", "wrongmodel", "wrong_model", "request_limit", "gpu_busy"]).has(error.code);
       generationAmbiguous = !preflight && (!Number.isInteger(error.status) || error.status >= 500 || [408, 409, 499].includes(error.status));
-      generationStatus(preflight ? "The image request wasn’t started." : generationAmbiguous ? "We couldn’t confirm the image result." : "The image request couldn’t be completed.", generationAmbiguous ? "The request may still be running or its image may no longer be available. Starting again could create another image." : error.message, { error: true, action: () => reviewPrompt(approved.query, approved.prompt), label: "Review prompt" });
+      const title = error.code === "model_declined" ? "FLUX didn’t return an image."
+        : error.code === "model_request_invalid" ? "The image service rejected the request."
+        : preflight ? "The image request wasn’t started." : generationAmbiguous ? "We couldn’t confirm the image result." : "The image request couldn’t be completed.";
+      generationStatus(title, generationAmbiguous ? "The request may still be running or its image may no longer be available. Starting again could create another image." : error.message, { error: true, action: () => reviewPrompt(approved.query, approved.prompt, { preserve: true }), label: "Review prompt" });
     } finally { generationBusy = false; updateControls(); }
   }
 

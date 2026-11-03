@@ -26,6 +26,27 @@ MAX_BODY = 12 * 1024 * 1024
 WAIT_SECONDS = 10
 
 
+def model_declined_diagnostic(result):
+    """Allow only our private service's explicit refusal code and static labels."""
+    if result.status_code != 400:
+        return None
+    try:
+        payload = result.json()
+    except ValueError:
+        return None
+    detail = payload.get("detail") if isinstance(payload, dict) else None
+    if not isinstance(detail, dict) or detail.get("code") != "model_declined":
+        return None
+    stage = detail.get("stage")
+    category = detail.get("category")
+    return {
+        "detail": "The model declined the request or its output. Review the description and try again.",
+        "code": "model_declined",
+        "stage": stage if stage in ("prompt", "reference", "output", "unknown") else "unknown",
+        "category": category if category in ("copyright_or_public_figure", "adult_content", "unknown") else "unknown",
+    }
+
+
 @contextmanager
 def gpu_lock(path, seconds=WAIT_SECONDS):
     Path(path).parent.mkdir(parents=True, exist_ok=True)
@@ -132,11 +153,13 @@ def create_app(kind: str):
         if result.is_success:
             return Response(result.content, media_type="application/json")
         # Do not forward upstream error bodies that can contain prompts/media.
+        if kind == "generation":
+            diagnostic = model_declined_diagnostic(result)
+            if diagnostic is not None:
+                return JSONResponse(diagnostic, status_code=400)
         message = "Model request was rejected; check request fields and media limits."
         if result.status_code == 429:
             message = "GPU is busy; retry shortly."
-        elif kind == "generation" and result.status_code == 400:
-            message = "The model declined the request or its output. Try a different description."
         return JSONResponse({"detail": message}, status_code=result.status_code)
 
     return app

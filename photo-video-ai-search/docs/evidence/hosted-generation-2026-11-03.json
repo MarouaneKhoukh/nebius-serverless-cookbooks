@@ -1,0 +1,22 @@
+{
+  "scope": "Two user-approved generation requests through the live Vercel relay to an existing Regular H200. No automatic retries or collection changes.",
+  "results": [
+    {
+      "case": "football",
+      "status": 422,
+      "seconds": 13.87,
+      "code": "model_declined"
+    },
+    {
+      "case": "neutral",
+      "status": 200,
+      "seconds": 12.11,
+      "png_bytes": 1458457,
+      "dimensions": [
+        1024,
+        1024
+      ]
+    }
+  ],
+  "limit": "This confirms one successful hosted generation and one refusal. It does not identify prompt-vs-output screening or establish general reliability."
+}

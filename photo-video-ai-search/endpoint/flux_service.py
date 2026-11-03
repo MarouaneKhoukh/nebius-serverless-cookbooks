@@ -2,6 +2,7 @@
 import base64
 import io
 import os
+import re
 import secrets
 import threading
 import time
@@ -15,6 +16,28 @@ from pydantic import BaseModel, ConfigDict, Field
 MODEL = "black-forest-labs/flux-3-image-klein"
 generation_lock = threading.Lock()
 models = None
+
+
+def refusal_diagnostic(error):
+    """Translate only the official, fixed refusal messages into public labels.
+
+    Never return exception text: future package versions or a failing dependency
+    could include a user's prompt, media, or internal diagnostics in that text.
+    The checks themselves remain in the official generate(..., safety=True) path.
+    """
+    message = str(error)
+    if message == "The prompt may name a copyrighted character, a brand or a public figure.":
+        return {"stage": "prompt", "category": "copyright_or_public_figure"}
+    reasons = {
+        "a copyrighted character, a brand or a public figure": "copyright_or_public_figure",
+        "nudity or other adult content": "adult_content",
+    }
+    for reason, category in reasons.items():
+        if message == f"The generated image may show {reason}, so it was not returned. Try another prompt or seed.":
+            return {"stage": "output", "category": category}
+        if re.fullmatch(r"Reference image [1-9][0-9]* may show " + re.escape(reason) + r"\.", message):
+            return {"stage": "reference", "category": category}
+    return {"stage": "unknown", "category": "unknown"}
 
 
 class ImageRequest(BaseModel):
@@ -93,8 +116,12 @@ def generate_image(body: ImageRequest):
                       "revised_prompt": record["prompt"]}],
             "seed": record["seed"], "steps": 16,
         }
-    except Refused:
-        raise HTTPException(400, "This request or its output was declined by the model's content checks.") from None
+    except Refused as error:
+        raise HTTPException(400, {
+            "code": "model_declined",
+            "message": "The model declined the request or its output. Review the description and try again.",
+            **refusal_diagnostic(error),
+        }) from None
     except Exception:
         raise HTTPException(503, "Image generation failed. Inspect sanitized runtime logs and GPU capacity.") from None
     finally:
