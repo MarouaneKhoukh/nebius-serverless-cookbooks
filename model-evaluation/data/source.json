@@ -1,0 +1,64 @@
+{
+  "dataset": "BANKING77",
+  "publisher": "PolyAI",
+  "revision": "57ec275d8078af65b7731c2a98be812d844a6d6b",
+  "repository": "https://github.com/PolyAI-LDN/task-specific-datasets",
+  "paper": "https://aclanthology.org/2020.nlp4convai-1.5/",
+  "license": "CC-BY-4.0",
+  "license_url": "https://creativecommons.org/licenses/by/4.0/",
+  "source_schema": [
+    "text",
+    "category"
+  ],
+  "source_files": {
+    "train.csv": {
+      "path": "banking_data/train.csv",
+      "sha256": "b06e26ac675513959a63135f11b94ea7786ed02da65db93a5650d8838cbc664b",
+      "bytes": 839073,
+      "rows": 10003,
+      "url": "https://raw.githubusercontent.com/PolyAI-LDN/task-specific-datasets/57ec275d8078af65b7731c2a98be812d844a6d6b/banking_data/train.csv"
+    },
+    "test.csv": {
+      "path": "banking_data/test.csv",
+      "sha256": "d12d6e3bc4c3103966ae786dc435913c0c563dfa328f5a3646d0e62cfeeb474d",
+      "bytes": 239961,
+      "rows": 3080,
+      "url": "https://raw.githubusercontent.com/PolyAI-LDN/task-specific-datasets/57ec275d8078af65b7731c2a98be812d844a6d6b/banking_data/test.csv"
+    },
+    "categories.json": {
+      "path": "banking_data/categories.json",
+      "sha256": "53261da888122daf2d120d925458631d9619e15d82e56052e7a42e535ce32b63",
+      "bytes": 2036,
+      "rows": 77,
+      "url": "https://raw.githubusercontent.com/PolyAI-LDN/task-specific-datasets/57ec275d8078af65b7731c2a98be812d844a6d6b/banking_data/categories.json"
+    },
+    "LICENSE": {
+      "path": "LICENSE",
+      "sha256": "7e7170e3cebf88a9f60c7b8421418323c09304da1af4d5e90f4da1dc1c8a2661",
+      "bytes": 18650,
+      "url": "https://raw.githubusercontent.com/PolyAI-LDN/task-specific-datasets/57ec275d8078af65b7731c2a98be812d844a6d6b/LICENSE"
+    }
+  },
+  "split_counts": {
+    "train": 10003,
+    "test": 3080
+  },
+  "intent_count": 77,
+  "default_selection": {
+    "split": "test",
+    "limit": 0,
+    "seed": 42
+  },
+  "prepared_schema": [
+    "id",
+    "prompt",
+    "expected"
+  ],
+  "changes": [
+    "Stable 1-based source-record IDs added.",
+    "Test records shuffled with the selected seed before optional limiting.",
+    "Original text and exact category strings retained.",
+    "Separate training rows fit the CPU baseline and supply one prompt example per intent to Qwen."
+  ],
+  "attribution": "BANKING77 by PolyAI. I\u00f1igo Casanueva, Tadas Tem\u010dinas, Daniela Gerz, Matthew Henderson and Ivan Vuli\u0107. Efficient Intent Detection with Dual Sentence Encoders. NLP4ConvAI 2020. Licensed under CC BY 4.0."
+}

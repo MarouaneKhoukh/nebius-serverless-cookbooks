@@ -1,0 +1,12 @@
+{
+  "repository": "https://github.com/MarouaneKhoukh/nebius-serverless-cookbooks",
+  "commit": "0926d4fc19e0842873f244f607c5affe888d17ab",
+  "url": "https://raw.githubusercontent.com/MarouaneKhoukh/nebius-serverless-cookbooks/0926d4fc19e0842873f244f607c5affe888d17ab/support-request-classification/docs/sample-results/result.zip",
+  "sha256": "03b6e35c9e82da55810f3395f80bba9c4e1c115aade0f6d15cc614bbffdf627f",
+  "bytes": 414019,
+  "input": "BANKING77 official test split",
+  "rows": 3080,
+  "candidate": "Qwen3-4B-Instruct-2507;77 training examples in prompt",
+  "baseline": "Word/bigram Naive Bayes fitted on 10003 training rows",
+  "origin": "Actual preemptible Nebius Serverless AI Jobs; scoring and this report run locally."
+}

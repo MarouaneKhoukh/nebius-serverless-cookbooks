@@ -1,226 +1,179 @@
 ---
-title: Evaluate a Model on Your Own Examples
+title: Evaluate a Model on a Real Test Set
 category: inference
 type: cookbook
-runtime: Nebius Serverless AI Endpoint
+runtime: Local scoring with optional Nebius Serverless AI Job
 frameworks: [vLLM]
-keywords: [preemptible, evaluation, qwen, accuracy, classification]
+keywords: [evaluation, banking77, qwen, classification, preemptible]
 difficulty: beginner
 ---
 
 <img src="docs/brand/nebius-logo.svg" alt="Nebius" width="140">
 
-# Evaluate a Model on Your Own Examples
+# Evaluate a Model on a Real Test Set
 
-Check how often Qwen assigns a support request to the right category: **billing**, **technical** or **account**. You'll compare its answers with 30 labeled examples and build a browser report showing the score and individual mistakes.
+Score **3,080 real BANKING77 questions across 77 intents**, compare Qwen with a trained CPU baseline and inspect where each model fails. You get accuracy, macro F1, per-intent results, confusion counts and CSVs for review.
 
-Nebius Serverless AI runs the model on a cloud GPU, so you don't need to configure a GPU server. You'll create an **Endpoint**—a model API you call over HTTPS. Your computer sends the examples, checks the answers and saves the report.
-
-**Preemptible instances give you a way to do more with your GPU budget.** They provide GPU capacity at a changing market price that can be lower than the regular rate. The trade-off is that a run can be interrupted. This cookbook saves each prediction on your computer, so you can resume the evaluation and process only the remaining examples.
-
-For example, during this experiment, this setup was priced at about **$0.80/hour on preemptible compute, compared with $1.60/hour on regular compute**. Prices can change.
-
-![The evaluation score and mistakes in a browser report](docs/media/result.jpg)
-
-**Powered by Nebius Serverless AI**
+The included predictions came from **preemptible Nebius Serverless AI Jobs** running Qwen3-4B-Instruct-2507. Evaluation itself runs locally: counting correct labels doesn't need another GPU. Use the complete saved export, supply your own predictions, or generate new predictions with the optional finite Job below.
 
 ## What you need
 
-- macOS or Ubuntu, Git and Python **3.10+**. No local GPU or extra Python packages.
-- A Nebius account with billing enabled and a project in **eu-north1**. A project holds your cloud resources and their permissions.
-- Permission and quota to run **one preemptible L40S GPU**. Quota is your account's resource allowance; check it under **Quotas** in the console if deployment is refused.
+- macOS or Ubuntu, Git and Python **3.10+**. The first path needs no cloud account, GPU or additional Python packages.
+- For new GPU predictions: a billing-enabled Nebius project in **eu-north1**, permission to create Jobs and use Object Storage, and quota for one preemptible L40S.
 
 ## 1. Get the files
 
 ```bash
 git clone https://github.com/MarouaneKhoukh/nebius-serverless-cookbooks.git
 cd nebius-serverless-cookbooks/model-evaluation
-python3 --version
 ```
 
-Run the remaining commands from this directory.
+Run all commands from this directory. The real question text, expected labels and saved model outputs are bundled in `data/reference-results.zip`. The evaluator verifies its fixed source, checksums, input joins and license before use. These are human-authored benchmark questions, not production bank logs. [Source and license](data/SOURCE.md).
 
-## 2. Sign in to Nebius
+## 2. Score the saved predictions
 
-The Nebius CLI lets you manage the Endpoint from your terminal. If it isn't installed:
+```bash
+python3 src/evaluate.py --output-dir results
+```
+
+Open **`results/report.html`**. It should show **3,080 questions**, Qwen at **76.0% accuracy**, and the CPU baseline at **78.6%**.
+
+![The evaluation report with actual BANKING77 scores and mistakes](docs/media/result.jpg)
+
+**Powered by Nebius Serverless AI**
+
+The comparison shows:
+
+- Both correct: **1,937** questions.
+- Qwen correct, CPU baseline wrong: **403**.
+- CPU baseline correct, Qwen wrong: **483**.
+- Both wrong: **257**.
+
+Use `mistakes.csv` and `comparisons.csv` to inspect those questions. `scores.json` contains macro F1, per-intent precision/recall and confusion counts. Invalid labels count as incorrect; they aren't dropped from the denominator.
+
+For this dataset, start with the CPU baseline. Qwen used 77 training examples in its prompt; Naive Bayes fitted all 10,003 source training rows. The comparison uses different supervision budgets, so it isn't an equal-data benchmark. [Validation and limitations](VALIDATION.md).
+
+## 3. Compare your own predictions
+
+A reference CSV needs `id,prompt,expected,predicted`. A candidate needs `id,predicted`; `prediction` is also accepted for the output column. IDs must be unique, and any supplied question text or expected label must match the reference.
+
+```bash
+python3 src/evaluate.py \
+  --predictions before_predictions.csv --candidate after_predictions.csv \
+  --reference-name "Base model" --candidate-name "My adapter" \
+  --output-dir results-comparison
+```
+
+Use the same test questions, prompt and generation settings to measure a fine-tuning change. The training cookbook exports these two CSVs. A changed prompt or different model is still a comparison, but it doesn't isolate fine-tuning's effect.
+
+If a candidate intentionally covers only a reference subset, add `--allow-subset`. Both models are then scored on those same IDs; the report records how many reference rows were omitted. Otherwise, missing IDs are an error.
+
+The taxonomy defaults to the 77 exact BANKING77 intent names, including original capitalization and punctuation. Supply `--labels path/to/labels.json` for another task. Use a new output directory for each experiment.
+
+To use your own frontend, add **`--no-report`** for raw CSV/JSON only, or replace `templates/report.html` with `--template YOUR_TEMPLATE.html`. The default showcase remains Nebius-branded; model outputs do not depend on its styling.
+
+## 4. Generate fresh predictions on Serverless
+
+Preemptible GPUs offer lower-priced capacity that Nebius can reclaim. The included finite Job saves every completed batch to Object Storage and resumes only missing batches. It loads Qwen, processes the test split and exits; there is no Endpoint to keep running.
+
+<details>
+<summary>Complete CLI setup and GPU run</summary>
+
+Install the Nebius CLI if needed:
 
 ```bash
 curl -sSL https://artifacts.nebius.cloud/cli/install.sh | bash
 ```
 
-Open a new terminal after installation and return to this cookbook's directory. Use CLI **0.12.303 or newer**; run `nebius update` if your version is older.
-
-In the [Nebius console](https://console.nebius.com), select your eu-north1 project and copy its project ID. Replace the **entire** `YOUR_PROJECT_ID` value below:
-
-If you already have a signed-in CLI profile for this project, skip the `profile create` line and replace `cookbook` in `profile activate` with your profile's name.
+Open a new terminal and return to this directory. Use CLI **0.12.303+**; run `nebius update` if older. Copy your project ID from the [console](https://console.nebius.com), replace the placeholder and complete browser sign-in:
 
 ```bash
-nebius version
-export NEBIUS_PROJECT_ID="YOUR_PROJECT_ID"
 export AI_AGENT="${AI_AGENT:-cookbook}"
-nebius profile create cookbook --parent-id "$NEBIUS_PROJECT_ID"
+nebius version
+export PROJECT_ID="YOUR_PROJECT_ID"
+nebius profile create cookbook --parent-id "$PROJECT_ID"
 nebius profile activate cookbook
 nebius iam whoami
 ```
 
-Complete the browser sign-in when prompted.
+Already signed in? Activate that project's profile instead of creating `cookbook`.
 
-Choose a **subnet**, the network your Endpoint will use. List the project's subnets, then replace `YOUR_SUBNET_ID` with a subnet's `metadata.id`. It must allow outbound internet access to download the model.
-
-```bash
-nebius vpc subnet list --parent-id "$NEBIUS_PROJECT_ID" --format json
-export NEBIUS_SUBNET_ID="YOUR_SUBNET_ID"
-```
-
-<details>
-<summary>If your project has no subnet</summary>
-
-Create a network and subnet in the same project:
+Choose a subnet with outbound internet access for model downloads. Copy its `metadata.id`:
 
 ```bash
-export NEBIUS_NETWORK_ID="$(nebius vpc network create --parent-id "$NEBIUS_PROJECT_ID" --name cookbook-network --format jsonpath='{.metadata.id}')"
-export NEBIUS_SUBNET_ID="$(nebius vpc subnet create --parent-id "$NEBIUS_PROJECT_ID" --name cookbook-subnet --network-id "$NEBIUS_NETWORK_ID" --format jsonpath='{.metadata.id}')"
+nebius vpc subnet list --parent-id "$PROJECT_ID" --format json
+export SUBNET_ID="YOUR_SUBNET_ID"
 ```
 
-New networks have a default internet route. If your company manages the network, ask for an approved subnet instead. [Network setup](https://docs.nebius.com/vpc/networking/isolation) · [Default routing](https://docs.nebius.com/vpc/routing/overview)
+If none exists, create one with the default internet route:
+
+```bash
+export NETWORK_ID="$(nebius vpc network create --parent-id "$PROJECT_ID" --name cookbook-network --format jsonpath='{.metadata.id}')"
+export SUBNET_ID="$(nebius vpc subnet create --parent-id "$PROJECT_ID" --name cookbook-subnet --network-id "$NETWORK_ID" --format jsonpath='{.metadata.id}')"
+```
+
+Create a private bucket with a unique name, or reuse a bucket in this project. Replace the bucket placeholder with its returned ID:
+
+```bash
+python3 scripts/job.py create-bucket \
+  --project-id "$PROJECT_ID" --name "YOUR_UNIQUE_BUCKET_NAME" --yes
+export BUCKET_ID="YOUR_BUCKET_ID"
+export RUN_ID="banking77-evaluation"
+```
+
+`config/job.json` pins Qwen3-4B-Instruct-2507 and vLLM 0.19.1, one **L40S**, a **100 GiB temporary disk** and a **one-hour timeout per Job**. Check the rate under **Serverless AI → Jobs → Create job → Preemptible**. L40S currently has a [flat preemptible rate](https://nebius.com/prices), although the CLI calls its setting **Follow Spot price**. Image download, model loading and retries can use paid compute time.
+
+```bash
+python3 scripts/job.py submit \
+  --project-id "$PROJECT_ID" --subnet-id "$SUBNET_ID" \
+  --bucket-id "$BUCKET_ID" --run-id "$RUN_ID" --dry-run
+python3 scripts/job.py submit \
+  --project-id "$PROJECT_ID" --subnet-id "$SUBNET_ID" \
+  --bucket-id "$BUCKET_ID" --run-id "$RUN_ID" --yes
+python3 scripts/job.py wait --timeout 3600
+python3 scripts/job.py logs --tail 30
+```
+
+The Job downloads checksum-verified BANKING77 files and saves batches of 64. Find `result_published` in the logs and download that exact `RUN_ID/exports/ATTEMPT_ID/result.zip` path from **Object Storage → your bucket**.
+
+```bash
+python3 src/evaluate.py --archive "$HOME/Downloads/result.zip" --output-dir results-fresh
+```
+
+If interrupted, validate any export first. A complete verified export needs no new GPU even if the platform reports `FAILED / Preempted`. If work remains, wait for the old Job to be terminal, keep `.state/job.json` and all original files/settings, then resume:
+
+```bash
+python3 scripts/job.py resume --dry-run
+python3 scripts/job.py resume --yes
+python3 scripts/job.py wait --timeout 3600
+python3 scripts/job.py logs --tail 30
+```
+
+Check that compute has stopped; cancel an active Job if you aren't continuing. A wait timeout alone doesn't stop it:
+
+```bash
+python3 scripts/job.py status
+python3 scripts/job.py cancel --yes
+python3 scripts/job.py status
+```
+
+A completed Job releases its GPU and temporary disk. Retained Object Storage remains billed; later remove only this run's objects or its dedicated bucket, preserving shared data.
 
 </details>
 
-## 3. Start the model
+## Run with an agent
 
-The supplied configuration runs **Qwen2.5-0.5B-Instruct** with vLLM on one L40S and a 500 GiB temporary disk. vLLM serves the model's API; you don't need to build a container.
-
-Before launching, check the current rate under **Serverless AI → Endpoints → Create endpoint → Preemptible**. The deployment script uses **Follow Spot price** by default, which accepts the changing price without a maximum. Model loading and idle time are billed too. You'll stop the Endpoint in step 5.
-
-If you already have an Endpoint serving this model, you can use the reuse option below. Otherwise, create one:
-
-<details>
-<summary>Set a maximum GPU price</summary>
-
-A pricing policy sets a maximum **per GPU hour**. A higher maximum can improve allocation priority when demand for the same GPU platform is high. You pay the current market rate while it stays within your limit. Capacity can still be reclaimed. [How allocation works](https://docs.nebius.com/signup-billing/pricing-policy#capacity-allocation)
-
-1. Check the [current price and recent history](https://docs.nebius.com/signup-billing/spot-prices). Choose a maximum within your budget, with room for price increases. A limit below the current rate blocks startup.
-2. In **Billing → Pricing → Pricing policy → Create pricing policy**, enter a name using letters/numbers, select your project and **`gpu-l40s-a`**, and enter that maximum. Create the policy and copy its ID.
-3. Add `--spot-pricing-policy-id "YOUR_POLICY_ID"` to both `create` commands below, replacing the whole placeholder. The deployment script will use that policy.
-
-Choose the policy before launching. Before changing its maximum, stop the Endpoints using it and wait for any Jobs using it to finish, or cancel them.
-
-A tight limit can cause more interruptions as prices rise. **Follow Spot price** accepts price changes without a cap, including prices above regular rates. A GPU price limit does not cap the total cost of a run or its storage.
-
-[Policy setup](https://docs.nebius.com/signup-billing/manage-pricing-policy) · [Pricing options](https://docs.nebius.com/signup-billing/pricing-policy)
-
-</details>
-
-```bash
-python3 scripts/endpoint.py create --project-id "$NEBIUS_PROJECT_ID" --subnet-id "$NEBIUS_SUBNET_ID" --name cookbook-evaluate-spot --dry-run
-python3 scripts/endpoint.py create --project-id "$NEBIUS_PROJECT_ID" --subnet-id "$NEBIUS_SUBNET_ID" --name cookbook-evaluate-spot --yes
-python3 scripts/endpoint.py wait --timeout 1800
-```
-
-The first command previews the deployment; the second creates it. Wait for the model to be ready before continuing. The deployment script passes the API address and authentication token to the client.
-
-<details>
-<summary>Reuse a compatible existing Endpoint</summary>
-
-Use this option **instead of** the three create/wait commands above. In **Serverless AI → Endpoints** in the console, copy the ID of an Endpoint serving `Qwen/Qwen2.5-0.5B-Instruct`. Replace the entire `YOUR_ENDPOINT_ID` value and run:
-
-```bash
-python3 scripts/endpoint.py attach --project-id "$NEBIUS_PROJECT_ID" --id "YOUR_ENDPOINT_ID"
-python3 scripts/endpoint.py start
-python3 scripts/endpoint.py wait --timeout 1800
-```
-
-The Endpoint must serve `Qwen/Qwen2.5-0.5B-Instruct` with token authentication on preemptible compute. Continue at step 4 and stop it after your final client has finished.
-
-</details>
-
-<details>
-<summary>Ask an agent to run it instead</summary>
-
-Install the [Nebius agent skills](https://github.com/nebius/skills#install) for your coding agent, then paste the prompt below. The agent needs terminal access and the CLI sign-in from step 2. Skills are optional for the CLI instructions above.
+The local evaluation command needs only Python. For fresh GPU predictions, install the [Nebius skills](https://github.com/nebius/skills#install) for an agent with terminal access and the signed-in CLI, then paste:
 
 ```text
-Run this cookbook in Nebius project <MY_PROJECT_ID> using
-nebius-cloud-basics and nebius-serverless-endpoints. Follow README.md and
-config/endpoint.json. Reuse a compatible existing Endpoint, or show the
-current price and confirm a new preemptible deployment.
-Wait for the model and evaluate data/evaluation.csv. Inspect all 30
-predictions, the accuracy score and the mistakes. Stop this cookbook's
-Endpoint and verify STOPPED. Keep authentication tokens private.
+Run model-evaluation in MarouaneKhoukh/nebius-serverless-cookbooks.
+First evaluate the bundled real BANKING77 prediction archive locally.
+For fresh predictions, use nebius-cloud-basics, nebius-serverless-jobs
+and nebius-serverless-data-secrets in project <PROJECT_ID>, subnet
+<SUBNET_ID>, bucket <BUCKET_ID>. Follow config/job.json, show the price
+and confirm before launching unapproved compute. Retrieve the complete
+result.zip, evaluate it locally, inspect errors and verify compute has
+stopped. Keep credentials private and preserve saved results.
 ```
 
-</details>
-
-## 4. Check the answers
-
-```bash
-python3 scripts/endpoint.py run -- python3 src/evaluate.py --input data/evaluation.csv --output-dir results
-```
-
-Open `results/report.html` in your browser. It shows the model's score and examples it got wrong. You can also inspect:
-
-- `results/scores.json`: accuracy and correct, incorrect and invalid-answer counts.
-- `results/predictions.csv`: every request, expected label and model prediction.
-- `results/mistakes.csv`: the incorrect or invalid answers.
-
-**Accuracy is correct answers divided by evaluated examples.** An answer with multiple labels or extra explanation counts as incorrect. Wait for all 30 examples before comparing scores:
-
-```bash
-python3 -c 'import json; r=json.load(open("results/scores.json")); print(r); assert r["complete"] and r["evaluated_examples"] == 30'
-```
-
-These fictional examples teach the evaluation workflow. For a useful score on your own task, use examples that reflect the requests your model will receive.
-
-## 5. Stop the Endpoint
-
-```bash
-python3 scripts/endpoint.py stop
-```
-
-Wait for `STOPPED`. This releases the GPU and temporary disk; your local results remain. The Endpoint stays running and billable until you stop it, even after evaluation finishes.
-
-## If the GPU is reclaimed
-
-Your saved answers remain on your computer. When capacity is available, restart the Endpoint and run the same evaluation with the same results directory:
-
-```bash
-python3 scripts/endpoint.py start
-python3 scripts/endpoint.py wait --timeout 1800
-python3 scripts/endpoint.py run -- python3 src/evaluate.py --input data/evaluation.csv --output-dir results
-python3 scripts/endpoint.py stop
-```
-
-Completed examples are skipped. A request whose answer wasn't saved may run again. The Endpoint needs an explicit restart; it doesn't recover automatically.
-
-<details>
-<summary>Use your own examples or try resuming</summary>
-
-Copy `data/evaluation.csv`, keeping the `id,prompt,expected` columns, unique IDs and one expected label per row. For a different classification task, edit `LABELS` and `SYSTEM_PROMPT` together in `src/runner.py`.
-
-Keep evaluation examples separate from training data. To compare a model before and after fine-tuning, use the same test examples and scoring rule. Continue with [Fine-Tune Qwen and Resume Saved Training](../fine-tuning-with-checkpoints/README.md) to try this.
-
-Use a new output directory when changing the input, model or settings. To try client resumption, run the step 4 command with `--output-dir results-resume --limit 5`, then repeat it without `--limit 5`. The second run skips the first five answers.
-
-If you run the client in a temporary notebook or another machine, keep its results directory on storage that survives that session.
-
-</details>
-
-<details>
-<summary>Troubleshooting and test results</summary>
-
-- **Sign-in error:** sign in again with your CLI profile. For API 401/403 errors, check the Endpoint's token-authentication setting.
-- **Quota exceeded:** request a higher allowance in the console.
-- **No capacity:** try again when preemptible GPUs become available.
-- **`RUNNING` but the API isn't ready:** use the wait command; check Endpoint logs if it times out.
-- **Invalid answers:** inspect their raw text in `predictions.csv`.
-- **Input or settings changed:** choose a new output directory.
-
-The recorded run scored 24/30 (80%) and reused saved answers on a second client run. Natural GPU preemption was not observed. [Validation and recorded prices](VALIDATION.md) · [Saved predictions](docs/sample-results/predictions.csv)
-
-Run local checks with `python3 -m unittest discover -s tests -v`.
-
-</details>
-
-[Serverless AI](https://docs.nebius.com/serverless/overview) · [Preemptible instances](https://docs.nebius.com/compute/virtual-machines/preemptible) · [Endpoint stop/start](https://docs.nebius.com/serverless/maintenance/stop-start) · [vLLM template](https://github.com/nebius/serverless-ai-cookbook/tree/main/templates/endpoint-vllm-qwen3-0-6b)
-
-The sample requests are fictional; no customer data is included.
+Local checks: `python3 -m unittest discover -s tests -v`.

@@ -1,65 +1,116 @@
 #!/usr/bin/env python3
-"""Run a held-out classification dataset and score predictions against labels."""
-
+"""Evaluate saved real benchmark predictions locally; inference is a separate step."""
+from __future__ import annotations
 import argparse
-import os
+import csv
+import hashlib
+import io
+import json
 from pathlib import Path
 import sys
-
-from runner import Endpoint, LABELS, MODEL, RecipeError, brand_svg, load_rows, render_report, run_rows, saved_records, settings_for, write_csv, write_json
-
-
-def score(records: list[dict], total: int) -> tuple[dict, list[dict]]:
-    comparisons = [{**record, "predicted": record.get("label") or "invalid", "correct": bool(record.get("label") == record["expected"])} for record in records]
-    correct = sum(record["correct"] for record in comparisons)
-    matrix = {expected: {predicted: 0 for predicted in (*LABELS, "invalid")} for expected in LABELS}
-    for record in comparisons:
-        matrix[record["expected"]][record["predicted"]] += 1
-    summary = {"total_examples": total, "evaluated_examples": len(comparisons), "remaining": total - len(comparisons), "complete": total == len(comparisons), "correct": correct, "incorrect": len(comparisons) - correct, "invalid_predictions": sum(record["predicted"] == "invalid" for record in comparisons), "accuracy": correct / len(comparisons) if comparisons else None, "confusion_matrix": matrix}
-    return summary, comparisons
+import zipfile
+from analysis import csv_records,scored_rows,metrics,compare
+from analysis_report import render
+ROOT=Path(__file__).resolve().parents[1]
+sys.path.insert(0,str(ROOT/'scripts'))
+from check_result import validate
 
 
-def write_outputs(directory: Path, records: list[dict], total: int, model: str) -> None:
-    summary, comparisons = score(records, total)
-    summary["model"] = model
-    write_json(directory / "scores.json", summary)
-    write_csv(directory / "predictions.csv", ["id", "prompt", "expected", "predicted", "response", "correct"], comparisons)
-    write_csv(directory / "mistakes.csv", ["id", "prompt", "expected", "predicted", "response"], [record for record in comparisons if not record["correct"]])
-    value = "n/a" if summary["accuracy"] is None else f"{summary['accuracy']:.1%}"
-    scope = "complete" if summary["complete"] else "partial — resume before comparing"
-    render_report(directory / "report.html", "Evaluate a Model on Your Own Examples", f"Accuracy: {value} · {summary['correct']} / {len(records)} correct · {total} total examples · {scope}", ["id", "prompt", "expected", "predicted", "correct"], comparisons)
+def read_csv(path):
+    if path.stat().st_size>25*1024**2:raise ValueError('CSV exceeds the 25 MiB input limit.')
+    return csv_records(path.read_text(encoding='utf-8-sig'))
 
 
-def main(argv=None) -> int:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--input", type=Path, default=Path("data/evaluation.csv"))
-    parser.add_argument("--output-dir", type=Path, default=Path("results"))
-    parser.add_argument("--model", default=MODEL)
-    parser.add_argument("--model-revision", default=os.environ.get("MODEL_REVISION", ""))
-    parser.add_argument("--limit", type=int, help="Evaluate at most N unfinished examples")
-    parser.add_argument("--readiness-timeout", type=float, default=900)
-    args = parser.parse_args(argv)
+def read_archive(path,labels):
+    if path.resolve()==(ROOT/'data/reference-results.zip').resolve():
+        pin=json.loads((ROOT/'data/reference.json').read_text())
+        if path.stat().st_size!=pin['bytes'] or hashlib.sha256(path.read_bytes()).hexdigest()!=pin['sha256']:
+            raise ValueError('Bundled reference result differs from its pinned source.')
+    with zipfile.ZipFile(path) as archive:
+        members=archive.infolist();names=[m.filename for m in members]
+        if len(set(names))!=len(names) or any(Path(n).name!=n or n in {'.','..'} for n in names):raise ValueError('Archive needs unique flat filenames.')
+        if sum(m.file_size for m in members)>500*1024**2:raise ValueError('Archive exceeds the 500 MiB limit.')
+        if archive.testzip() is not None:raise ValueError('Corrupt result ZIP.')
+        files={n:archive.read(n) for n in names}
+    validate(files)
+    contract=json.loads(files['run_contract.json'])
+    if contract['labels']!=labels:raise ValueError('Archive taxonomy differs from --labels.')
+    metadata={'model':contract['config']['model'],'model_revision':contract['config']['model_revision'],
+              'dataset':contract['dataset'],'prompt_examples':len(contract.get('prompt_examples',[])),
+              'artifact_sha256':hashlib.sha256(path.read_bytes()).hexdigest(),
+              'inference_origin':'Saved Nebius Serverless AI prediction export; no model requests made by this evaluator.'}
+    return csv_records(files['predictions.csv'].decode()),metadata,files
+
+
+def write_csv(path,fields,rows):
+    with path.open('w',newline='',encoding='utf-8') as stream:
+        writer=csv.DictWriter(stream,fieldnames=fields,extrasaction='ignore',lineterminator='\n');writer.writeheader();writer.writerows(rows)
+
+
+def main(argv=None):
+    p=argparse.ArgumentParser(description=__doc__)
+    source=p.add_mutually_exclusive_group()
+    source.add_argument('--archive',type=Path,help='Complete result.zip from the bundled finite GPU Job')
+    source.add_argument('--predictions',type=Path,help='CSV with id,prompt,expected,predicted (or prediction)')
+    p.add_argument('--candidate',type=Path,help='Optional second model CSV with id,predicted; extra gold/text columns must match')
+    p.add_argument('--allow-subset',action='store_true',help='Explicitly compare only candidate IDs when it covers a declared reference subset')
+    p.add_argument('--labels',type=Path,default=ROOT/'data/categories.json')
+    p.add_argument('--reference-name')
+    p.add_argument('--candidate-name')
+    p.add_argument('--output-dir',type=Path,default=Path('results'))
+    p.add_argument('--no-report',action='store_true',help='Export raw CSV/JSON only for your own UI')
+    p.add_argument('--template',type=Path,help='Optional replacement HTML template; default templates/report.html')
+    a=p.parse_args(argv)
     try:
-        rows = load_rows(args.input, evaluation=True)
-        brand_svg()
-        endpoint = Endpoint.from_environment()
-        endpoint.wait(args.model, deadline=args.readiness_timeout)
-        try:
-            records = run_rows(rows, args.output_dir, settings_for(args.model, args.model_revision), endpoint.complete, limit=args.limit)
-        except RecipeError:
-            records = saved_records(rows, args.output_dir)
-            if records:
-                write_outputs(args.output_dir, records, len(rows), args.model)
-            raise
-        write_outputs(args.output_dir, records, len(rows), args.model)
-        summary, _ = score(records, len(rows))
-        print(f"Evaluated {len(records)} / {len(rows)}. Accuracy: {summary['accuracy']:.1%}. Invalid responses count as incorrect.")
-        print(f"Wrote {args.output_dir / 'scores.json'} and {args.output_dir / 'report.html'}")
+        labels=json.loads(a.labels.read_text())
+        if not isinstance(labels,list) or not labels or len(set(labels))!=len(labels) or any(not isinstance(v,str) or not v or v!=v.strip() for v in labels):raise ValueError('Labels must be unique nonempty exact strings.')
+        files={}
+        if a.predictions:
+            raw=read_csv(a.predictions);provenance={'input':'user_csv','sha256':hashlib.sha256(a.predictions.read_bytes()).hexdigest()}
+        else:
+            raw,provenance,files=read_archive(a.archive or ROOT/'data/reference-results.zip',labels)
+        reference=scored_rows(raw,labels)
+        reference_name=a.reference_name or provenance.get('model','Reference model')
+        candidate=None;candidate_name=None
+        if a.candidate:
+            candidate=read_csv(a.candidate);candidate_name=a.candidate_name or 'Candidate model'
+        elif not a.predictions and all(r.get('baseline_predicted') for r in raw):
+            candidate=[{'id':r['id'],'predicted':r['baseline_predicted']} for r in raw]
+            candidate_name=a.candidate_name or 'Word/bigram Naive Bayes (CPU)'
+        pairs=[];comparison=None
+        if candidate is not None:
+            reference,candidate,pairs,comparison=compare(reference,candidate,labels,a.allow_subset)
+            comparison['candidate']=metrics(candidate,labels)
+        summary={'schema':1,'dataset':'BANKING77' if not a.predictions else 'User-supplied labeled examples',
+                 'reference_name':reference_name,'candidate_name':candidate_name,'labels':labels,
+                 'reference':metrics(reference,labels),'comparison':comparison,'provenance':provenance,
+                 'notes':['Different supervision or prompts are not a controlled fine-tuning comparison.',
+                          'The bundled benchmark has known normalized train/test text overlaps, documented in data/SOURCE.md.',
+                          'Scoring consumes saved outputs and makes no paid inference requests.']}
+        if a.output_dir.exists() and any(a.output_dir.iterdir()):raise ValueError('Output directory is not empty; choose a new one to preserve earlier results.')
+        a.output_dir.mkdir(parents=True,exist_ok=True)
+        (a.output_dir/'scores.json').write_text(json.dumps(summary,indent=2,ensure_ascii=False)+'\n')
+        write_csv(a.output_dir/'predictions.csv',['id','prompt','expected','predicted','valid','correct'],reference)
+        write_csv(a.output_dir/'mistakes.csv',['id','prompt','expected','predicted','valid','correct'],[r for r in reference if not r['correct']])
+        write_csv(a.output_dir/'comparisons.csv',['id','prompt','expected','reference_predicted','candidate_predicted','reference_correct','candidate_correct','outcome'],pairs)
+        if 'DATA_LICENSE' in files:
+            (a.output_dir/'DATA_LICENSE').write_bytes(files['DATA_LICENSE'])
+        if 'DATA_SOURCE.md' in files:
+            # Preserve the pinned original archive; adapt its links to the new
+            # analysis folder, which has different attribution filenames.
+            attribution=files['DATA_SOURCE.md'].decode('utf-8')
+            attribution=attribution.replace('](source.json)','](dataset_provenance.json)').replace('](LICENSE)','](DATA_LICENSE)')
+            (a.output_dir/'DATA_SOURCE.md').write_text(attribution,encoding='utf-8')
+        if 'dataset' in provenance:
+            (a.output_dir/'dataset_provenance.json').write_text(json.dumps(provenance['dataset'],indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
+        if not a.no_report:(a.output_dir/'report.html').write_text(render(summary,reference,candidate,pairs,ROOT,a.template),encoding='utf-8')
+        print(json.dumps({'rows':len(reference),'reference_accuracy':summary['reference']['accuracy'],
+                          'candidate_accuracy':comparison['candidate']['accuracy'] if comparison else None,
+                          'comparison_outcomes':comparison['outcomes'] if comparison else None,
+                          'output':str(a.output_dir)},indent=2))
         return 0
-    except (RecipeError, OSError) as exc:
-        print(f"Error: {exc}", file=sys.stderr)
-        return 1
+    except (OSError,ValueError,KeyError,TypeError,zipfile.BadZipFile) as exc:
+        print('Error:',str(exc),file=sys.stderr);return 1
 
 
-if __name__ == "__main__":
-    raise SystemExit(main())
+if __name__=='__main__':raise SystemExit(main())
