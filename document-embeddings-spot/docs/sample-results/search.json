@@ -1,0 +1,28 @@
+{
+  "query": "How do I reset my password?",
+  "instruction": "Given a question, retrieve relevant passages from the document collection that answer it",
+  "index_fingerprint": "7b9d6b2fc3a71ee54b84c2b7d7ce942eee8d52bc9819defa403f0d473c47b8a1",
+  "matches": [
+    {
+      "id": "43fbc814570cf0b04492a6b26852e04947998620b458a033c5d1a6425bcb4839",
+      "source": "account-access.txt",
+      "chunk_index": 0,
+      "text": "Reset your account password If you cannot sign in because you forgot your password, open the sign-in page and choose Forgot password. Enter the email address registered to your account. Follow the password reset link sent to that mailbox and choose a new password. The link expires after thirty minutes. If you cannot access the registered mailbox or your two-factor authentication device, contact the workspace administrator. Never share passwords or verification codes in a support message. These are fictional instructions for the cookbook's sample team.",
+      "similarity": 0.7236898425875015
+    },
+    {
+      "id": "61355a21e6f0114f93f35aa4703bcc1e605cdeacecc1e092b6317fb882b39337",
+      "source": "office-hours.txt",
+      "chunk_index": 0,
+      "text": "Office hours and building access The sample office is open Monday through Friday from nine in the morning until six in the evening. Use your assigned badge at the entrance. Visitors should register with reception and stay with their host while inside the building. Reserve meeting rooms in the shared calendar. Cancel a reservation if plans change so another team can use the room. Contact reception for a replacement badge or help with building access. These locations and policies are fictional examples.",
+      "similarity": 0.36434406678933456
+    },
+    {
+      "id": "a7d08be00dd987aaf20cc84b0c871431c06e41611eeb527901138b608b64b955",
+      "source": "technical-support.txt",
+      "chunk_index": 0,
+      "text": "Reporting a technical problem If an application feature fails, collect the error message, approximate time and a short set of steps that reproduce the issue. Include the affected application version and whether the problem also occurs in another browser. Do not include passwords, access tokens or private customer data in a screenshot. For an urgent outage, contact the sample on-call support channel. Routine bugs can be filed in the issue tracker. Describe the expected result and the result you observed. These instructions are fictional sample content.",
+      "similarity": 0.33323853268241865
+    }
+  ]
+}

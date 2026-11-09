@@ -1,0 +1,5 @@
+Billing and refunds
+
+The sample team's subscription renews on the first day of each month. Download invoices and payment receipts from the Billing section. An administrator can update the billing address, tax number or payment card before the next renewal.
+
+For a duplicate payment or an unused subscription refund, send the invoice number to the finance team. A refund review normally takes five business days. Cancelling a subscription stops the following renewal and leaves access active until the paid period ends. These are fictional sample policies.

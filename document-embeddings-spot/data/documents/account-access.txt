@@ -1,0 +1,5 @@
+Reset your account password
+
+If you cannot sign in because you forgot your password, open the sign-in page and choose Forgot password. Enter the email address registered to your account. Follow the password reset link sent to that mailbox and choose a new password. The link expires after thirty minutes.
+
+If you cannot access the registered mailbox or your two-factor authentication device, contact the workspace administrator. Never share passwords or verification codes in a support message. These are fictional instructions for the cookbook's sample team.

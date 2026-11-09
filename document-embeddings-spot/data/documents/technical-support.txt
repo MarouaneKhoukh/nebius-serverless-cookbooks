@@ -1,0 +1,5 @@
+Reporting a technical problem
+
+If an application feature fails, collect the error message, approximate time and a short set of steps that reproduce the issue. Include the affected application version and whether the problem also occurs in another browser. Do not include passwords, access tokens or private customer data in a screenshot.
+
+For an urgent outage, contact the sample on-call support channel. Routine bugs can be filed in the issue tracker. Describe the expected result and the result you observed. These instructions are fictional sample content.

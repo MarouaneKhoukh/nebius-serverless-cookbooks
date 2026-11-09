@@ -1,0 +1,17 @@
+[
+  {
+    "query": "Can I claim back the cost of a work trip?",
+    "first": "travel-expenses.txt",
+    "similarity": 0.5617972070493141
+  },
+  {
+    "query": "May I work from home?",
+    "first": "remote-work.txt",
+    "similarity": 0.5652477946382413
+  },
+  {
+    "query": "How do I reset my password?",
+    "first": "account-access.txt",
+    "similarity": 0.7236898425875015
+  }
+]

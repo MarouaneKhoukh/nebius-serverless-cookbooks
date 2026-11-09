@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "fingerprint": "7b9d6b2fc3a71ee54b84c2b7d7ce942eee8d52bc9819defa403f0d473c47b8a1",
+  "model": "Qwen/Qwen3-Embedding-0.6B",
+  "model_revision": "",
+  "dimensions": 1024,
+  "documents": 6,
+  "chunks_total": 6,
+  "chunks_saved": 6,
+  "remaining": 0,
+  "complete": true,
+  "chunk_words": 160,
+  "vectors": "vectors.jsonl",
+  "metadata": "metadata.jsonl"
+}
