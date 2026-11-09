@@ -1,0 +1,7 @@
+{
+  "input_rows": 12,
+  "completed": 12,
+  "remaining": 0,
+  "invalid_labels": 0,
+  "model": "Qwen/Qwen2.5-0.5B-Instruct"
+}
