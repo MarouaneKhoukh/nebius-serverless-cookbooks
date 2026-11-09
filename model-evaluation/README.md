@@ -92,7 +92,7 @@ The supplied configuration runs **Qwen2.5-0.5B-Instruct** with vLLM on one L40S 
 
 Before launching, check the current rate under **Serverless AI → Endpoints → Create endpoint → Preemptible**. The deployment script uses **Follow Spot price** by default, which accepts the changing price without a maximum. Model loading and idle time are billed too. You'll stop the Endpoint in step 5.
 
-If you ran the [classification cookbook](../support-request-classification/README.md), you can use its Endpoint through the reuse option below. Otherwise, create one:
+If you already have an Endpoint serving this model, you can use the reuse option below. Otherwise, create one:
 
 <details>
 <summary>Set a maximum GPU price</summary>
@@ -120,9 +120,9 @@ python3 scripts/endpoint.py wait --timeout 1800
 The first command previews the deployment; the second creates it. Wait for the model to be ready before continuing. The deployment script passes the API address and authentication token to the client.
 
 <details>
-<summary>Reuse the classification cookbook's Endpoint</summary>
+<summary>Reuse a compatible existing Endpoint</summary>
 
-Use this option **instead of** the three create/wait commands above. In the classification cookbook's directory, run `python3 scripts/endpoint.py status` and copy the Endpoint ID. Return here, replace the entire `YOUR_ENDPOINT_ID` value and run:
+Use this option **instead of** the three create/wait commands above. In **Serverless AI → Endpoints** in the console, copy the ID of an Endpoint serving `Qwen/Qwen2.5-0.5B-Instruct`. Replace the entire `YOUR_ENDPOINT_ID` value and run:
 
 ```bash
 python3 scripts/endpoint.py attach --project-id "$NEBIUS_PROJECT_ID" --id "YOUR_ENDPOINT_ID"
@@ -142,8 +142,8 @@ Install the [Nebius agent skills](https://github.com/nebius/skills#install) for 
 ```text
 Run this cookbook in Nebius project <MY_PROJECT_ID> using
 nebius-cloud-basics and nebius-serverless-endpoints. Follow README.md and
-config/endpoint.json. Reuse the classification cookbook's compatible
-Endpoint, or show the current price and confirm a new preemptible deployment.
+config/endpoint.json. Reuse a compatible existing Endpoint, or show the
+current price and confirm a new preemptible deployment.
 Wait for the model and evaluate data/evaluation.csv. Inspect all 30
 predictions, the accuracy score and the mistakes. Stop this cookbook's
 Endpoint and verify STOPPED. Keep authentication tokens private.

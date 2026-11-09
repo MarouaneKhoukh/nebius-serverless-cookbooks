@@ -6,9 +6,9 @@ AI projects you can run on Nebius Serverless AI. Each cookbook includes sample d
 
 The classification, evaluation, training, video and embedding recipes use **preemptible GPUs** to take advantage of lower rates when available. Each saves completed work so you can continue after an interruption.
 
-Start with classification, then evaluate the model and fine-tune it:
+Start with the batch-classification workflow. The evaluation and training recipes are separate examples:
 
-1. [Classify Support Requests with Qwen](support-request-classification/README.md) — label a CSV of requests and save the answers.
+1. [Classify a Support Backlog with Qwen](support-request-classification/README.md) — classify 3,080 banking queries in a GPU Job, save batches and review predictions alongside a CPU baseline.
 2. [Evaluate a Model on Your Own Examples](model-evaluation/README.md) — compare predictions with expected labels and review the mistakes.
 3. [Fine-Tune Qwen and Resume Saved Training](fine-tuning-with-checkpoints/README.md) — train on example requests, save a checkpoint and finish in a new Job.
 
