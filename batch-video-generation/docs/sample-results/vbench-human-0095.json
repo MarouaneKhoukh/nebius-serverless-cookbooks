@@ -1,0 +1,36 @@
+{
+  "id": "vbench-human-0095",
+  "input_row": {
+    "id": "vbench-human-0095",
+    "prompt": "a singer of a music band",
+    "seed": 874227636,
+    "category": "human",
+    "source_path": "prompts/prompts_per_category/human.txt",
+    "source_line": 95,
+    "source_revision": "fd18b3d055cb0fc6f066ca90fe2c3c8cbb698490"
+  },
+  "status": "completed",
+  "fingerprint": "63a1a5c152f44d8122715f973161a6ef43092df6de547a11792701c8912e1f63",
+  "request": {
+    "model": "Wan-AI/Wan2.1-T2V-1.3B-Diffusers",
+    "prompt": "a singer of a music band",
+    "seed": 874227636,
+    "size": "832x480",
+    "num_frames": 49,
+    "fps": 16,
+    "num_inference_steps": 20,
+    "guidance_scale": 5.0,
+    "flow_shift": 3.0,
+    "boundary_ratio": 0.0
+  },
+  "completed_at": "2026-11-09T19:26:21.626512+00:00",
+  "client_elapsed_seconds": 16.31,
+  "sha256": "5d678e14c00df2fb3f41a5acd1b3bf31b544bfa6f3d01a67790feda4ec25d9d7",
+  "validation": {
+    "width": 832,
+    "height": 480,
+    "frames_decoded": 49,
+    "duration_seconds": 3.0625,
+    "decode_passed": true
+  }
+}

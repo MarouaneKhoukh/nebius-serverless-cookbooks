@@ -152,6 +152,20 @@ class RecoveryTests(unittest.TestCase):
         self.assertTrue(all(row["validation"]["frames_decoded"] == 5 for row in summary["outputs"]))
         self.assertIn("Powered by Nebius Serverless AI", (self.output / "index.html").read_text())
 
+    def test_export_checker_verifies_batch_without_endpoint_calls(self):
+        self.assertEqual(self.run_client(), 0)
+        checker_spec = importlib.util.spec_from_file_location("video_result_checker", SOURCE.parents[1] / "scripts/check_results.py")
+        checker = importlib.util.module_from_spec(checker_spec)
+        checker_spec.loader.exec_module(checker)
+        result = checker.check(self.output)
+        self.assertEqual(result["completed"], 3)
+        self.assertEqual(result["frames_per_clip"], [5])
+        self.assertEqual(self.api.posts, 3)
+        manifest = self.output / "clips.csv"
+        manifest.write_text(manifest.read_text().replace("clip-0", "unknown", 1))
+        with self.assertRaisesRegex(checker.RecipeError, "CSV clip manifest"):
+            checker.check(self.output)
+
     def test_changed_prompt_refuses_stale_output(self):
         self.write_rows(1)
         self.assertEqual(self.run_client(), 0)

@@ -1,0 +1,36 @@
+{
+  "id": "vbench-animal-0082",
+  "input_row": {
+    "id": "vbench-animal-0082",
+    "prompt": "a still video of mosquito biting human",
+    "seed": 1785537283,
+    "category": "animal",
+    "source_path": "prompts/prompts_per_category/animal.txt",
+    "source_line": 82,
+    "source_revision": "fd18b3d055cb0fc6f066ca90fe2c3c8cbb698490"
+  },
+  "status": "completed",
+  "fingerprint": "2af8434dd40606fa2a3cf63bd520ff4b976ab363428d165265840988f095382c",
+  "request": {
+    "model": "Wan-AI/Wan2.1-T2V-1.3B-Diffusers",
+    "prompt": "a still video of mosquito biting human",
+    "seed": 1785537283,
+    "size": "832x480",
+    "num_frames": 49,
+    "fps": 16,
+    "num_inference_steps": 20,
+    "guidance_scale": 5.0,
+    "flow_shift": 3.0,
+    "boundary_ratio": 0.0
+  },
+  "completed_at": "2026-11-09T19:24:33.394013+00:00",
+  "client_elapsed_seconds": 17.371,
+  "sha256": "7874923d90e906bfa9fbe03627ce529b3ed3817d699c9317647c983903ba18f2",
+  "validation": {
+    "width": 832,
+    "height": 480,
+    "frames_decoded": 49,
+    "duration_seconds": 3.0625,
+    "decode_passed": true
+  }
+}

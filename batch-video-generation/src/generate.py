@@ -22,6 +22,8 @@ from datetime import datetime, timezone
 
 ROOT = Path(__file__).resolve().parents[1]
 MODEL = "Wan-AI/Wan2.1-T2V-1.3B-Diffusers"
+PROVENANCE_FIELDS = {"category", "source_path", "source_line", "source_revision"}
+CATEGORIES = {"animal", "architecture", "food", "human", "lifestyle", "plant", "scenery", "vehicles"}
 TRANSIENT = {429, 502, 503, 504}
 
 
@@ -74,6 +76,9 @@ def read_prompts(path: Path) -> list[dict]:
         reader = csv.DictReader(stream)
         if not {"id", "prompt", "seed"}.issubset(reader.fieldnames or []):
             raise RecipeError("CSV needs the columns id,prompt,seed.")
+        columns = set(reader.fieldnames or [])
+        if columns & PROVENANCE_FIELDS and not PROVENANCE_FIELDS <= columns:
+            raise RecipeError("Keep all VBench source columns together, or use only id,prompt,seed for your own input.")
         rows, used = [], set()
         for line, row in enumerate(reader, start=2):
             clip_id, prompt = (row.get("id") or "").strip(), (row.get("prompt") or "").strip()
@@ -89,7 +94,21 @@ def read_prompts(path: Path) -> list[dict]:
                 raise RecipeError(f"CSV line {line}: seed must be an integer.") from exc
             if not 0 <= seed < 2**31:
                 raise RecipeError(f"CSV line {line}: seed must be between 0 and 2147483647.")
-            rows.append({"id": clip_id, "prompt": prompt, "seed": seed})
+            item = {"id": clip_id, "prompt": prompt, "seed": seed}
+            if PROVENANCE_FIELDS <= columns:
+                category, relative, revision = row["category"], row["source_path"], row["source_revision"]
+                try:
+                    source_line = int(row["source_line"])
+                except (TypeError, ValueError) as exc:
+                    raise RecipeError(f"CSV line {line}: source_line must be an integer.") from exc
+                if category not in CATEGORIES or relative != f"prompts/prompts_per_category/{category}.txt" or not re.fullmatch(r"[0-9a-f]{40}", revision) or not 1 <= source_line <= 100:
+                    raise RecipeError(f"CSV line {line}: invalid VBench source metadata.")
+                if clip_id != f"vbench-{category}-{source_line:04d}":
+                    raise RecipeError(f"CSV line {line}: prompt ID differs from its source category/line.")
+                item.update(category=category, source_path=relative, source_line=source_line, source_revision=revision)
+            rows.append(item)
+            if len(rows) > 1000:
+                raise RecipeError("Use at most 1,000 prompts in one batch.")
             used.add(clip_id)
     if not rows:
         raise RecipeError("CSV contains no prompts.")
@@ -206,8 +225,8 @@ def validate_video(path: Path, fields: dict) -> dict:
         if int(video["width"]) != expected_width or int(video["height"]) != expected_height:
             raise ValueError("unexpected output dimensions")
         frames = int(video["nb_read_frames"])
-        if frames < fields["num_frames"]:
-            raise ValueError(f"only {frames} of {fields['num_frames']} frames decoded")
+        if frames != fields["num_frames"]:
+            raise ValueError(f"decoded {frames}, expected {fields['num_frames']} frames")
         subprocess.run(
             ["ffmpeg", "-v", "error", "-xerror", "-i", str(path), "-map", "0:v:0", "-f", "null", "-"],
             check=True, capture_output=True, timeout=60,
@@ -223,6 +242,8 @@ def completed(output: Path, row: dict, fields: dict) -> dict | None:
     if not meta_path.exists():
         return None
     meta = read_json(meta_path)
+    if meta.get("input_row", row if not PROVENANCE_FIELDS <= row.keys() else None) != row:
+        raise RecipeError(f"{row['id']}: saved source metadata changed. Use a new output directory.")
     if meta.get("fingerprint") != fingerprint(fields):
         raise RecipeError(f"{row['id']}: prompt/model/settings changed. Use a new --output directory.")
     if meta.get("status") != "completed" or not meta.get("validation", {}).get("decode_passed"):
@@ -235,6 +256,8 @@ def completed(output: Path, row: dict, fields: dict) -> dict | None:
 def generate_one(client: Client, row: dict, fields: dict, output: Path, args: argparse.Namespace) -> dict:
     pending_path = output / ".pending" / f"{row['id']}.json"
     pending = read_json(pending_path) if pending_path.exists() else None
+    if pending and pending.get("input_row", row) != row:
+        raise RecipeError(f"{row['id']}: pending source metadata changed. Use a new output directory.")
     if pending and pending.get("fingerprint") != fingerprint(fields):
         raise RecipeError(f"{row['id']}: pending request has different settings. Use a new output directory.")
     if pending and (pending.get("endpoint") != client.base or not pending.get("video_id")):
@@ -253,7 +276,7 @@ def generate_one(client: Client, row: dict, fields: dict, output: Path, args: ar
     if pending is None:
         if (output / f"{row['id']}.mp4").exists() and not pending_path.exists():
             raise RecipeError(f"{row['id']}: untracked MP4 exists. Move it aside or use a new output directory.")
-        pending = {"fingerprint": fingerprint(fields), "endpoint": client.base, "submitted_at": utc_now()}
+        pending = {"fingerprint": fingerprint(fields), "input_row": row, "endpoint": client.base, "submitted_at": utc_now()}
         atomic_json(pending_path, pending)  # Record intent before sending the paid POST.
         body, content_type = multipart(fields)
         try:
@@ -287,7 +310,7 @@ def generate_one(client: Client, row: dict, fields: dict, output: Path, args: ar
     client.request("/v1/videos/" + video_id + "/content", destination=part)
     validation = validate_video(part, fields)
     os.replace(part, video_path)
-    meta = {"id": row["id"], "status": "completed", "fingerprint": fingerprint(fields),
+    meta = {"id": row["id"], "input_row": row, "status": "completed", "fingerprint": fingerprint(fields),
             "request": fields, "video_id": pending["video_id"], "completed_at": utc_now(),
             "client_elapsed_seconds": round(time.monotonic() - start, 3),
             "sha256": digest(video_path), "validation": validation}
@@ -306,7 +329,16 @@ def gallery(output: Path, rows: list[dict], args: argparse.Namespace) -> None:
         raise RecipeError("Missing official logo at docs/brand/nebius-logo.svg.")
     (output / "brand").mkdir(exist_ok=True)
     shutil.copyfile(logo, output / "brand" / "nebius-logo.svg")
-    cards, done = [], []
+    if args.input.resolve() != (output / "input.csv").resolve():
+        shutil.copyfile(args.input, output / "input.csv")
+    provenance = getattr(args, "provenance", None)
+    if provenance:
+        atomic_json(output / "input.source.json", provenance)
+        shutil.copyfile(ROOT / "data/LICENSE", output / "DATA_LICENSE")
+        attribution = (ROOT / "data/SOURCE.md").read_text(encoding="utf-8")
+        (output / "DATA_SOURCE.md").write_text(attribution.replace("(LICENSE)", "(DATA_LICENSE)").replace("(prompts.source.json)", "(input.source.json)"), encoding="utf-8")
+        shutil.copyfile(ROOT / "data/source.json", output / "source.json")
+    cards, done, exported = [], [], []
     for row in rows:
         meta_path = output / f"{row['id']}.json"
         if not meta_path.exists():
@@ -314,14 +346,38 @@ def gallery(output: Path, rows: list[dict], args: argparse.Namespace) -> None:
         meta = completed(output, row, request_fields(row, args))
         done.append(meta)
         file = urllib.parse.quote(row["id"] + ".mp4")
-        cards.append(f'<article><video controls preload="metadata" src="{file}"></video><div><h2>{html.escape(row["id"].replace("-", " ").title())}</h2><p>{html.escape(row["prompt"])}</p><a href="{file}" download>Download MP4 ↗</a><small>{meta["validation"]["frames_decoded"]} frames · {meta["validation"]["width"]} × {meta["validation"]["height"]} · seed {row["seed"]}</small></div></article>')
-    summary = {"model": args.model, "input_rows": len(rows), "completed": len(done),
+        category = row.get("category", "Custom prompt")
+        title = f"{category.title()} · source line {row['source_line']}" if row.get("category") else row["id"]
+        origin = ""
+        source_url = ""
+        if row.get("source_path"):
+            source_url = f"https://github.com/Vchitect/VBench/blob/{row['source_revision']}/{row['source_path']}#L{row['source_line']}"
+            origin = f'<a href="{html.escape(source_url, quote=True)}" target="_blank" rel="noopener noreferrer">Original VBench prompt ↗</a>'
+        info = meta["validation"]
+        cards.append(f'<article><video controls preload="metadata" src="{file}"></video><div><h2>{html.escape(title)}</h2><p>{html.escape(row["prompt"])}</p><a href="{file}" download>Download MP4 ↗</a><small>{info["frames_decoded"]} frames · {info["width"]} × {info["height"]} · seed {row["seed"]}</small>{origin}</div></article>')
+        exported.append({"id": row["id"], "category": row.get("category", ""), "prompt": row["prompt"],
+                         "seed": row["seed"], "file": row["id"] + ".mp4", "source_url": source_url,
+                         "frames": info["frames_decoded"], "duration_seconds": info["duration_seconds"],
+                         "sha256": meta["sha256"]})
+    with (output / "clips.csv").open("w", newline="", encoding="utf-8") as stream:
+        fields = ["id", "category", "prompt", "seed", "file", "source_url", "frames", "duration_seconds", "sha256"]
+        writer = csv.DictWriter(stream, fieldnames=fields, lineterminator="\n")
+        writer.writeheader()
+        writer.writerows(exported)
+    summary = {"schema": 2, "model": args.model, "input_rows": len(rows), "completed": len(done),
+               "input_sha256": digest(args.input),
+               "input_source": {"dataset": provenance["dataset"], "revision": provenance["revision"],
+                                "selection_seed": provenance["selection_seed"], "per_category": provenance["per_category"]} if provenance else {"dataset": "custom CSV"},
                "settings": {k: v for k, v in request_fields(rows[0], args).items() if k not in {"prompt", "seed"}},
-               "outputs": [{"id": item["id"], "sha256": item["sha256"], "validation": item["validation"]} for item in done]}
+               "outputs": [{"id": item["id"], "input_row": item.get("input_row"), "sha256": item["sha256"],
+                            "validation": item["validation"]} for item in done],
+               "note": "A generation batch for inspection. No VBench quality score is calculated."}
     atomic_json(output / "summary.json", summary)
-    (output / "index.html").write_text(f'''<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Generate Video Clips from a List of Prompts</title><style>
-    *{{box-sizing:border-box}}body{{margin:0;background:#f6f5ef;color:#25271f;font:16px/1.6 system-ui,sans-serif}}main{{max-width:1150px;padding:38px 24px;margin:auto}}header{{display:flex;justify-content:space-between;gap:20px;align-items:center;border-bottom:1px solid #d7d8cb;padding-bottom:22px}}header img{{width:145px;height:auto}}.badge{{font-size:13px;border:1px solid #c9ccba;border-radius:20px;padding:6px 13px}}h1{{font-size:clamp(30px,5vw,49px);line-height:1.1;max-width:780px;margin:40px 0 16px}}.intro{{color:#656a5a;max-width:800px}}.grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:22px;margin:30px 0}}article{{border:1px solid #d5d6ca;border-radius:16px;overflow:hidden;background:white}}video{{width:100%;aspect-ratio:832/480;display:block;background:#22261e}}article>div{{padding:20px}}h2{{font-size:20px;margin:0 0 8px}}p{{margin:0 0 14px}}small{{display:block;color:#747963;margin-top:14px}}a{{color:#384512;font-weight:600}}footer{{padding:20px 0;border-top:1px solid #d7d8cb;color:#72765f;font-size:13px}}@media(max-width:600px){{header{{align-items:flex-start;flex-direction:column}}}}
-    </style><main><header><img src="brand/nebius-logo.svg" alt="Nebius"><span class="badge">Powered by Nebius Serverless AI</span></header><h1>Generate Video Clips from a List of Prompts</h1><p class="intro">{len(done)} of {len(rows)} clips saved. Play a clip or download its MP4 below. Completed videos stay on your computer if the GPU stops.</p><div class="grid">{''.join(cards) or '<p>No completed clips yet. Run the batch to fill your collection.</p>'}</div><footer>Wan2.1-T2V-1.3B · Small 17-frame preview settings by default. Review generated media before sharing. · <a href="summary.json">Result metadata</a></footer></main></html>''', encoding="utf-8")
+    heading = "Generate a Video Batch from VBench Prompts" if provenance else "Generate a Video Batch"
+    source_note = 'One reproducible prompt selection per content category. This subset does not produce a full VBench score.' if provenance else 'Custom input prompts. Completed clips remain available if the GPU stops.'
+    (output / "index.html").write_text(f'''<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{html.escape(heading)}</title><style>
+    *{{box-sizing:border-box}}body{{margin:0;background:#f6f5ef;color:#25271f;font:16px/1.6 system-ui,sans-serif}}main{{max-width:1150px;padding:38px 24px;margin:auto}}header{{display:flex;justify-content:space-between;gap:20px;align-items:center;border-bottom:1px solid #d7d8cb;padding-bottom:22px}}header img{{width:145px;height:auto}}.badge{{font-size:13px;border:1px solid #c9ccba;border-radius:20px;padding:6px 13px}}h1{{font-size:clamp(30px,5vw,49px);line-height:1.1;max-width:880px;margin:40px 0 16px}}.intro{{color:#656a5a;max-width:850px}}.grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:22px;margin:30px 0}}article{{border:1px solid #d5d6ca;border-radius:16px;overflow:hidden;background:white}}video{{width:100%;aspect-ratio:832/480;display:block;background:#22261e}}article>div{{padding:20px}}h2{{font-size:20px;margin:0 0 8px}}p{{margin:0 0 14px}}small{{display:block;color:#747963;margin-top:14px}}a{{color:#384512;font-weight:600}}footer{{padding:20px 0;border-top:1px solid #d7d8cb;color:#72765f;font-size:13px}}@media(max-width:600px){{header{{align-items:flex-start;flex-direction:column}}}}
+    </style><main><header><img src="brand/nebius-logo.svg" alt="Nebius"><span class="badge">Powered by Nebius Serverless AI</span></header><h1>{html.escape(heading)}</h1><p class="intro">{len(done)} of {len(rows)} clips saved. {html.escape(source_note)}</p><p><a href="clips.csv">Clip manifest CSV</a> · <a href="summary.json">Run metadata</a> · <a href="input.csv">Input prompts</a></p><div class="grid">{''.join(cards) or '<p>No completed clips yet. Run the batch to fill your collection.</p>'}</div><footer>Wan2.1-T2V-1.3B · {args.frames} frames at {args.fps} fps, {args.steps} inference steps. Inspect prompt alignment and motion before using generated media.</footer></main></html>''', encoding="utf-8")
 
 
 def parser() -> argparse.ArgumentParser:
@@ -330,7 +386,7 @@ def parser() -> argparse.ArgumentParser:
     p.add_argument("--output", type=Path, default=ROOT / "results")
     p.add_argument("--model", default=MODEL)
     p.add_argument("--size", default="832x480")
-    p.add_argument("--frames", type=int, default=17)
+    p.add_argument("--frames", type=int, default=49)
     p.add_argument("--fps", type=int, default=16)
     p.add_argument("--steps", type=int, default=20)
     p.add_argument("--limit", type=int, help="Generate at most this many new clips; completed clips do not count.")
@@ -357,6 +413,14 @@ def main(argv: list[str] | None = None) -> int:
         if min(args.readiness_timeout, args.generation_timeout, args.request_timeout, args.poll_interval) <= 0:
             raise RecipeError("Timeouts and poll interval must be positive.")
         rows = read_prompts(args.input)
+        args.provenance = None
+        if args.input.with_suffix(".source.json").is_file():
+            if str(ROOT / "src") not in sys.path:
+                sys.path.insert(0, str(ROOT / "src"))
+            from vbench_data import verify
+            args.provenance = verify(args.input)
+        elif any(PROVENANCE_FIELDS <= row.keys() for row in rows):
+            raise RecipeError("A VBench input requires its matching .source.json sidecar; use scripts/prepare_data.py.")
         if args.check_input:
             print(f"Validated {len(rows)} prompts; model={args.model}; {args.frames} frames at {args.size}.")
             return 0

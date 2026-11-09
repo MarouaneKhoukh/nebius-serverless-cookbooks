@@ -1,0 +1,36 @@
+{
+  "id": "vbench-food-0004",
+  "input_row": {
+    "id": "vbench-food-0004",
+    "prompt": "a person slicing a vegetable",
+    "seed": 2113083690,
+    "category": "food",
+    "source_path": "prompts/prompts_per_category/food.txt",
+    "source_line": 4,
+    "source_revision": "fd18b3d055cb0fc6f066ca90fe2c3c8cbb698490"
+  },
+  "status": "completed",
+  "fingerprint": "179be146ffc7a26da14e57b629d7609857d11a81562b95b93c27d28956dd9595",
+  "request": {
+    "model": "Wan-AI/Wan2.1-T2V-1.3B-Diffusers",
+    "prompt": "a person slicing a vegetable",
+    "seed": 2113083690,
+    "size": "832x480",
+    "num_frames": 49,
+    "fps": 16,
+    "num_inference_steps": 20,
+    "guidance_scale": 5.0,
+    "flow_shift": 3.0,
+    "boundary_ratio": 0.0
+  },
+  "completed_at": "2026-11-09T19:26:05.182495+00:00",
+  "client_elapsed_seconds": 17.855,
+  "sha256": "1b7e59f3992f26c5d0e284a8c4d7175aeb5829234798087a7447c1c76b358412",
+  "validation": {
+    "width": 832,
+    "height": 480,
+    "frames_decoded": 49,
+    "duration_seconds": 3.0625,
+    "decode_passed": true
+  }
+}

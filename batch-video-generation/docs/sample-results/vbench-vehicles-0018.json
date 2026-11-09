@@ -1,0 +1,36 @@
+{
+  "id": "vbench-vehicles-0018",
+  "input_row": {
+    "id": "vbench-vehicles-0018",
+    "prompt": "a green vintage automobile with an open hood parked in a parking area",
+    "seed": 1256227319,
+    "category": "vehicles",
+    "source_path": "prompts/prompts_per_category/vehicles.txt",
+    "source_line": 18,
+    "source_revision": "fd18b3d055cb0fc6f066ca90fe2c3c8cbb698490"
+  },
+  "status": "completed",
+  "fingerprint": "ad365cdf377f9d72f77b8f2cebb38d8712229d09bb65f9ab9f5c22ee61d4421a",
+  "request": {
+    "model": "Wan-AI/Wan2.1-T2V-1.3B-Diffusers",
+    "prompt": "a green vintage automobile with an open hood parked in a parking area",
+    "seed": 1256227319,
+    "size": "832x480",
+    "num_frames": 49,
+    "fps": 16,
+    "num_inference_steps": 20,
+    "guidance_scale": 5.0,
+    "flow_shift": 3.0,
+    "boundary_ratio": 0.0
+  },
+  "completed_at": "2026-11-09T19:27:27.026523+00:00",
+  "client_elapsed_seconds": 16.313,
+  "sha256": "f48250b1493059a282c11046b78ca6bd17ee8cd2b32932d1615477634e2cb944",
+  "validation": {
+    "width": 832,
+    "height": 480,
+    "frames_decoded": 49,
+    "duration_seconds": 3.0625,
+    "decode_passed": true
+  }
+}

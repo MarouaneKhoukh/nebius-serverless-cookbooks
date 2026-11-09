@@ -1,0 +1,36 @@
+{
+  "id": "vbench-plant-0032",
+  "input_row": {
+    "id": "vbench-plant-0032",
+    "prompt": "variety of trees and plants in a botanical garden",
+    "seed": 731970836,
+    "category": "plant",
+    "source_path": "prompts/prompts_per_category/plant.txt",
+    "source_line": 32,
+    "source_revision": "fd18b3d055cb0fc6f066ca90fe2c3c8cbb698490"
+  },
+  "status": "completed",
+  "fingerprint": "f3a1f7ef2c0a6768ab53e87835c2ba3f50b7b4bcca48fe1d6ac309c61faeaf77",
+  "request": {
+    "model": "Wan-AI/Wan2.1-T2V-1.3B-Diffusers",
+    "prompt": "variety of trees and plants in a botanical garden",
+    "seed": 731970836,
+    "size": "832x480",
+    "num_frames": 49,
+    "fps": 16,
+    "num_inference_steps": 20,
+    "guidance_scale": 5.0,
+    "flow_shift": 3.0,
+    "boundary_ratio": 0.0
+  },
+  "completed_at": "2026-11-09T19:26:54.298411+00:00",
+  "client_elapsed_seconds": 16.284,
+  "sha256": "fe4428a13e167de503c22711349bd6298d8b4155c562f7a97c15cce13b030ce0",
+  "validation": {
+    "width": 832,
+    "height": 480,
+    "frames_decoded": 49,
+    "duration_seconds": 3.0625,
+    "decode_passed": true
+  }
+}

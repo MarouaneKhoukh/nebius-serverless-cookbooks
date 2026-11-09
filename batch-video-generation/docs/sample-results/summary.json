@@ -1,11 +1,19 @@
 {
+  "schema": 2,
   "model": "Wan-AI/Wan2.1-T2V-1.3B-Diffusers",
-  "input_rows": 3,
-  "completed": 3,
+  "input_rows": 8,
+  "completed": 8,
+  "input_sha256": "40c6f386ddc9136f8bd2b529072c2ab25421f2ef8adf8105a37a71a24e3b4ba2",
+  "input_source": {
+    "dataset": "VBench",
+    "revision": "fd18b3d055cb0fc6f066ca90fe2c3c8cbb698490",
+    "selection_seed": 42,
+    "per_category": 1
+  },
   "settings": {
     "model": "Wan-AI/Wan2.1-T2V-1.3B-Diffusers",
     "size": "832x480",
-    "num_frames": 17,
+    "num_frames": 49,
     "fps": 16,
     "num_inference_steps": 20,
     "guidance_scale": 5.0,
@@ -14,37 +22,165 @@
   },
   "outputs": [
     {
-      "id": "paper-boat",
-      "sha256": "28aebd8ccfaea712b63c946c091c5fe79d780abed9d125d1a3e94c7a59d37dc5",
+      "id": "vbench-animal-0082",
+      "input_row": {
+        "id": "vbench-animal-0082",
+        "prompt": "a still video of mosquito biting human",
+        "seed": 1785537283,
+        "category": "animal",
+        "source_path": "prompts/prompts_per_category/animal.txt",
+        "source_line": 82,
+        "source_revision": "fd18b3d055cb0fc6f066ca90fe2c3c8cbb698490"
+      },
+      "sha256": "7874923d90e906bfa9fbe03627ce529b3ed3817d699c9317647c983903ba18f2",
       "validation": {
         "width": 832,
         "height": 480,
-        "frames_decoded": 17,
-        "duration_seconds": 1.0625,
+        "frames_decoded": 49,
+        "duration_seconds": 3.0625,
         "decode_passed": true
       }
     },
     {
-      "id": "mountain-lake",
-      "sha256": "70cb0d851019f05f5e53d36dde6675020bce22d4cd4441f4e7ec0f1b4ea1cbb8",
+      "id": "vbench-architecture-0015",
+      "input_row": {
+        "id": "vbench-architecture-0015",
+        "prompt": "friends hanging out at a coffee house",
+        "seed": 286977637,
+        "category": "architecture",
+        "source_path": "prompts/prompts_per_category/architecture.txt",
+        "source_line": 15,
+        "source_revision": "fd18b3d055cb0fc6f066ca90fe2c3c8cbb698490"
+      },
+      "sha256": "0e90de8da0b7d82e3616a267c184f92fd8851da57b39a888398bb47414405f52",
       "validation": {
         "width": 832,
         "height": 480,
-        "frames_decoded": 17,
-        "duration_seconds": 1.0625,
+        "frames_decoded": 49,
+        "duration_seconds": 3.0625,
         "decode_passed": true
       }
     },
     {
-      "id": "red-ball",
-      "sha256": "18f82e6639e32c216278194bc6c9b645d22d8c5b54f2b8f09baf74c1e613ea94",
+      "id": "vbench-food-0004",
+      "input_row": {
+        "id": "vbench-food-0004",
+        "prompt": "a person slicing a vegetable",
+        "seed": 2113083690,
+        "category": "food",
+        "source_path": "prompts/prompts_per_category/food.txt",
+        "source_line": 4,
+        "source_revision": "fd18b3d055cb0fc6f066ca90fe2c3c8cbb698490"
+      },
+      "sha256": "1b7e59f3992f26c5d0e284a8c4d7175aeb5829234798087a7447c1c76b358412",
       "validation": {
         "width": 832,
         "height": 480,
-        "frames_decoded": 17,
-        "duration_seconds": 1.0625,
+        "frames_decoded": 49,
+        "duration_seconds": 3.0625,
+        "decode_passed": true
+      }
+    },
+    {
+      "id": "vbench-human-0095",
+      "input_row": {
+        "id": "vbench-human-0095",
+        "prompt": "a singer of a music band",
+        "seed": 874227636,
+        "category": "human",
+        "source_path": "prompts/prompts_per_category/human.txt",
+        "source_line": 95,
+        "source_revision": "fd18b3d055cb0fc6f066ca90fe2c3c8cbb698490"
+      },
+      "sha256": "5d678e14c00df2fb3f41a5acd1b3bf31b544bfa6f3d01a67790feda4ec25d9d7",
+      "validation": {
+        "width": 832,
+        "height": 480,
+        "frames_decoded": 49,
+        "duration_seconds": 3.0625,
+        "decode_passed": true
+      }
+    },
+    {
+      "id": "vbench-lifestyle-0036",
+      "input_row": {
+        "id": "vbench-lifestyle-0036",
+        "prompt": "modern minimalist home interior",
+        "seed": 594370757,
+        "category": "lifestyle",
+        "source_path": "prompts/prompts_per_category/lifestyle.txt",
+        "source_line": 36,
+        "source_revision": "fd18b3d055cb0fc6f066ca90fe2c3c8cbb698490"
+      },
+      "sha256": "aae66ebe463ab2744ca9144eb1b40567b689b0dfc91eb18b8fcef939831dd820",
+      "validation": {
+        "width": 832,
+        "height": 480,
+        "frames_decoded": 49,
+        "duration_seconds": 3.0625,
+        "decode_passed": true
+      }
+    },
+    {
+      "id": "vbench-plant-0032",
+      "input_row": {
+        "id": "vbench-plant-0032",
+        "prompt": "variety of trees and plants in a botanical garden",
+        "seed": 731970836,
+        "category": "plant",
+        "source_path": "prompts/prompts_per_category/plant.txt",
+        "source_line": 32,
+        "source_revision": "fd18b3d055cb0fc6f066ca90fe2c3c8cbb698490"
+      },
+      "sha256": "fe4428a13e167de503c22711349bd6298d8b4155c562f7a97c15cce13b030ce0",
+      "validation": {
+        "width": 832,
+        "height": 480,
+        "frames_decoded": 49,
+        "duration_seconds": 3.0625,
+        "decode_passed": true
+      }
+    },
+    {
+      "id": "vbench-scenery-0029",
+      "input_row": {
+        "id": "vbench-scenery-0029",
+        "prompt": "a scenic view of the golden hour at norway",
+        "seed": 1515188077,
+        "category": "scenery",
+        "source_path": "prompts/prompts_per_category/scenery.txt",
+        "source_line": 29,
+        "source_revision": "fd18b3d055cb0fc6f066ca90fe2c3c8cbb698490"
+      },
+      "sha256": "3ad3fcf87effe91f4dd8832cbcab224717e40f1c98228b5d872a9e5845547cde",
+      "validation": {
+        "width": 832,
+        "height": 480,
+        "frames_decoded": 49,
+        "duration_seconds": 3.0625,
+        "decode_passed": true
+      }
+    },
+    {
+      "id": "vbench-vehicles-0018",
+      "input_row": {
+        "id": "vbench-vehicles-0018",
+        "prompt": "a green vintage automobile with an open hood parked in a parking area",
+        "seed": 1256227319,
+        "category": "vehicles",
+        "source_path": "prompts/prompts_per_category/vehicles.txt",
+        "source_line": 18,
+        "source_revision": "fd18b3d055cb0fc6f066ca90fe2c3c8cbb698490"
+      },
+      "sha256": "f48250b1493059a282c11046b78ca6bd17ee8cd2b32932d1615477634e2cb944",
+      "validation": {
+        "width": 832,
+        "height": 480,
+        "frames_decoded": 49,
+        "duration_seconds": 3.0625,
         "decode_passed": true
       }
     }
-  ]
+  ],
+  "note": "A generation batch for inspection. No VBench quality score is calculated."
 }

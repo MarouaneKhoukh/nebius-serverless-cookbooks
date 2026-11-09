@@ -1,0 +1,36 @@
+{
+  "id": "vbench-lifestyle-0036",
+  "input_row": {
+    "id": "vbench-lifestyle-0036",
+    "prompt": "modern minimalist home interior",
+    "seed": 594370757,
+    "category": "lifestyle",
+    "source_path": "prompts/prompts_per_category/lifestyle.txt",
+    "source_line": 36,
+    "source_revision": "fd18b3d055cb0fc6f066ca90fe2c3c8cbb698490"
+  },
+  "status": "completed",
+  "fingerprint": "9f1d8af0f897e0d86400613caef3534ef8a4a44700fc9457ec06d569b4d5bcdd",
+  "request": {
+    "model": "Wan-AI/Wan2.1-T2V-1.3B-Diffusers",
+    "prompt": "modern minimalist home interior",
+    "seed": 594370757,
+    "size": "832x480",
+    "num_frames": 49,
+    "fps": 16,
+    "num_inference_steps": 20,
+    "guidance_scale": 5.0,
+    "flow_shift": 3.0,
+    "boundary_ratio": 0.0
+  },
+  "completed_at": "2026-11-09T19:26:37.870688+00:00",
+  "client_elapsed_seconds": 16.112,
+  "sha256": "aae66ebe463ab2744ca9144eb1b40567b689b0dfc91eb18b8fcef939831dd820",
+  "validation": {
+    "width": 832,
+    "height": 480,
+    "frames_decoded": 49,
+    "duration_seconds": 3.0625,
+    "decode_passed": true
+  }
+}

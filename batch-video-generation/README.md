@@ -3,237 +3,201 @@ title: Generate Video Clips from a List of Prompts
 category: inference
 type: cookbook
 runtime: Nebius Serverless AI Endpoint
-frameworks: [vLLM-Omni, Wan]
-keywords: [preemptible, video-generation, batch, resume]
+frameworks: [vLLM-Omni]
+keywords: [preemptible, video-generation, wan, vbench, batch-processing]
 difficulty: beginner
 ---
 
-<img src="docs/brand/nebius-logo.svg" alt="Nebius" width="145">
+<img src="docs/brand/nebius-logo.svg" alt="Nebius" width="140">
 
 # Generate Video Clips from a List of Prompts
 
-Give Wan three text prompts and save three short MP4 previews. You'll build a Python tool that generates each clip, downloads it and puts the results in a local video gallery.
+Run **Wan2.1-T2V-1.3B** on eight published **VBench prompts**, one from each content category. Get eight MP4s, a source-linked CSV manifest and a local gallery. A fixed prompt selection and recorded seeds let you repeat the batch when testing a model or changing generation settings.
 
-Nebius Serverless AI runs the video model on a cloud GPU, so you don't need to set up a GPU server. You'll create an **Endpoint**, a model API you call over HTTPS. Your computer submits prompts and saves the clips.
+**Nebius Serverless AI hosts Wan behind an Endpoint**, an authenticated model API on a cloud GPU. Your computer submits requests and saves each finished clip. **Preemptible GPUs** offer a lower rate when capacity is available, with the trade-off that Nebius can reclaim them. Finished downloads remain reusable; an unfinished generation may need another request.
 
-**Preemptible instances give you a way to do more with your GPU budget.** They provide GPU capacity at a changing market price that can be lower than the regular rate. The trade-off is that a run can be interrupted. This cookbook saves every finished clip on your computer, so the next run reuses those videos and generates only the unfinished ones.
+These are public benchmark prompts, not production footage. This small batch doesn't calculate a VBench score. [Prompt source, selection and Apache 2.0 license](data/SOURCE.md).
 
-For example, during this experiment, this setup was priced at about **$0.84/hour on preemptible compute, compared with $4.55/hour on regular compute**. Prices can change.
-
-![Three saved Wan video previews](docs/media/result.jpg)
+![The VBench prompt batch and generated video previews](docs/media/result.jpg)
 
 **Powered by Nebius Serverless AI**
 
-Watch the recorded samples: [paper boat](docs/sample-results/paper-boat.mp4), [mountain lake](docs/sample-results/mountain-lake.mp4), [red ball](docs/sample-results/red-ball.mp4). These are small **17-frame previews**. After cloning, open `docs/sample-results/index.html` to play them without starting a GPU.
+[Saved clips and manifests](docs/sample-results) · [Measured run](VALIDATION.md)
 
 ## What you need
 
 - macOS or Ubuntu, Git and Python **3.10+**. No local GPU or extra Python packages.
-- A Nebius account with billing enabled and a project in **eu-north1**. A project holds your cloud resources and their permissions.
-- Permission and quota to run **one preemptible H100 GPU**. Quota is your account's resource allowance; check **Quotas** in the console if deployment is refused.
-- FFmpeg and `ffprobe`, installed below, to check the downloaded videos. The macOS instructions require [Homebrew](https://brew.sh/).
+- A billing-enabled Nebius project in **eu-north1**, with permission and quota for **one preemptible H100**.
+- FFmpeg and `ffprobe` to validate downloads.
 
-## 1. Get the files and install FFmpeg
+## 1. Get the files
 
 ```bash
 git clone https://github.com/MarouaneKhoukh/nebius-serverless-cookbooks.git
 cd nebius-serverless-cookbooks/batch-video-generation
-python3 --version
 ```
 
-Run the remaining commands from this directory.
-
-On macOS with Homebrew:
-
-```bash
-brew install ffmpeg
-```
-
-On Ubuntu:
+Run all commands from this directory. Install FFmpeg with `brew install ffmpeg` on macOS with [Homebrew](https://brew.sh/), or on Ubuntu:
 
 ```bash
 sudo apt-get update
 sudo apt-get install -y ffmpeg
 ```
 
-Check that both tools are available:
+Check the bundled inputs without a cloud account:
 
 ```bash
 ffmpeg -version
 ffprobe -version
+python3 scripts/prepare_data.py --verify
+python3 src/generate.py --check-input
 ```
 
-## 2. Sign in to Nebius
+Expect **eight prompts** and **49 frames at 832×480**. The CSV includes the original category, source line, pinned VBench revision and a video seed. Its matching `.source.json` records the source checksums and selection.
 
-The Nebius CLI creates and manages your Endpoint from the terminal. If it isn't installed:
+## 2. Sign in and choose a network
+
+Install the Nebius CLI if needed:
 
 ```bash
 curl -sSL https://artifacts.nebius.cloud/cli/install.sh | bash
 ```
 
-Open a new terminal after installation and return to this cookbook's directory. Use CLI **0.12.303 or newer**; run `nebius update` if yours is older.
-
-In the [Nebius console](https://console.nebius.com), select your eu-north1 project and copy its project ID. Replace the **entire** `YOUR_PROJECT_ID` value:
-
-If you already have a signed-in CLI profile for this project, use its name in place of `cookbook` and skip `profile create`. Otherwise, create the `cookbook` profile:
+Open a new terminal and return to this directory. Use CLI **0.12.303+**; run `nebius update` if yours is older. Copy your project ID from the [console](https://console.nebius.com), replace the placeholder and complete browser sign-in:
 
 ```bash
+export AI_AGENT="${AI_AGENT:-cookbook}"
 nebius version
 export NEBIUS_PROJECT_ID="YOUR_PROJECT_ID"
-export AI_AGENT="${AI_AGENT:-cookbook}"
 nebius profile create cookbook --parent-id "$NEBIUS_PROJECT_ID"
 nebius profile activate cookbook
 nebius iam whoami
 ```
 
-Complete the browser sign-in when prompted.
+If already signed in to this project, activate that profile instead of creating `cookbook`.
 
-Choose a **subnet**, the network your Endpoint will use. List the project's subnets and replace `YOUR_SUBNET_ID` with a subnet's `metadata.id`. It must allow outbound internet access to download the model.
+Choose a **subnet**, the Endpoint's network, with outbound internet access for model downloads. Copy its `metadata.id`:
 
 ```bash
 nebius vpc subnet list --parent-id "$NEBIUS_PROJECT_ID" --format json
 export NEBIUS_SUBNET_ID="YOUR_SUBNET_ID"
 ```
 
-<details>
-<summary>If your project has no subnet</summary>
-
-Create a network and subnet in the same project:
+If the project has no subnet, create one with the default internet route:
 
 ```bash
 export NEBIUS_NETWORK_ID="$(nebius vpc network create --parent-id "$NEBIUS_PROJECT_ID" --name cookbook-network --format jsonpath='{.metadata.id}')"
 export NEBIUS_SUBNET_ID="$(nebius vpc subnet create --parent-id "$NEBIUS_PROJECT_ID" --name cookbook-subnet --network-id "$NEBIUS_NETWORK_ID" --format jsonpath='{.metadata.id}')"
 ```
 
-New networks have a default internet route. If your company manages the network, ask for an approved subnet instead. [Network setup](https://docs.nebius.com/vpc/networking/isolation) · [Default routing](https://docs.nebius.com/vpc/routing/overview)
+## 3. Start Wan
 
-</details>
+The [configuration](config/endpoint.json) uses **vLLM-Omni 0.24.0**, one H100 and a **500 GiB temporary disk**. The model is public; no Hugging Face token is required.
 
-## 3. Start the video model
+Check the rate under **Serverless AI → Endpoints → Create endpoint → Preemptible**. The helper follows the changing spot price without a cap; it can exceed the regular rate. Image/model loading and idle time use paid compute. A pricing policy can set a maximum; create one for `gpu-h100-sxm` under **Billing → Pricing → Pricing policy** and add `--spot-pricing-policy-id "YOUR_POLICY_ID"` to both commands below if needed.
 
-The supplied configuration runs **Wan2.1-T2V-1.3B** through vLLM-Omni on one H100, with a 500 GiB temporary disk. The model is public; no Hugging Face token is needed.
-
-Check the current rate under **Serverless AI → Endpoints → Create endpoint → Preemptible** before launching. The deployment script uses **Follow Spot price** by default, which accepts the changing price without a maximum. Model loading and idle time are billed too. You'll stop the Endpoint after downloading the clips.
-
-<details>
-<summary>Set a maximum GPU price</summary>
-
-A pricing policy sets a maximum **per GPU hour**. A higher maximum can improve allocation priority when demand for the same GPU platform is high. You pay the current market rate while it stays within your limit. Capacity can still be reclaimed. [How allocation works](https://docs.nebius.com/signup-billing/pricing-policy#capacity-allocation)
-
-1. Check the [current price and recent history](https://docs.nebius.com/signup-billing/spot-prices). Choose a maximum within your budget, with room for price increases. A limit below the current rate blocks startup.
-2. In **Billing → Pricing → Pricing policy → Create pricing policy**, enter a name using letters/numbers, select your project and **`gpu-h100-sxm`**, and enter that maximum. Create the policy and copy its ID.
-3. Add `--spot-pricing-policy-id "YOUR_POLICY_ID"` to both `create` commands below, replacing the whole placeholder. The deployment script will use that policy.
-
-Choose the policy before launching. Before changing its maximum, stop the Endpoints using it and wait for any Jobs using it to finish, or cancel them.
-
-A tight limit can cause more interruptions as prices rise. **Follow Spot price** accepts price changes without a cap, including prices above regular rates. A GPU price limit does not cap the total cost of a run or its storage.
-
-[Policy setup](https://docs.nebius.com/signup-billing/manage-pricing-policy) · [Pricing options](https://docs.nebius.com/signup-billing/pricing-policy)
-
-</details>
+During this experiment, the H100 and disk were quoted at **about $0.85/hour before tax**. That's an hourly quote, not a cost per clip.
 
 ```bash
 python3 scripts/endpoint.py create \
-  --project-id "$NEBIUS_PROJECT_ID" \
-  --subnet-id "$NEBIUS_SUBNET_ID" \
-  --name cookbook-video-spot --dry-run
+  --project-id "$NEBIUS_PROJECT_ID" --subnet-id "$NEBIUS_SUBNET_ID" \
+  --name cookbook-video-generation --dry-run
 
 python3 scripts/endpoint.py create \
-  --project-id "$NEBIUS_PROJECT_ID" \
-  --subnet-id "$NEBIUS_SUBNET_ID" \
-  --name cookbook-video-spot --yes
+  --project-id "$NEBIUS_PROJECT_ID" --subnet-id "$NEBIUS_SUBNET_ID" \
+  --name cookbook-video-generation --yes
 
 python3 scripts/endpoint.py wait --timeout 1800
 ```
 
-The first command previews the deployment; the second creates it. Wait for the model API to be ready before continuing. The deployment script passes the API address and authentication token to the client. If loading fails, check the Endpoint logs and stop it while diagnosing the problem.
+Wait for the model API readiness message. The helper passes the URL and token privately to client commands. A wait timeout doesn't stop the Endpoint: inspect logs and stop unused compute while diagnosing.
 
 <details>
-<summary>Ask an agent to run it instead</summary>
+<summary>Run with an agent instead</summary>
 
-Install the [Nebius agent skills](https://github.com/nebius/skills#install) for your coding agent, then paste the prompt below. The agent needs terminal access and the CLI sign-in from step 2. Skills are optional for the CLI instructions above.
+Install the [Nebius skills](https://github.com/nebius/skills#install) for an agent with terminal access and the signed-in CLI, then paste:
 
 ```text
-Run this cookbook in Nebius project <MY_PROJECT_ID> using
-nebius-cloud-basics and nebius-serverless-endpoints. Follow README.md and
-config/endpoint.json. Show the current price and confirm the deployment
-before creating a preemptible H100 Endpoint. Wait for Wan, generate the
-three sample clips and check that they play. Verify that rerunning the
-client reuses the completed clips. Stop this cookbook's Endpoint and verify
-STOPPED. Keep authentication tokens private.
+Run batch-video-generation in MarouaneKhoukh/nebius-serverless-cookbooks.
+Use nebius-cloud-basics and nebius-serverless-endpoints in project
+<PROJECT_ID> and subnet <SUBNET_ID>. Follow config/endpoint.json.
+Verify the VBench source selection. Show the current price and confirm
+before launching unapproved compute. Generate all eight 49-frame clips,
+check them with scripts/check_results.py, rerun to verify completed-clip
+reuse, then stop this Endpoint and verify STOPPED. Keep tokens private.
 ```
 
 </details>
 
-## 4. Generate the clips
+## 4. Generate the batch
+
+First generate two clips, then run the same input again to complete the batch:
 
 ```bash
-python3 src/generate.py --check-input
+python3 scripts/endpoint.py run -- \
+  python3 src/generate.py --input data/prompts.csv --output results-vbench --limit 2
 
 python3 scripts/endpoint.py run -- \
-  python3 src/generate.py --input data/prompts.csv --output results
+  python3 src/generate.py --input data/prompts.csv --output results-vbench
+
+python3 scripts/check_results.py results-vbench
 ```
 
-The tool submits each prompt, waits for the video, downloads it and checks it with FFmpeg. Expect **three completed clips**.
+The second process reuses the two completed downloads and generates six more. Each output is **49 frames at 16 fps**, about **3.06 seconds**, at **832×480**, using 20 inference steps. The checker verifies input joins, provenance, hashes and MP4 decoding. These are short previews for inspection.
 
-Open `results/index.html` in your browser. The MP4s, their prompts and settings, and `summary.json` are saved in `results/` on your computer. The gallery plays those local files; it isn't a publicly hosted website.
+## 5. Inspect and reuse the output
 
-## 5. Stop the Endpoint
+Open **`results-vbench/index.html`**. Check **8 of 8 clips saved**, play the clips and inspect how well each follows its original prompt. Every card links to the exact VBench source line.
+
+- **`clips.csv`** joins prompt IDs, categories, seeds, source links, clip filenames and hashes.
+- **`summary.json`** records settings and completion; each clip also has its own JSON record.
+- **`input.csv`**, **`input.source.json`** and the dataset license retain input provenance.
+- **MP4 files** are ordinary downloads you can use in your own UI; the branded gallery is a preview.
+
+Rerun the generation command once more. Expect **Generated 0; reused 8**, without new generation requests. [Validation and measured output](VALIDATION.md) record which checks were actually performed; this recipe does not run the full VBench evaluation protocol.
+
+## 6. Stop or resume
+
+Stop when finished and verify **STOPPED**:
 
 ```bash
 python3 scripts/endpoint.py stop
+python3 scripts/endpoint.py status
 ```
 
-Wait for `STOPPED`. This releases the GPU and temporary disk; your downloaded clips remain. The Endpoint stays running and billable until you stop it, even after the videos finish.
+The GPU and temporary disk are released; downloaded results remain. Closing the gallery or client alone doesn't stop billing.
 
-## If the GPU is reclaimed
-
-Keep the same input, settings and results directory. Completed clips are reused. A clip that was still being generated must start again if its server-side request was lost.
-
-After confirming the Endpoint was interrupted, restart it and continue:
+If only the client stopped, rerun the original command first: it can continue polling an existing request. After a confirmed GPU interruption, restart the Endpoint and explicitly allow replacement of lost requests:
 
 ```bash
 python3 scripts/endpoint.py start
 python3 scripts/endpoint.py wait --timeout 1800
 python3 scripts/endpoint.py run -- \
-  python3 src/generate.py --input data/prompts.csv --output results --retry-lost
+  python3 src/generate.py --input data/prompts.csv --output results-vbench --retry-lost
 python3 scripts/endpoint.py stop
+python3 scripts/endpoint.py status
 ```
 
-`--retry-lost` permits a new paid request for a missing video request. If only your local script stopped, rerun the original command first: it can continue waiting for a request still running on the server. Restarting the local script alone doesn't stop the cloud GPU.
+**`--retry-lost` permits another paid request.** Check the old request and Endpoint before using it. Completed downloads are skipped. Keep the input, settings and output directory unchanged; changing them requires a new directory.
 
-<details>
-<summary>Change the prompts or try resuming</summary>
+## Use a larger batch or your own prompts
 
-Edit `data/prompts.csv`, keeping unique filename-safe IDs and integer seeds. Use a new results directory when changing prompts, seeds, the model or generation settings.
-
-For longer previews, add `--frames 33` or `--frames 49` and choose a new `--output` directory. Valid frame counts follow `4n+1`; longer videos need more GPU work. The provided configuration uses the Wan template's `flow_shift=3.0` and `boundary_ratio=0.0` settings.
-
-To try client resumption, run step 4 with `--output results-resume --limit 1`, then repeat it without `--limit 1`. The second run reuses the first clip. Stop the Endpoint afterwards.
-
-Rebuild the gallery from saved clips without making model requests:
+The eight prompt lists contain 800 prompts. To prepare five per category, with recorded source IDs and seeds:
 
 ```bash
-python3 src/generate.py --input data/prompts.csv --output results --report-only
+python3 scripts/prepare_data.py --per-category 5 --output data/larger-batch.csv
 ```
 
-</details>
+This prepares 40 inputs, without launching compute. Keep its `larger-batch.source.json` beside the CSV. Use `--input data/larger-batch.csv --output results-larger` in the generation command. More clips mean more paid inference.
 
-<details>
-<summary>Troubleshooting and test results</summary>
+For your own inputs, use a UTF-8 CSV with `id,prompt,seed`; IDs must be unique and filename-safe. The VBench columns are optional for custom inputs. Keep model settings and inputs fixed when comparing runs.
 
-- **Sign-in or API 401/403 error:** check your CLI profile and the Endpoint's token-authentication setting.
-- **Quota exceeded:** request a higher allowance in the console.
-- **No capacity:** try again when preemptible H100 GPUs become available.
-- **`RUNNING` but the API isn't ready:** use the wait command; check Endpoint logs if it times out.
-- **Missing video request:** after a confirmed Endpoint interruption, use `--retry-lost` as above.
-- **Video check fails:** inspect the file and local disk space. The tool keeps it out of the completed results until it passes.
-- **Generation fails:** check the prompt and Endpoint logs before retrying.
+For quota errors, check **Quotas**. For capacity errors, retry when preemptible H100s are available. For API or decode failures, inspect logs and stop unused compute; failed downloads are not marked complete.
 
-The recorded run generated three playable clips and reused them on a later client run. Natural GPU preemption was not observed. [Validation and recorded prices](VALIDATION.md) · [Recorded gallery](docs/sample-results/index.html)
+Local checks, without cloud resources:
 
-Run local checks with `python3 -m unittest discover -s tests -v`.
+```bash
+python3 -m unittest discover -s tests -v
+```
 
-</details>
-
-[Serverless AI](https://docs.nebius.com/serverless/overview) · [Preemptible instances](https://docs.nebius.com/compute/virtual-machines/preemptible) · [Endpoint stop/start](https://docs.nebius.com/serverless/maintenance/stop-start) · [Wan template](https://github.com/nebius/serverless-ai-cookbook/tree/main/templates/endpoint-wan21-t2v-1-3b) · [Wan model](https://huggingface.co/Wan-AI/Wan2.1-T2V-1.3B-Diffusers)
+[VBench source and license](data/SOURCE.md) · [Nebius Wan template](https://github.com/nebius/serverless-ai-cookbook/tree/main/templates/endpoint-wan21-t2v-1-3b) · [Pricing policies](https://docs.nebius.com/signup-billing/manage-pricing-policy)

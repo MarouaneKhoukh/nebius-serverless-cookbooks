@@ -1,0 +1,36 @@
+{
+  "id": "vbench-architecture-0015",
+  "input_row": {
+    "id": "vbench-architecture-0015",
+    "prompt": "friends hanging out at a coffee house",
+    "seed": 286977637,
+    "category": "architecture",
+    "source_path": "prompts/prompts_per_category/architecture.txt",
+    "source_line": 15,
+    "source_revision": "fd18b3d055cb0fc6f066ca90fe2c3c8cbb698490"
+  },
+  "status": "completed",
+  "fingerprint": "a73bae6fef27d38ce3f48a3b5cf9199ff38e9c2482f3c4e867362aae9e18e4e6",
+  "request": {
+    "model": "Wan-AI/Wan2.1-T2V-1.3B-Diffusers",
+    "prompt": "friends hanging out at a coffee house",
+    "seed": 286977637,
+    "size": "832x480",
+    "num_frames": 49,
+    "fps": 16,
+    "num_inference_steps": 20,
+    "guidance_scale": 5.0,
+    "flow_shift": 3.0,
+    "boundary_ratio": 0.0
+  },
+  "completed_at": "2026-11-09T19:24:49.886290+00:00",
+  "client_elapsed_seconds": 16.359,
+  "sha256": "0e90de8da0b7d82e3616a267c184f92fd8851da57b39a888398bb47414405f52",
+  "validation": {
+    "width": 832,
+    "height": 480,
+    "frames_decoded": 49,
+    "duration_seconds": 3.0625,
+    "decode_passed": true
+  }
+}
