@@ -1,0 +1,9 @@
+{
+  "config_sha256": "82ab2e5d59ec5d5ab6c29065c2d829434ee5c46de698b4feb511324437af8142",
+  "model": "Qwen/Qwen2.5-0.5B-Instruct",
+  "model_revision": "7ae557604adf67be50417f59c2c2f167def9a775",
+  "schema": 1,
+  "system_prompt": "Classify support tickets as billing, technical, or account. Return only the category.",
+  "test_sha256": "ae48d3d0f809959214f05b0f0e9567bab407164f3642f7cffe6849dee2a75955",
+  "train_sha256": "585699ddebb2b201dc77598387f812265642723a7a6320f69d9d5e3a8bd2f852"
+}

@@ -1,0 +1,67 @@
+{
+  "contract_hash": "75049c4178a80fa60e1fa0bf595d87a8daab5e6c0720c2df8ff87a2160c61d6a",
+  "files": [
+    {
+      "bytes": 5216,
+      "path": "README.md",
+      "sha256": "5fa6016005915030b556f067497d03e8956755498096aa9fea38119bdeb72fb1"
+    },
+    {
+      "bytes": 1004,
+      "path": "adapter_config.json",
+      "sha256": "52059ee90f6994e9c66f8a05153d7cdc433a92cf297990dc5368f412e3fa93d5"
+    },
+    {
+      "bytes": 4350392,
+      "path": "adapter_model.safetensors",
+      "sha256": "00f2c6201f6c9eb312096b77d3b65c4257273998293030c874d359ac7c03bf25"
+    },
+    {
+      "bytes": 2507,
+      "path": "chat_template.jinja",
+      "sha256": "cd8e9439f0570856fd70470bf8889ebd8b5d1107207f67a5efb46e342330527f"
+    },
+    {
+      "bytes": 8812299,
+      "path": "optimizer.pt",
+      "sha256": "cea35b636c35c5d47db5a242dff97ac42b7690ce6f816f4ac610fa23d2d949b8"
+    },
+    {
+      "bytes": 14645,
+      "path": "rng_state.pth",
+      "sha256": "8211970f4b4ed92044dc55f73e571abe355d16c142bbb7f9108cd462c0cf22ca"
+    },
+    {
+      "bytes": 1465,
+      "path": "scheduler.pt",
+      "sha256": "57f5bbb5b4ba44d34a455960920ef8eaf75574205648b376b9b795cb9f0b32ae"
+    },
+    {
+      "bytes": 11421892,
+      "path": "tokenizer.json",
+      "sha256": "3fd169731d2cbde95e10bf356d66d5997fd885dd8dbb6fb4684da3f23b2585d8"
+    },
+    {
+      "bytes": 665,
+      "path": "tokenizer_config.json",
+      "sha256": "47bfa3e7727312946b29ac10d6dd0672d63cf7815b2a160b9523872040d2e536"
+    },
+    {
+      "bytes": 34,
+      "path": "tokens_state.",
+      "sha256": "26b92a8b58ae922160204759a36cd9ea6d59ad7a6dec7d0a914449f99242f068"
+    },
+    {
+      "bytes": 13539,
+      "path": "trainer_state.json",
+      "sha256": "087f5ab866f17738a084a8f624e3275fe482cc7c1b41eb29d2ee3e5ad05fd774"
+    },
+    {
+      "bytes": 9105,
+      "path": "training_args.bin",
+      "sha256": "752782bc7da21dc6b0247eb98d1d5b7dad89056bcdb5b6aa46cefd9010efa5db"
+    }
+  ],
+  "global_step": 30,
+  "schema": 1
+}

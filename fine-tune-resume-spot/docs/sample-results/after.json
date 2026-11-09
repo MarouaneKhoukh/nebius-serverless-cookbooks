@@ -1,0 +1,284 @@
+{
+  "accuracy": 0.9333333333333333,
+  "adapter": true,
+  "correct": 28,
+  "invalid_predictions": 0,
+  "max_new_tokens": 16,
+  "model": "Qwen/Qwen2.5-0.5B-Instruct",
+  "model_revision": "7ae557604adf67be50417f59c2c2f167def9a775",
+  "peak_allocated_bytes": 1045989376,
+  "predictions": [
+    {
+      "correct": true,
+      "expected": "billing",
+      "id": "eval-b01",
+      "prediction": "billing",
+      "prompt": "My bank statement has two charges for the same order.",
+      "response": "billing",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "billing",
+      "id": "eval-b02",
+      "prediction": "billing",
+      "prompt": "Where can I download the invoice for our annual plan?",
+      "response": "billing",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "billing",
+      "id": "eval-b03",
+      "prediction": "billing",
+      "prompt": "I would like the unused part of my payment refunded.",
+      "response": "billing",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "billing",
+      "id": "eval-b04",
+      "prediction": "billing",
+      "prompt": "Can we switch from monthly payments to yearly payments?",
+      "response": "billing",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "billing",
+      "id": "eval-b05",
+      "prediction": "billing",
+      "prompt": "The promotional discount was not applied to my purchase.",
+      "response": "billing",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "billing",
+      "id": "eval-b06",
+      "prediction": "billing",
+      "prompt": "Please update the VAT number that appears on our receipts.",
+      "response": "billing",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "billing",
+      "id": "eval-b07",
+      "prediction": "billing",
+      "prompt": "Why did the renewal price increase on this invoice?",
+      "response": "billing",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "billing",
+      "id": "eval-b08",
+      "prediction": "billing",
+      "prompt": "Our credit card expired and the subscription payment failed.",
+      "response": "billing",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "billing",
+      "id": "eval-b09",
+      "prediction": "billing",
+      "prompt": "I need to cancel our paid plan before the next renewal.",
+      "response": "billing",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "billing",
+      "id": "eval-b10",
+      "prediction": "billing",
+      "prompt": "Can your team explain this extra fee on my bill?",
+      "response": "billing",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "technical",
+      "id": "eval-t01",
+      "prediction": "technical",
+      "prompt": "Search results never finish loading after I submit a query.",
+      "response": "technical",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "technical",
+      "id": "eval-t02",
+      "prediction": "technical",
+      "prompt": "The Python SDK throws an exception when creating a project.",
+      "response": "technical",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "technical",
+      "id": "eval-t03",
+      "prediction": "technical",
+      "prompt": "The webhook integration stopped delivering events yesterday.",
+      "response": "technical",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "technical",
+      "id": "eval-t04",
+      "prediction": "technical",
+      "prompt": "Every image uploaded to the gallery looks corrupted.",
+      "response": "technical",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "technical",
+      "id": "eval-t05",
+      "prediction": "technical",
+      "prompt": "The application freezes when I select more than ten files.",
+      "response": "technical",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "technical",
+      "id": "eval-t06",
+      "prediction": "technical",
+      "prompt": "The report download is empty even though the dashboard has data.",
+      "response": "technical",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "technical",
+      "id": "eval-t07",
+      "prediction": "technical",
+      "prompt": "Our API requests have become much slower this morning.",
+      "response": "technical",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "technical",
+      "id": "eval-t08",
+      "prediction": "technical",
+      "prompt": "Notifications arrive twice for every new message.",
+      "response": "technical",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "technical",
+      "id": "eval-t09",
+      "prediction": "technical",
+      "prompt": "The chart displays the wrong timezone for every timestamp.",
+      "response": "technical",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "technical",
+      "id": "eval-t10",
+      "prediction": "technical",
+      "prompt": "The latest update broke the connection to our database.",
+      "response": "technical",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "account",
+      "id": "eval-a01",
+      "prediction": "account",
+      "prompt": "I cannot remember the password for my user account.",
+      "response": "account",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "account",
+      "id": "eval-a02",
+      "prediction": "account",
+      "prompt": "Please remove a former employee from our workspace.",
+      "response": "account",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "account",
+      "id": "eval-a03",
+      "prediction": "technical",
+      "prompt": "How do I replace the phone used for two-factor authentication?",
+      "response": "technical",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "account",
+      "id": "eval-a04",
+      "prediction": "account",
+      "prompt": "I want to change the display name on my profile.",
+      "response": "account",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "account",
+      "id": "eval-a05",
+      "prediction": "billing",
+      "prompt": "The invitation link for our new teammate has expired.",
+      "response": "billing",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "account",
+      "id": "eval-a06",
+      "prediction": "account",
+      "prompt": "My role does not let me view the team's private projects.",
+      "response": "account",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "account",
+      "id": "eval-a07",
+      "prediction": "account",
+      "prompt": "I no longer have access to the email address used to sign in.",
+      "response": "account",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "account",
+      "id": "eval-a08",
+      "prediction": "account",
+      "prompt": "Can I transfer ownership of this workspace to another person?",
+      "response": "account",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "account",
+      "id": "eval-a09",
+      "prediction": "account",
+      "prompt": "My account was locked after several failed login attempts.",
+      "response": "account",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "account",
+      "id": "eval-a10",
+      "prediction": "account",
+      "prompt": "I need to update the contact details saved on my profile.",
+      "response": "account",
+      "valid_label": true
+    }
+  ],
+  "seed": 42,
+  "total": 30
+}

@@ -1,0 +1,2 @@
+# Local validation and orchestration use Python 3.10+ standard library only.
+# GPU training/evaluation dependencies come from the pinned Axolotl image in README.

@@ -1,0 +1,19 @@
+{
+  "completed": true,
+  "contract_hash": "75049c4178a80fa60e1fa0bf595d87a8daab5e6c0720c2df8ff87a2160c61d6a",
+  "controlled_stop": false,
+  "global_step": 30,
+  "max_steps": 30,
+  "model": "Qwen/Qwen2.5-0.5B-Instruct",
+  "model_revision": "7ae557604adf67be50417f59c2c2f167def9a775",
+  "recovery_exercise": "separate Jobs with a controlled checkpoint stop",
+  "resumed_from_step": 10,
+  "runtime_versions": {
+    "axolotl": "0.16.0.dev0",
+    "peft": "0.18.1",
+    "torch": "2.9.1+cu128",
+    "transformers": "5.3.0"
+  },
+  "schema": 1,
+  "training_wall_seconds": 64.54774000399999
+}
