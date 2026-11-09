@@ -7,7 +7,7 @@ The [README](../README.md) contains the complete setup, Endpoint creation, conne
 | | Connected demo: `hosted-demo/` | Persistent builder: `media_search/` |
 | --- | --- | --- |
 | Endpoint connection | Each visitor enters their own managed URLs and token | Operator configures URLs/tokens in private `.env` |
-| Web runtime | Node.js locally; JavaScript Worker when hosted through Sites | Python/FastAPI on a local or Linux CPU host |
+| Web runtime | Node.js locally; Vercel functions or a JavaScript Worker when hosted | Python/FastAPI on a local or Linux CPU host |
 | Saved images and metadata | IndexedDB in the visitor's browser | Host's `DATA_DIR` |
 | Vectors | Page memory; re-embedded on each connection | Qdrant collection on the host/private network |
 | Who sees saved images | This browser profile on this origin | All visitors to that configured gallery |
@@ -49,11 +49,11 @@ In the Nebius console, open **Serverless AI → Endpoints → your Endpoint → 
 
 The first connection form asks for the search URL and token. `POST /api/connect` verifies that connection; its API also retains support for submitting both model connections together. The proxy validates the managed HTTPS URLs and checks the expected models. The embedding response must contain one finite, nonzero, **4096-dimensional** vector. Connection checks and photo indexing do not generate an image.
 
-A search submitted before connection is retained. After model checks and collection indexing succeed, the app runs that search. Authentication errors, a stopped/unready Endpoint, wrong models and invalid vector responses must remain visible failures rather than a pretend connected state.
+A search submitted before connection is retained. After model checks and collection indexing succeed, the app runs that search. Authentication errors, a stopped/unready Endpoint, wrong models and invalid vector responses must remain visible connection errors.
 
 **Create an image** is a primary action alongside search; an empty search result also asks whether to create. Choosing to create opens the FLUX connection step if it is not connected yet. That focused form asks for the port-8001 public URL, using the existing Endpoint token by default and an optional separate token when needed. `POST /api/connect-generation` accepts `generation_url` and `token`, checks only the FLUX model list, and returns the verified generation URL/model. It performs no embedding or generation. The browser attaches the verified generation connection without clearing vectors, re-indexing or repeating the search, then opens prompt review for the original description. A creation request made before setup is retained through connection and indexing, without running an unnecessary text search. Cancelled or failed connection attempts keep search usable; a new search, Back to collection or disconnect cancels the pending creation choice.
 
-The connection belongs to this open page. Credentials are held in page memory and supplied only to the same-origin proxy for each operation. They are not persisted in IndexedDB, included in a shareable URL, published with the source, or configured as the cookbook author's Site secret. The proxy sends them only to validated Nebius-managed inference hosts and does not follow arbitrary redirects.
+The connection belongs to this open page. Credentials are held in page memory and supplied only to the same-origin proxy for each operation. They are not persisted in IndexedDB, included in a shareable URL, published with the source. The proxy sends them only to validated Nebius-managed inference hosts and does not follow arbitrary redirects.
 
 **Disconnect** removes the page's connection and vectors. It neither stops nor deletes the GPU. Reconnecting re-embeds every saved image, so a different Endpoint is never searched with stale vectors from another connection. Reloading also requires a new connection. Saved image bytes remain in browser storage until removed through the app or browser site-data controls.
 
@@ -164,6 +164,6 @@ QDRANT_TEST_URL=http://127.0.0.1:6333 python3 -m pytest -q
 
 That test creates/removes a uniquely named test collection; it does not call a paid model API. Mock responses verify control flow, not image quality, GPU fit or generation latency.
 
-Live acceptance requires the real journey: disconnected search opens connection, invalid credentials fail clearly, valid models/indexing make search ready, **coffee** and the synonym **espresso** find coffee beans, and an absent subject such as **football** shows no matching photos with zero result cards. Test visual retrieval without descriptive filenames as well as name matching. Prompt cancellation makes no generation call, approval produces an unsaved preview, Add makes it searchable, and Discard leaves the collection unchanged. Reload and reconnect must preserve saved browser images without retaining the token. Check the deployed origin separately from a local server and report the actual hosting audience. Current results belong in the validation record rather than being inferred from these instructions.
+See [the test results](../VALIDATION.md) for the completed browser journeys, runtime settings and remaining checks.
 
 The older [H100 live test](../LIVE-TEST.md) covered the search-only recipe, including video. It is historical evidence. Existing RTX/H200 and Python approval tests likewise do not by themselves prove the new hosted visitor connection flow. The underlying Python video utilities remain available for historical checks; they are not part of this image-only walkthrough.

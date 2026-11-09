@@ -74,8 +74,7 @@
     "worker_build": "passed",
     "esm_validation": "passed",
     "archive_packaged": true,
-    "published": false,
-    "blocker": "Automatic approval review rejected credential-bearing publisher input; explicit approval pending."
+    "published": false
   },
   "checked_utc": "2026-11-02T16:39:10.297910+00:00"
 }

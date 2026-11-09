@@ -12,7 +12,7 @@ Find photos with **Qwen3-VL**, create missing images with **FLUX 3 Image Klein**
 
 [Watch the video](docs/media/byo-endpoint-live.mp4) · [Current interface](docs/media/search-create-core.png)
 
-*Real H200 recording with pauses shortened. The connection screen has since been simplified.*
+*Real H200 walkthrough with waits shortened. [Capture details](docs/media/CAPTURE.md).*
 
 Both models share one Nebius GPU Endpoint. Use the hosted demo or run the web app locally; saved photos stay in your browser.
 
@@ -97,7 +97,7 @@ In your selected Nebius project, open **Serverless AI → Endpoints → Create e
 Review the current price, then create **once**. Save the Endpoint ID and both **Overview → Public endpoints** URLs. **Running** can appear before the models finish loading; step 5 checks model readiness.
 
 <details>
-<summary>Use Spot instead</summary>
+<summary>Use preemptible compute</summary>
 
 In the same form, choose **Preemptible** and a pricing policy for your project and H200. Create a policy if needed, choosing a maximum **USD price per GPU-hour** after checking the current quote. Use a separate name, such as `media-search-generate-spot`.
 
@@ -116,10 +116,10 @@ Install the CLI if needed:
 curl -sSL https://artifacts.nebius.cloud/cli/install.sh | bash
 ```
 
-Restart Terminal, return to this cookbook directory, then sign in. Use CLI **0.12.299+**; run `nebius update` if older. Reuse an existing suitable profile, or create one for your intended tenant/project:
+Restart Terminal, return to this cookbook directory, then sign in. Use CLI **0.12.303+**; run `nebius update` if older. Reuse an existing suitable profile, or create one for your intended tenant/project:
 
 ```bash
-export AI_AGENT="${AI_AGENT:-codex}"
+export AI_AGENT="${AI_AGENT:-cookbook-reader}"
 nebius version
 nebius profile create
 ```
@@ -192,13 +192,7 @@ nebius ai endpoint start --id aiendpoint-REPLACE_WITH_YOUR_ID --async
 <details>
 <summary>Deploy with Nebius skills in your agent</summary>
 
-Complete model access and image publication above. Install/sign in to the CLI using the preceding option, then install the [Nebius skills](https://github.com/nebius/skills):
-
-```bash
-npx skills add nebius/skills
-```
-
-Select `nebius-cloud-basics`, `nebius-serverless-endpoints`, and `nebius-serverless-data-secrets` for your agent. Open this cookbook directory and use:
+Complete model access and image publication above. Sign in to the CLI using the preceding option, then follow the [Nebius skills installation instructions](https://github.com/nebius/skills#install) for your coding agent. This route uses `nebius-cloud-basics`, `nebius-serverless-endpoints` and `nebius-serverless-data-secrets`. Open this cookbook directory and paste the prompt below. The CLI route works without skills.
 
 ```text
 Run this cookbook using the installed Nebius skills and README.md.
@@ -206,8 +200,8 @@ Use my selected existing project, built image and HF_TOKEN secret.
 Confirm their IDs, GPU/driver compatibility, current cost and stop deadline.
 Deploy one H200 with ports 8000/http and 8001/http, token auth,
 500 GiB disk and 16 GiB shared memory. Use the image's default entrypoint.
-Use Regular unless I choose capped Spot; never change projects or replace
-an existing working Endpoint to try Spot. Keep credentials out of chat.
+Use regular compute unless I choose a preemptible configuration. Reuse a
+compatible existing Endpoint in the selected project. Keep credentials private.
 Wait for both models. Launch the demo, verify coffee matches and football
 shows no match. Show the prompt before generating; let me approve it and
 choose Add or Discard. Report what actually worked and stop only this
@@ -242,7 +236,7 @@ Photos stay in this browser, with a **20-image limit**. Tokens and vectors stay 
 In **Serverless AI → Endpoints**, stop this recipe's Endpoint and wait for **Stopped**. Or, using its saved resource ID:
 
 ```bash
-export AI_AGENT="${AI_AGENT:-codex}"
+export AI_AGENT="${AI_AGENT:-cookbook-reader}"
 nebius ai endpoint stop --id aiendpoint-REPLACE_WITH_YOUR_ID
 nebius ai endpoint get --id aiendpoint-REPLACE_WITH_YOUR_ID \
   --format jsonpath='{.status.state}'
