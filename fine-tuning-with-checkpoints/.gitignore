@@ -6,3 +6,5 @@ results/
 state/
 .state/
 *.zip
+
+data/prepared/

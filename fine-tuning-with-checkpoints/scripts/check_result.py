@@ -1,6 +1,8 @@
 """Inspect a downloaded result ZIP without extracting files or loading the model."""
 
 import argparse
+import csv
+import io
 import hashlib
 import json
 from pathlib import Path
@@ -10,6 +12,10 @@ import zipfile
 def check(path: Path, require_resume: bool = False) -> dict:
     with zipfile.ZipFile(path) as archive:
         names = set(archive.namelist())
+        if len(names) != len(archive.namelist()) or sum(m.file_size for m in archive.infolist()) > 500 * 1024**2:
+            raise ValueError("ZIP has duplicate members or exceeds the 500 MiB inspection limit")
+        if archive.testzip() is not None:
+            raise ValueError("ZIP checksum validation failed")
         if any(Path(name).is_absolute() or ".." in Path(name).parts for name in names):
             raise ValueError("ZIP contains unsafe member paths")
         def read(name):
@@ -18,6 +24,32 @@ def check(path: Path, require_resume: bool = False) -> dict:
         contract = read("run_contract.json")
         contract_hash = hashlib.sha256(json.dumps(contract, sort_keys=True).encode()).hexdigest()
         proof = read("checkpoint-proof.json")
+        provenance = read("dataset_provenance.json")
+        if provenance != contract.get("dataset"):
+            raise ValueError("Dataset provenance differs from the run contract")
+        for name, field in (("train.jsonl", "train_sha256"), ("test.csv", "test_sha256")):
+            if hashlib.sha256(archive.read(name)).hexdigest() != contract[field]:
+                raise ValueError("Prepared data differs from the run contract: " + name)
+        if hashlib.sha256(archive.read("DATA_LICENSE")).hexdigest() != provenance["source_files"]["LICENSE"]["sha256"]:
+            raise ValueError("The verified dataset license is missing or changed")
+        if not archive.read("DATA_SOURCE.md").strip():
+            raise ValueError("Dataset attribution is missing")
+        examples = list(csv.DictReader(io.StringIO(archive.read("test.csv").decode("utf-8"))))
+        training = [json.loads(line) for line in archive.read("train.jsonl").decode("utf-8").splitlines() if line.strip()]
+        if (summary["test_examples"] != len(examples) or summary["train_examples"] != len(training)
+                or [r["id"] for r in examples] != provenance["test_ids"]
+                or [r["id"] for r in training] != provenance["train_ids"]):
+            raise ValueError("Selected dataset counts or source IDs disagree")
+        train_text = {r["messages"][1]["content"].strip().casefold() for r in training}
+        if train_text & {r["prompt"].strip().casefold() for r in examples}:
+            raise ValueError("Training and test text overlap")
+        for name in ("before.json", "after.json") if summary["completed"] else ("before.json",):
+            result = read(name)
+            joined = [{k:r[k] for k in ("id","prompt","expected")} for r in result["predictions"]]
+            if joined != examples or result["model_revision"] != contract["model_revision"]:
+                raise ValueError("Evaluation predictions differ from the held-out input or model pin")
+            if result["total"] != len(examples) or result["correct"] != sum(r["prediction"] == r["expected"] for r in result["predictions"]):
+                raise ValueError("Evaluation score counts are inconsistent")
         if proof["contract_hash"] != contract_hash or summary["contract_hash"] != contract_hash:
             raise ValueError("Run contract and checkpoint proof do not match")
         if summary["global_step"] != proof["global_step"]:

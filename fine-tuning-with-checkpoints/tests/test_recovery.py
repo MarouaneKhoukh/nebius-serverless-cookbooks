@@ -10,7 +10,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 from checkpoint_store import (ensure_contract, latest_checkpoint, publish_checkpoint,
     restore_checkpoint, safe_relative, verify_published)
-from evaluate import read_examples, score
+from evaluate import LABELS, read_examples, score, normalize
+from data_prep import select_rows
 
 
 def fixture(path, step):
@@ -66,21 +67,30 @@ class RecoveryTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 safe_relative(value)
 
-    def test_data_is_separate_balanced_and_small_enough_to_inject(self):
-        train_path = ROOT / "data/train.jsonl"
-        train = [json.loads(line) for line in train_path.read_text().splitlines()]
-        test = read_examples(ROOT / "data/test.csv")
-        self.assertEqual(len(train), 120)
-        self.assertEqual(len(test), 30)
-        self.assertLessEqual(train_path.stat().st_size, 65536)
-        prompts = {row["messages"][1]["content"] for row in train}
-        self.assertEqual(len(prompts), len(train))
-        self.assertFalse(prompts & {row["prompt"] for row in test})
-        for label in ["billing", "technical", "account"]:
-            self.assertEqual(sum(row["messages"][-1]["content"] == label for row in train), 40)
+    def test_real_data_selection_is_balanced_deterministic_and_disjoint(self):
+        labels=["Refund_not_showing_up","reverted_card_payment?"]
+        train=[{"id":f"train-{i}-{j}","prompt":f"original training {i} {j}","expected":label}
+               for i,label in enumerate(labels) for j in range(5)]
+        test=[{"id":f"test-{i}-{j}","prompt":f"original test {i} {j}","expected":label}
+              for i,label in enumerate(labels) for j in range(3)]
+        train.extend([{**test[0],"id":"overlap-train"},{**train[0],"id":"duplicate-train"}])
+        chosen,evaluation,audit=select_rows(train,test,labels,2,1,42)
+        self.assertEqual((chosen,evaluation,audit),select_rows(train,test,labels,2,1,42))
+        self.assertEqual(len(chosen),4)
+        self.assertEqual(len(evaluation),2)
+        self.assertEqual(audit["excluded_train_rows_matching_official_test_text"],1)
+        self.assertEqual(audit["excluded_duplicate_train_texts"],1)
+        self.assertFalse({r["prompt"] for r in chosen}&{r["prompt"] for r in evaluation})
+        for label in labels:self.assertEqual(sum(r["expected"]==label for r in chosen),2)
+
+    def test_taxonomy_case_and_punctuation_are_preserved(self):
+        self.assertEqual(len(LABELS),77)
+        self.assertIn("Refund_not_showing_up",LABELS)
+        self.assertIn("reverted_card_payment?",LABELS)
+        self.assertEqual(normalize('"Refund_not_showing_up"'),"Refund_not_showing_up")
 
     def test_invalid_label_is_counted_wrong_not_guessed(self):
-        result = score([{"id": "one", "prompt": "Example", "expected": "billing"}], ["Maybe billing or account"])
+        result = score([{"id": "one", "prompt": "Example", "expected": "card_arrival"}], ["Maybe billing or account"])
         self.assertEqual(result["correct"], 0)
         self.assertEqual(result["invalid_predictions"], 1)
 

@@ -1,0 +1,5 @@
+{
+  "train_per_intent": 20,
+  "test_per_intent": 4,
+  "seed": 42
+}

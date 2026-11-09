@@ -1,0 +1,53 @@
+base_model: Qwen/Qwen3-4B-Instruct-2507
+revision_of_model: cdbee75f17c01a7cc42f958dc650907174af0554
+model_type: AutoModelForCausalLM
+tokenizer_type: AutoTokenizer
+trust_remote_code: false
+adapter: lora
+load_in_4bit: false
+load_in_8bit: false
+bf16: true
+fp16: false
+tf32: true
+chat_template: tokenizer_default
+datasets:
+- path: /workspace/spot-cookbook/inputs/train.jsonl
+  type: chat_template
+  field_messages: messages
+  roles_to_train:
+  - assistant
+  train_on_eos: turn
+val_set_size: 0
+dataset_prepared_path: /workspace/spot-cookbook/prepared
+sequence_len: 1024
+sample_packing: false
+pad_to_sequence_len: true
+train_on_inputs: false
+micro_batch_size: 4
+gradient_accumulation_steps: 4
+gradient_checkpointing: true
+learning_rate: 0.0002
+lr_scheduler: cosine
+warmup_steps: 2
+max_steps: 100
+seed: 42
+logging_steps: 1
+save_steps: 50
+save_strategy: steps
+save_total_limit: 2
+save_only_model: false
+output_dir: /workspace/spot-cookbook/training
+optimizer: adamw_torch
+flash_attention: false
+eval_strategy: 'no'
+lora_r: 8
+lora_alpha: 16
+lora_dropout: 0.05
+lora_target_modules:
+- q_proj
+- k_proj
+- v_proj
+- o_proj
+plugins:
+- spot_checkpoint_plugin.SpotCheckpointPlugin
+resume_from_checkpoint: /workspace/spot-cookbook/restored/checkpoint-50

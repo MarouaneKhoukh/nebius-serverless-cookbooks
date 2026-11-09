@@ -16,7 +16,7 @@ The serving configuration names the model without pinning its weights revision. 
 
 ## Corpus and query provenance
 
-The official plain-text archive SHA-256 is `2522c3aee3c6617e99f7db5e43356471108739e35fe8a97b5d10da33832ff141`. The selected source documents total 2,304,869 bytes. Preparation verified the archive, individual files and retained PSF license against [the source manifest](data/source.json).
+The official plain-text archive SHA-256 is `2522c3aee3c6617e99f7db5e43356471108739e35fe8a97b5d10da33832ff141`. The selected source documents total 2,304,869 bytes. Preparation verified the archive, individual files and retained PSF license against [the source manifest](data/source.json). A second preparation run downloaded the official archive into an empty cache, verified the same checksum and prepared all 55 documents successfully.
 
 The twelve questions are original text from the Python Library and Extension FAQ. FAQ answers are excluded from the indexed corpus. Expected reference modules were curated from those answers and restricted to this collection. These are source-level diagnostic checks, not independently judged passage relevance or generated-answer scores. Different retrieved reference documents can also be useful.
 
@@ -49,7 +49,7 @@ The [recorded reports](docs/sample-results/) include every query's returned pass
 
 ## Offline checks
 
-The **30 offline checks pass**. They cover archive/document checksums, retained license, cache reuse, unsafe paths, changed inputs, native vector validation, API response ordering, partial-batch recovery, source-level scoring, export alignment and HTML escaping. Fixture vectors are separate from the actual model results above.
+The **31 offline checks pass**. They cover archive/document checksums, retained license, cache reuse, unsafe paths, changed inputs, native vector validation, API response ordering, partial-batch recovery, source-level scoring, export alignment, HTML escaping and offline report rendering without changing saved vectors or results. Fixture vectors are separate from the actual model results above.
 
 ```bash
 python3 -m unittest discover -s tests -q

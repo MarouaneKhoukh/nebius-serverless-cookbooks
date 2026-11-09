@@ -1,0 +1,309 @@
+id,prompt,expected,prediction,response,valid_label,correct
+banking77-test-000006,When will I get my card?,card_arrival,card_arrival,card_arrival,True,True
+banking77-test-000040,Where is the tracking number for the card you sent me?,card_arrival,card_arrival,card_arrival,True,True
+banking77-test-000022,Status of the card I ordered.,card_arrival,card_arrival,card_arrival,True,True
+banking77-test-000030,i want to track the card you sent,card_arrival,card_arrival,card_arrival,True,True
+banking77-test-000044,"I have received my card, can you help me put it in the app?",card_linking,card_linking,card_linking,True,True
+banking77-test-000073,Can I reactivate a card I thought I lost?,card_linking,lost_or_stolen_card,lost_or_stolen_card,True,False
+banking77-test-000069,I would like to link my card. How do I do it?,card_linking,card_linking,card_linking,True,True
+banking77-test-000072,Is there a way to make my old card usable with the app?,card_linking,card_linking,card_linking,True,True
+banking77-test-000097,Can you tell me where you get your exchange rates?,exchange_rate,exchange_rate,exchange_rate,True,True
+banking77-test-000117,What kind of foreign exchange rate will I get when I exchange my money?,exchange_rate,exchange_rate,exchange_rate,True,True
+banking77-test-000084,Where do you guys acquire your exchange rate?,exchange_rate,exchange_rate,exchange_rate,True,True
+banking77-test-000099,What currencies is an exchange rate calculated in?,exchange_rate,exchange_rate,exchange_rate,True,True
+banking77-test-000126,This rate is too low. Are you sure your using the right exchange rate.,card_payment_wrong_exchange_rate,card_payment_wrong_exchange_rate,card_payment_wrong_exchange_rate,True,True
+banking77-test-000142,"When I made a purchase last Saturday, I was charged extra. Did I receive the right exchange rate?",card_payment_wrong_exchange_rate,card_payment_wrong_exchange_rate,card_payment_wrong_exchange_rate,True,True
+banking77-test-000153,I paid for something in foreign currency but noticed the exchange rate is incorrect.,card_payment_wrong_exchange_rate,card_payment_wrong_exchange_rate,card_payment_wrong_exchange_rate,True,True
+banking77-test-000145,"Hi, I have been overcharged for my payment last Saturday. I guess exchange rate was wrong.",card_payment_wrong_exchange_rate,card_payment_wrong_exchange_rate,card_payment_wrong_exchange_rate,True,True
+banking77-test-000182,I got a extra €1 fee in my statement,extra_charge_on_statement,extra_charge_on_statement,extra_charge_on_statement,True,True
+banking77-test-000192,There is a transaction for $1 and I don't know why it was charged.,extra_charge_on_statement,transaction_charged_twice,transaction_charged_twice,True,False
+banking77-test-000176,There is an extra $1 charge,extra_charge_on_statement,extra_charge_on_statement,extra_charge_on_statement,True,True
+banking77-test-000193,"Can you help me with a weird charge?  It's a pound charge that never goes away from the statement view on the app I'm using.  It's not described as anything but ""Pending"", and that status has never changed during the last two days.",extra_charge_on_statement,pending_card_payment,pending_card_payment,True,False
+banking77-test-000220,"Hey, my card was declined at an ATM in the city centre theatre. My account says the transaction is pending, though. I didn't get the money, though, so what does that mean?",pending_cash_withdrawal,declined_cash_withdrawal,declined_cash_withdrawal,True,False
+banking77-test-000215,I am still waiting for a cash withdrawal to show,pending_cash_withdrawal,pending_cash_withdrawal,pending_cash_withdrawal,True,True
+banking77-test-000231,Cash withdrawal still pending?,pending_cash_withdrawal,pending_cash_withdrawal,pending_cash_withdrawal,True,True
+banking77-test-000218,Why is my ATM cash withdrawal showing up as a pending transaction?,pending_cash_withdrawal,pending_cash_withdrawal,pending_cash_withdrawal,True,True
+banking77-test-000247,"There is an incoming payment into my account, but it is deactivated. Will they still be processed?",fiat_currency_support,receiving_money,receiving_money,True,False
+banking77-test-000251,Where can I exchange my money for EUR?,fiat_currency_support,exchange_via_app,exchange_via_app,True,False
+banking77-test-000256,How do I change currencies to euros?,fiat_currency_support,fiat_currency_support,fiat_currency_support,True,True
+banking77-test-000275,How man currencies can I hold?,fiat_currency_support,fiat_currency_support,fiat_currency_support,True,True
+banking77-test-000299,How long does it take to get my card? Can I choose when to receive it?,card_delivery_estimate,card_delivery_estimate,card_delivery_estimate,True,True
+banking77-test-000304,Whats the delivery time to the United States?,card_delivery_estimate,card_delivery_estimate,card_delivery_estimate,True,True
+banking77-test-000308,How long does shipping take to get to a US destination?,card_delivery_estimate,card_delivery_estimate,card_delivery_estimate,True,True
+banking77-test-000316,What's the U.S. Delivery time?,card_delivery_estimate,card_delivery_estimate,card_delivery_estimate,True,True
+banking77-test-000355,Can you explain where I can find the auto-top option?,automatic_top_up,automatic_top_up,automatic_top_up,True,True
+banking77-test-000352,Can I be topped up once I hit a certain balance?,automatic_top_up,automatic_top_up,automatic_top_up,True,True
+banking77-test-000339,How can I top up automatically?,automatic_top_up,automatic_top_up,automatic_top_up,True,True
+banking77-test-000324,"I'm running out of money, can I  auto top up?",automatic_top_up,automatic_top_up,automatic_top_up,True,True
+banking77-test-000381,My actual card isn't working.,card_not_working,card_not_working,card_not_working,True,True
+banking77-test-000370,My card does not work,card_not_working,card_not_working,card_not_working,True,True
+banking77-test-000389,Need help with my card. It's not working.,card_not_working,card_not_working,card_not_working,True,True
+banking77-test-000398,Nothing goes through on my card.,card_not_working,card_not_working,card_not_working,True,True
+banking77-test-000402,Tell me how I can exchange between different currency.,exchange_via_app,exchange_via_app,exchange_via_app,True,True
+banking77-test-000427,Can am I able to exchange currencies?,exchange_via_app,exchange_via_app,exchange_via_app,True,True
+banking77-test-000437,How do I exchange currency?,exchange_via_app,exchange_via_app,exchange_via_app,True,True
+banking77-test-000439,Can I exchange currencies with my account?,exchange_via_app,exchange_via_app,exchange_via_app,True,True
+banking77-test-000445,My card is lost! What can I do?,lost_or_stolen_card,lost_or_stolen_card,lost_or_stolen_card,True,True
+banking77-test-000446,I lost my card,lost_or_stolen_card,lost_or_stolen_card,lost_or_stolen_card,True,True
+banking77-test-000459,What should I do if I lost my card?,lost_or_stolen_card,lost_or_stolen_card,lost_or_stolen_card,True,True
+banking77-test-000479,My card got stolen!,lost_or_stolen_card,lost_or_stolen_card,lost_or_stolen_card,True,True
+banking77-test-000489,What age do I have to be?,age_limit,age_limit,age_limit,True,True
+banking77-test-000517,How old does my kids need to be to open an account?,age_limit,age_limit,age_limit,True,True
+banking77-test-000497,Can I open a bank account for my newborn baby?,age_limit,age_limit,age_limit,True,True
+banking77-test-000505,Can my children have their own account?,age_limit,age_limit,age_limit,True,True
+banking77-test-000554,Can I unblock my pin?,pin_blocked,pin_blocked,pin_blocked,True,True
+banking77-test-000525,How do I unblock my pin after entering it wrong too many times?,pin_blocked,pin_blocked,pin_blocked,True,True
+banking77-test-000535,What do I do if the bank machine won't accept my PIN attempts anymore?,pin_blocked,pin_blocked,pin_blocked,True,True
+banking77-test-000528,"How do I reset my PIN, I can't seem to use my card?",pin_blocked,pin_blocked,pin_blocked,True,True
+banking77-test-000561,Are contactless payments enabled on my new card?,contactless_not_working,contactless_not_working,contactless_not_working,True,True
+banking77-test-000566,I tried to pay contactless at the bus today and it didn't work. Any ideas why?,contactless_not_working,contactless_not_working,contactless_not_working,True,True
+banking77-test-000590,I wanted to use my contactless at the metro today but it didn't accept it!,contactless_not_working,contactless_not_working,contactless_not_working,True,True
+banking77-test-000564,"I don't know what's wrong, my contactless stopped working. Tried it in a few different places today and it didn't work in any of them.",contactless_not_working,contactless_not_working,contactless_not_working,True,True
+banking77-test-000626,Is there a charge for topping up by transfer?,top_up_by_bank_transfer_charge,top_up_by_bank_transfer_charge,top_up_by_bank_transfer_charge,True,True
+banking77-test-000619,What are the fees for top-ups?,top_up_by_bank_transfer_charge,top_up_by_card_charge,top_up_by_card_charge,True,False
+banking77-test-000629,Will I be charged for a SEPA transfer?,top_up_by_bank_transfer_charge,top_up_by_bank_transfer_charge,top_up_by_bank_transfer_charge,True,True
+banking77-test-000635,Will I be charged a fee if I receive a SEPA transfer,top_up_by_bank_transfer_charge,top_up_by_bank_transfer_charge,top_up_by_bank_transfer_charge,True,True
+banking77-test-000666,"Hi I'm a new customer and tried topping up for the first time today, seems it's not working, the thing shows up as pending since half an hour already! Please fix it!",pending_top_up,pending_top_up,pending_top_up,True,True
+banking77-test-000679,"The top-up has a definite problem! I regularly use your service and haven't had a problem before, but now the top-up just shows pending. Please tell my why it continues to show pending.",pending_top_up,pending_top_up,pending_top_up,True,True
+banking77-test-000670,What does it mean when my top up is saying  still pending?,pending_top_up,pending_top_up,pending_top_up,True,True
+banking77-test-000662,top up did not complete,pending_top_up,top_up_failed,top_up_failed,True,False
+banking77-test-000709,Can a transaction be cancelled?,cancel_transfer,cancel_transfer,cancel_transfer,True,True
+banking77-test-000701,I transferred the wrong amount and would like to cancel the transaction.,cancel_transfer,cancel_transfer,cancel_transfer,True,True
+banking77-test-000707,The transfer I just made needs to be cancelled right now. It was my mistake. Please help me cancel it before it goes through!,cancel_transfer,cancel_transfer,cancel_transfer,True,True
+banking77-test-000714,I made an error in payment yesterday and I need it fixed asap because it's for my rent tomorrow.,cancel_transfer,request_refund,request_refund,True,False
+banking77-test-000744,What is the top-ups limit?,top_up_limits,top_up_limits,top_up_limits,True,True
+banking77-test-000722,Am I free to top-up as much as I want?,top_up_limits,top_up_limits,top_up_limits,True,True
+banking77-test-000743,Is there a limit on top-ups?,top_up_limits,top_up_limits,top_up_limits,True,True
+banking77-test-000741,Can you tell me the limits for top ups?,top_up_limits,top_up_limits,top_up_limits,True,True
+banking77-test-000792,"I tried to take out cash but the amount isn't right, so what do I do?",wrong_amount_of_cash_received,wrong_amount_of_cash_received,wrong_amount_of_cash_received,True,True
+banking77-test-000796,The ATM didn't give me the the withdraw amount requested.,wrong_amount_of_cash_received,wrong_amount_of_cash_received,wrong_amount_of_cash_received,True,True
+banking77-test-000773,"How can I request cash back? The ATM just gave me the wrong amount, the app shows the amount that I've been actually charged though...",wrong_amount_of_cash_received,wrong_amount_of_cash_received,wrong_amount_of_cash_received,True,True
+banking77-test-000770,"Hi. I just withdrew cash from an ATM and received the wrong amount. However, my app shows the correct amount I withdrew. How do I get the rest of the cash?",wrong_amount_of_cash_received,wrong_amount_of_cash_received,wrong_amount_of_cash_received,True,True
+banking77-test-000831,Is using my card free?,card_payment_fee_charged,card_payment_fee_charged,card_payment_fee_charged,True,True
+banking77-test-000830,Someone needs to make me aware when there are extra charges for payments. I happened to be looking at the app earlier and noticed a charge associated to a payment that was extra that no one made me aware of before at all.,card_payment_fee_charged,extra_charge_on_statement,extra_charge_on_statement,True,False
+banking77-test-000840,They charged me for paying with my card.,card_payment_fee_charged,card_payment_fee_charged,card_payment_fee_charged,True,True
+banking77-test-000827,Is there a fee when you pay with your card?,card_payment_fee_charged,card_payment_fee_charged,card_payment_fee_charged,True,True
+banking77-test-000861,"Hey, I need some help figuring out way my transfer is not complete yet. My Landlord hasn't got the money yet.She should have received it by now.",transfer_not_received_by_recipient,transfer_not_received_by_recipient,transfer_not_received_by_recipient,True,True
+banking77-test-000870,How long will it take for my transaction to be completed?,transfer_not_received_by_recipient,transfer_timing,transfer_timing,True,False
+banking77-test-000860,I sent money.  They haven't received it.,transfer_not_received_by_recipient,transfer_not_received_by_recipient,transfer_not_received_by_recipient,True,True
+banking77-test-000855,I completed a money transaction but the recipient hasn't received it,transfer_not_received_by_recipient,transfer_not_received_by_recipient,transfer_not_received_by_recipient,True,True
+banking77-test-000892,Will you accept my other card from the U.S.?,supported_cards_and_currencies,supported_cards_and_currencies,supported_cards_and_currencies,True,True
+banking77-test-000912,What cards to do you support to top up.,supported_cards_and_currencies,supported_cards_and_currencies,supported_cards_and_currencies,True,True
+banking77-test-000882,"I need support options, I want to top my card",supported_cards_and_currencies,topping_up_by_card,topping_up_by_card,True,False
+banking77-test-000909,What options do I have in regards to payment?,supported_cards_and_currencies,supported_cards_and_currencies,supported_cards_and_currencies,True,True
+banking77-test-000925,If I don't want a physical card can i get a virtual version?,getting_virtual_card,getting_virtual_card,getting_virtual_card,True,True
+banking77-test-000949,How do I order a virtual card?,getting_virtual_card,getting_virtual_card,getting_virtual_card,True,True
+banking77-test-000935,Is it possible for me to get a virtual card?,getting_virtual_card,getting_virtual_card,getting_virtual_card,True,True
+banking77-test-000930,how do i get a virtual card?,getting_virtual_card,getting_virtual_card,getting_virtual_card,True,True
+banking77-test-000980,"I am traveling to Germany, Will I be able to use my card there?",card_acceptance,card_acceptance,card_acceptance,True,True
+banking77-test-000982,Is there any place I cannot use my card?,card_acceptance,card_acceptance,card_acceptance,True,True
+banking77-test-000979,Which outlets accept my card?,card_acceptance,card_acceptance,card_acceptance,True,True
+banking77-test-000975,What places will accept my card for payment?,card_acceptance,card_acceptance,card_acceptance,True,True
+banking77-test-001029,Was my top up reversed?,top_up_reverted,top_up_reverted,top_up_reverted,True,True
+banking77-test-001040,I'd like to know why my top-up was canceled please.,top_up_reverted,top_up_reverted,top_up_reverted,True,True
+banking77-test-001031,Do you know if my top-up has been cancelled?,top_up_reverted,top_up_reverted,top_up_reverted,True,True
+banking77-test-001003,Is it possible to tell if my top up has reverted?,top_up_reverted,top_up_reverted,top_up_reverted,True,True
+banking77-test-001052,"When I deposit cheques and cash, my balance does not update.",balance_not_updated_after_cheque_or_cash_deposit,balance_not_updated_after_cheque_or_cash_deposit,balance_not_updated_after_cheque_or_cash_deposit,True,True
+banking77-test-001068,Why does my account not accept cash deposits?,balance_not_updated_after_cheque_or_cash_deposit,balance_not_updated_after_cheque_or_cash_deposit,balance_not_updated_after_cheque_or_cash_deposit,True,True
+banking77-test-001060,"I Submitted a cheque couple days ago, nothing happened to my account yet.Would you please check What could be the possible issue?",balance_not_updated_after_cheque_or_cash_deposit,balance_not_updated_after_cheque_or_cash_deposit,balance_not_updated_after_cheque_or_cash_deposit,True,True
+banking77-test-001043,Is there a reason why my account isn't updating because I used a check to  balance my account?,balance_not_updated_after_cheque_or_cash_deposit,balance_not_updated_after_cheque_or_cash_deposit,balance_not_updated_after_cheque_or_cash_deposit,True,True
+banking77-test-001103,"I'm concerned about a payment that has recently been made on my card.  I do not recognize the name that the transaction went to, can you help me?",card_payment_not_recognised,card_payment_not_recognised,card_payment_not_recognised,True,True
+banking77-test-001095,I have a payment I didn't do,card_payment_not_recognised,reverted_card_payment?,reverted_card_payment?,True,False
+banking77-test-001086,I did not make this card payment.,card_payment_not_recognised,reverted_card_payment?,reverted_card_payment?,True,False
+banking77-test-001107,I'm not familiar with a card payment.,card_payment_not_recognised,card_payment_not_recognised,card_payment_not_recognised,True,True
+banking77-test-001143,Where can I go to update my personal profile?,edit_personal_details,edit_personal_details,edit_personal_details,True,True
+banking77-test-001134,I need to change my account details,edit_personal_details,edit_personal_details,edit_personal_details,True,True
+banking77-test-001158,How can I edit my personal details?,edit_personal_details,edit_personal_details,edit_personal_details,True,True
+banking77-test-001155,I want to change my name.,edit_personal_details,edit_personal_details,edit_personal_details,True,True
+banking77-test-001174,Why do you need so much information to verify my identity?,why_verify_identity,why_verify_identity,why_verify_identity,True,True
+banking77-test-001175,What is the purpose for the identity check,why_verify_identity,why_verify_identity,why_verify_identity,True,True
+banking77-test-001185,Why do I have to give you all of my identification details?,why_verify_identity,why_verify_identity,why_verify_identity,True,True
+banking77-test-001163,do I need to verify my identity every time I log into my account?,why_verify_identity,why_verify_identity,why_verify_identity,True,True
+banking77-test-001228,How do I show this stupid system that this is really my identity?,unable_to_verify_identity,verify_my_identity,verify_my_identity,True,False
+banking77-test-001201,I cannot verify my identity,unable_to_verify_identity,unable_to_verify_identity,unable_to_verify_identity,True,True
+banking77-test-001206,It is impossible to verify my identity,unable_to_verify_identity,unable_to_verify_identity,unable_to_verify_identity,True,True
+banking77-test-001224,The app doesn't believe that I am me,unable_to_verify_identity,unable_to_verify_identity,unable_to_verify_identity,True,True
+banking77-test-001251,Where in the app can I find my PIN?,get_physical_card,pin_blocked,pin_blocked,True,False
+banking77-test-001242,Is the PIN delivered separately?,get_physical_card,card_delivery_estimate,card_delivery_estimate,True,False
+banking77-test-001252,I just got my new card but am not sure how to check its PIN.,get_physical_card,pin_blocked,pin_blocked,True,False
+banking77-test-001270,I need my PIN,get_physical_card,pin_blocked,pin_blocked,True,False
+banking77-test-001286,Do you guys accept mastercard or visa?,visa_or_mastercard,visa_or_mastercard,visa_or_mastercard,True,True
+banking77-test-001319,Do you use Mastercard or Visa?,visa_or_mastercard,visa_or_mastercard,visa_or_mastercard,True,True
+banking77-test-001298,What are the available cards?,visa_or_mastercard,supported_cards_and_currencies,supported_cards_and_currencies,True,False
+banking77-test-001293,Do I get a choice between Visa and Mastercard?,visa_or_mastercard,visa_or_mastercard,visa_or_mastercard,True,True
+banking77-test-001348,Cannot access my top up.,topping_up_by_card,top_up_reverted,top_up_reverted,True,False
+banking77-test-001340,Will my friend be able to top off my account?,topping_up_by_card,receiving_money,receiving_money,True,False
+banking77-test-001335,I have friends that would like to top-up my account is that possible?,topping_up_by_card,receiving_money,receiving_money,True,False
+banking77-test-001321,How can I top up my account with a card?,topping_up_by_card,topping_up_by_card,topping_up_by_card,True,True
+banking77-test-001380,I have to have several disposable cards per day.,disposable_card_limits,disposable_card_limits,disposable_card_limits,True,True
+banking77-test-001391,How many disposable cards can I own?,disposable_card_limits,disposable_card_limits,disposable_card_limits,True,True
+banking77-test-001366,what is the disposable cards limit?,disposable_card_limits,disposable_card_limits,disposable_card_limits,True,True
+banking77-test-001363,"I need to use my disposable card multiple times a day, is there a cutoff limit?",disposable_card_limits,disposable_card_limits,disposable_card_limits,True,True
+banking77-test-001416,"I don't recognize some of the transactions on my card, I think someone must have gotten my card info and used it.",compromised_card,compromised_card,compromised_card,True,True
+banking77-test-001438,What should I do if I think someone is using my card.,compromised_card,compromised_card,compromised_card,True,True
+banking77-test-001418,My card is being used online to make a bunch of purchases! Someone else is using it fraudulently. Can you help me freeze it?,compromised_card,compromised_card,compromised_card,True,True
+banking77-test-001425,"The transactions showing up are strange, I think my card was used without me knowing.",compromised_card,compromised_card,compromised_card,True,True
+banking77-test-001461,Can I get cash with this card anywhere?,atm_support,card_acceptance,card_acceptance,True,False
+banking77-test-001449,Where are the locations of ATMs that accept this card?,atm_support,atm_support,atm_support,True,True
+banking77-test-001448,Is there any nearby ATM's?,atm_support,atm_support,atm_support,True,True
+banking77-test-001465,Where is the nearest bank machine?,atm_support,atm_support,atm_support,True,True
+banking77-test-001488,There's a Direct Debit payment in my account that I didn't make,direct_debit_payment_not_recognised,direct_debit_payment_not_recognised,direct_debit_payment_not_recognised,True,True
+banking77-test-001512,I don't recognize a debit payment that was made and would like to find out about the payment.,direct_debit_payment_not_recognised,direct_debit_payment_not_recognised,direct_debit_payment_not_recognised,True,True
+banking77-test-001519,There's a direct debit I wish to dispute,direct_debit_payment_not_recognised,direct_debit_payment_not_recognised,direct_debit_payment_not_recognised,True,True
+banking77-test-001509,I didn't make this direct debit transaction,direct_debit_payment_not_recognised,direct_debit_payment_not_recognised,direct_debit_payment_not_recognised,True,True
+banking77-test-001529,"How do I reset a forgotten passcode, please?",passcode_forgotten,passcode_forgotten,passcode_forgotten,True,True
+banking77-test-001551,Can you help me reset my password?,passcode_forgotten,passcode_forgotten,passcode_forgotten,True,True
+banking77-test-001539,Help me reset the passcode.,passcode_forgotten,passcode_forgotten,passcode_forgotten,True,True
+banking77-test-001534,I no longer have my passcode.,passcode_forgotten,passcode_forgotten,passcode_forgotten,True,True
+banking77-test-001565,Why was my ATM transaction cancelled?,declined_cash_withdrawal,declined_cash_withdrawal,declined_cash_withdrawal,True,True
+banking77-test-001600,atm would not give me cash,declined_cash_withdrawal,declined_cash_withdrawal,declined_cash_withdrawal,True,True
+banking77-test-001570,"I need your help to check my account, please! My card keeps being declined at the ATM, and I've already tried two different ones!",declined_cash_withdrawal,declined_cash_withdrawal,declined_cash_withdrawal,True,True
+banking77-test-001584,How come I can't take money out of the ATM?,declined_cash_withdrawal,declined_cash_withdrawal,declined_cash_withdrawal,True,True
+banking77-test-001602,Why is my payment pending?,pending_card_payment,pending_card_payment,pending_card_payment,True,True
+banking77-test-001627,"I was double charged, and the second charge is showing as ""pending"". How long will it be before I get my money back once the second charge has been refunded?",pending_card_payment,transaction_charged_twice,transaction_charged_twice,True,False
+banking77-test-001619,Why is there a pending transaction on my card?,pending_card_payment,pending_card_payment,pending_card_payment,True,True
+banking77-test-001639,I have a pending payment in my account that I paid a while back ago and it still hasnt gone through. Why would it show pending for so long?,pending_card_payment,pending_card_payment,pending_card_payment,True,True
+banking77-test-001646,I can't find my phone.,lost_or_stolen_phone,lost_or_stolen_phone,lost_or_stolen_phone,True,True
+banking77-test-001678,How do I use the app if I don't have my phone with me?,lost_or_stolen_phone,lost_or_stolen_phone,lost_or_stolen_phone,True,True
+banking77-test-001667,Can I still use the app if I switched phones?,lost_or_stolen_phone,lost_or_stolen_phone,lost_or_stolen_phone,True,True
+banking77-test-001660,"lost phone, can i still access account?",lost_or_stolen_phone,lost_or_stolen_phone,lost_or_stolen_phone,True,True
+banking77-test-001694,How do I apply for a refund?,request_refund,request_refund,request_refund,True,True
+banking77-test-001709,I am not Happy with this product can i get a refund?,request_refund,request_refund,request_refund,True,True
+banking77-test-001707,Hello I changed my mind and really need a refund on one of things I bought recently. Can you please cancel the transaction and get my money back. Please it's urgent.,request_refund,request_refund,request_refund,True,True
+banking77-test-001702,Can you cancel my purchase?,request_refund,request_refund,request_refund,True,True
+banking77-test-001751,My transfer has been declined and I know it should have went through.,declined_transfer,declined_transfer,declined_transfer,True,True
+banking77-test-001731,The card got declined twice when I tried to use it to buy something online yesterday.,declined_transfer,declined_card_payment,declined_card_payment,True,False
+banking77-test-001756,I tried to buy something online yesterday but it wouldn't stop saying declined. Tried again today but same thing happened. What's Broken?,declined_transfer,declined_card_payment,declined_card_payment,True,False
+banking77-test-001735,How do I contact customer support about a transfer?,declined_transfer,contactless_not_working,contactless_not_working,True,False
+banking77-test-001795,Why doesn't a return show up im my account from a purchase I made?,Refund_not_showing_up,request_refund,request_refund,True,False
+banking77-test-001792,Where is my refund? I have been checking my account all day.,Refund_not_showing_up,Refund_not_showing_up,Refund_not_showing_up,True,True
+banking77-test-001791,"I did what you told me earlier and contacted the seller for a refund directly, but nothing is happening! It's been a week and I still haven't got anything. Please just give me back my money",Refund_not_showing_up,request_refund,request_refund,True,False
+banking77-test-001800,I should have received a refund however it is not showing on my statement,Refund_not_showing_up,Refund_not_showing_up,Refund_not_showing_up,True,True
+banking77-test-001834,"I finally got my new card and was very excited to use it today. However, my payment kept declining. What is happening?",declined_card_payment,declined_card_payment,declined_card_payment,True,True
+banking77-test-001825,I have no idea why my card payment did not work.,declined_card_payment,declined_card_payment,declined_card_payment,True,True
+banking77-test-001817,"I have a card payment that was declined, but why?",declined_card_payment,declined_card_payment,declined_card_payment,True,True
+banking77-test-001809,Can you look at my account ans see why my card was declined,declined_card_payment,declined_card_payment,declined_card_payment,True,True
+banking77-test-001849,I had made a transfer but its still pending.,pending_transfer,pending_transfer,pending_transfer,True,True
+banking77-test-001878,My transfer hasn't gone through yet.,pending_transfer,pending_transfer,pending_transfer,True,True
+banking77-test-001855,My transfer is still pending and I know the account numbers are correct.  Please help.,pending_transfer,pending_transfer,pending_transfer,True,True
+banking77-test-001852,How long can an EU transfer take?,pending_transfer,transfer_timing,transfer_timing,True,False
+banking77-test-001897,I need your help in deleting my account.,terminate_account,terminate_account,terminate_account,True,True
+banking77-test-001899,Delete this account!,terminate_account,terminate_account,terminate_account,True,True
+banking77-test-001887,Please delete my account right now!,terminate_account,terminate_account,terminate_account,True,True
+banking77-test-001881,Can you remove my account please?,terminate_account,terminate_account,terminate_account,True,True
+banking77-test-001921,"What do I do if an ATM ""stole"" my card?",card_swallowed,card_swallowed,card_swallowed,True,True
+banking77-test-001937,The ATM won't give me my card back.,card_swallowed,card_swallowed,card_swallowed,True,True
+banking77-test-001957,The ATM won't give back my card,card_swallowed,card_swallowed,card_swallowed,True,True
+banking77-test-001958,I was at an ATM and it swallowed my card.,card_swallowed,card_swallowed,card_swallowed,True,True
+banking77-test-001989,Can you explain why there is a payment showing twice?,transaction_charged_twice,transaction_charged_twice,transaction_charged_twice,True,True
+banking77-test-001972,I have been charged twice,transaction_charged_twice,transaction_charged_twice,transaction_charged_twice,True,True
+banking77-test-001973,It appears that I am being double charged for some items that I have purchased this past week.  Please review and correct.,transaction_charged_twice,transaction_charged_twice,transaction_charged_twice,True,True
+banking77-test-001999,I made a payment that got charged twice instead of once.,transaction_charged_twice,transaction_charged_twice,transaction_charged_twice,True,True
+banking77-test-002024,I have to verify the source of my funds,verify_source_of_funds,verify_source_of_funds,verify_source_of_funds,True,True
+banking77-test-002038,How do I become aware of where my funds come from?,verify_source_of_funds,verify_source_of_funds,verify_source_of_funds,True,True
+banking77-test-002040,What do I need to do to verify the source of my funds?,verify_source_of_funds,verify_source_of_funds,verify_source_of_funds,True,True
+banking77-test-002008,I would like to see the source of my money.,verify_source_of_funds,verify_source_of_funds,verify_source_of_funds,True,True
+banking77-test-002078,There is an important thing from China that I need to transfer. Approximately how long will this take?,transfer_timing,transfer_timing,transfer_timing,True,True
+banking77-test-002059,How long is my Europe transfer wait?,transfer_timing,transfer_timing,transfer_timing,True,True
+banking77-test-002045,How many days does it take until funds are in my account?,transfer_timing,balance_not_updated_after_bank_transfer,balance_not_updated_after_bank_transfer,True,False
+banking77-test-002041,What is the number of days I have to wait for my Europe transfer?,transfer_timing,transfer_timing,transfer_timing,True,True
+banking77-test-002120,Why has payment been returned?,reverted_card_payment?,declined_card_payment,declined_card_payment,True,False
+banking77-test-002086,I made a payment but the app reverted the payment.,reverted_card_payment?,reverted_card_payment?,reverted_card_payment?,True,True
+banking77-test-002106,"There must be an issue, why has my card been cancelled?",reverted_card_payment?,card_not_working,card_not_working,True,False
+banking77-test-002114,I did a payment but the app reverted it,reverted_card_payment?,reverted_card_payment?,reverted_card_payment?,True,True
+banking77-test-002130,"I desperately need to change my PIN, but I'm overseas on vacation right now. How can I do this?",change_pin,change_pin,change_pin,True,True
+banking77-test-002145,How do I change my PIN?,change_pin,change_pin,change_pin,True,True
+banking77-test-002129,I want to set a new PIN,change_pin,change_pin,change_pin,True,True
+banking77-test-002126,How might  I change my PIN?,change_pin,change_pin,change_pin,True,True
+banking77-test-002182,I couldn't do a transfer to an account,beneficiary_not_allowed,failed_transfer,failed_transfer,True,False
+banking77-test-002189,"My beneficiary has been denied, is this normal?",beneficiary_not_allowed,beneficiary_not_allowed,beneficiary_not_allowed,True,True
+banking77-test-002199,i tried to make a transfer to a beneficiary and it didn't go through,beneficiary_not_allowed,beneficiary_not_allowed,beneficiary_not_allowed,True,True
+banking77-test-002181,How come I'm not allowed to transfer funds right now? I just keep getting an error message.,beneficiary_not_allowed,beneficiary_not_allowed,beneficiary_not_allowed,True,True
+banking77-test-002219,Is there a transfer fee?,transfer_fee_charged,transfer_fee_charged,transfer_fee_charged,True,True
+banking77-test-002218,I was charged more when I transferred!,transfer_fee_charged,transfer_fee_charged,transfer_fee_charged,True,True
+banking77-test-002232,In the past month I often used this account to manage payments for my new holiday villa. Now all of a sudden your fees have increased exorbitantly! Don't you have a rewards programme for frequent users?,transfer_fee_charged,card_payment_fee_charged,card_payment_fee_charged,True,False
+banking77-test-002222,"My receipt shows an extra charge on my transfer, why is this?",transfer_fee_charged,extra_charge_on_statement,extra_charge_on_statement,True,False
+banking77-test-002246,Is there a problem with receiving my salary in GBP?,receiving_money,receiving_money,receiving_money,True,True
+banking77-test-002252,How do people send me money?,receiving_money,receiving_money,receiving_money,True,True
+banking77-test-002276,Can I get paid in a different currency?,receiving_money,receiving_money,receiving_money,True,True
+banking77-test-002263,Is it possible to deposit money in GBP?,receiving_money,fiat_currency_support,fiat_currency_support,True,False
+banking77-test-002290,My transfer didn't go through.,failed_transfer,failed_transfer,failed_transfer,True,True
+banking77-test-002306,What is stopping my money from transferring?,failed_transfer,failed_transfer,failed_transfer,True,True
+banking77-test-002293,"I transferred my funds, why did it not go through?",failed_transfer,failed_transfer,failed_transfer,True,True
+banking77-test-002313,"I've now been trying to do a really standard transfer 5 times already. What's going on, is your system broken or something?!",failed_transfer,failed_transfer,failed_transfer,True,True
+banking77-test-002351,I want to transfer from accounts in order to Top up. What are the steps necessary.,transfer_into_account,transfer_into_account,transfer_into_account,True,True
+banking77-test-002322,"I'm out of money, can I add money with my bank?",transfer_into_account,top_up_by_bank_transfer_charge,top_up_by_bank_transfer_charge,True,False
+banking77-test-002326,"I need to transfer money into my account, how do I go about doing this?",transfer_into_account,transfer_into_account,transfer_into_account,True,True
+banking77-test-002341,How can I fund my top-up account using my bank account?,transfer_into_account,top_up_by_bank_transfer_charge,top_up_by_bank_transfer_charge,True,False
+banking77-test-002366,What are the benefits to verifying the top-up?,verify_top_up,verify_top_up,verify_top_up,True,True
+banking77-test-002392,Can I verify a top-up and what card is used?,verify_top_up,verify_top_up,verify_top_up,True,True
+banking77-test-002389,What is the importance of verifying the top-up?,verify_top_up,verify_top_up,verify_top_up,True,True
+banking77-test-002379,Where's the verification code for the top-up card?,verify_top_up,verify_top_up,verify_top_up,True,True
+banking77-test-002429,May I have a second card?,getting_spare_card,getting_spare_card,getting_spare_card,True,True
+banking77-test-002428,Am I allowed to give my daughter one of my cards to use?,getting_spare_card,age_limit,age_limit,True,False
+banking77-test-002431,Are there restrictions for ordering extra cards?,getting_spare_card,getting_spare_card,getting_spare_card,True,True
+banking77-test-002422,Can I order extra cards?,getting_spare_card,getting_spare_card,getting_spare_card,True,True
+banking77-test-002451,Where do I locate topping up with cash.,top_up_by_cash_or_cheque,top_up_by_cash_or_cheque,top_up_by_cash_or_cheque,True,True
+banking77-test-002446,Is there an option to top up a with cheque?,top_up_by_cash_or_cheque,top_up_by_cash_or_cheque,top_up_by_cash_or_cheque,True,True
+banking77-test-002475,I want to do a cash top-up,top_up_by_cash_or_cheque,top_up_by_cash_or_cheque,top_up_by_cash_or_cheque,True,True
+banking77-test-002469,how come i can't find anywhere to load using cash,top_up_by_cash_or_cheque,top_up_by_cash_or_cheque,top_up_by_cash_or_cheque,True,True
+banking77-test-002507,Where can my card be delivered?,order_physical_card,card_delivery_estimate,card_delivery_estimate,True,False
+banking77-test-002509,Where do I order my card?,order_physical_card,order_physical_card,order_physical_card,True,True
+banking77-test-002493,"For physical cards, do you charge?",order_physical_card,top_up_by_cash_or_cheque,top_up_by_cash_or_cheque,True,False
+banking77-test-002495,Will I get a real card?,order_physical_card,order_physical_card,order_physical_card,True,True
+banking77-test-002552,How come my disposable virtual card used to pay for a gym subscription got rejected?,virtual_card_not_working,virtual_card_not_working,virtual_card_not_working,True,True
+banking77-test-002546,My disposable card seems not to be working am I doing something wrong?,virtual_card_not_working,virtual_card_not_working,virtual_card_not_working,True,True
+banking77-test-002545,My card is just not working at this time.,virtual_card_not_working,card_not_working,card_not_working,True,False
+banking77-test-002527,Are there restrictions for my disposable card since it does not seem to be working?,virtual_card_not_working,virtual_card_not_working,virtual_card_not_working,True,True
+banking77-test-002599,The cash withdrawal exchange rate is not correct.,wrong_exchange_rate_for_cash_withdrawal,wrong_exchange_rate_for_cash_withdrawal,wrong_exchange_rate_for_cash_withdrawal,True,True
+banking77-test-002569,Why is the exchange rate wrong for my international withdrawal?,wrong_exchange_rate_for_cash_withdrawal,wrong_exchange_rate_for_cash_withdrawal,wrong_exchange_rate_for_cash_withdrawal,True,True
+banking77-test-002561,I did not get the right amount of money when I used a different country's currency.,wrong_exchange_rate_for_cash_withdrawal,wrong_exchange_rate_for_cash_withdrawal,wrong_exchange_rate_for_cash_withdrawal,True,True
+banking77-test-002568,I attempted to get money using a foreign currency at an ATM but the rate was highly inaccurate!,wrong_exchange_rate_for_cash_withdrawal,wrong_exchange_rate_for_cash_withdrawal,wrong_exchange_rate_for_cash_withdrawal,True,True
+banking77-test-002602,Can I create a disposable virtual card?,get_disposable_virtual_card,get_disposable_virtual_card,get_disposable_virtual_card,True,True
+banking77-test-002616,I want to get a disposable virtual card.,get_disposable_virtual_card,get_disposable_virtual_card,get_disposable_virtual_card,True,True
+banking77-test-002633,Where can I get a disposable virtual card?,get_disposable_virtual_card,get_disposable_virtual_card,get_disposable_virtual_card,True,True
+banking77-test-002615,What do I do to get a disposable virtual card?,get_disposable_virtual_card,get_disposable_virtual_card,get_disposable_virtual_card,True,True
+banking77-test-002655,Why caused my top up to not work?,top_up_failed,top_up_failed,top_up_failed,True,True
+banking77-test-002658,My funding to my card didn't go through.,top_up_failed,top_up_failed,top_up_failed,True,True
+banking77-test-002676,"I really need money from my card today, but my card is getting declined. Please help!!",top_up_failed,declined_card_payment,declined_card_payment,True,False
+banking77-test-002668,I tried to top up. Why was it denied?,top_up_failed,beneficiary_not_allowed,beneficiary_not_allowed,True,False
+banking77-test-002710,Why doesn't it show that I did a balance transfer?,balance_not_updated_after_bank_transfer,balance_not_updated_after_bank_transfer,balance_not_updated_after_bank_transfer,True,True
+banking77-test-002698,I had cash transferred but the balance did not change.,balance_not_updated_after_bank_transfer,balance_not_updated_after_bank_transfer,balance_not_updated_after_bank_transfer,True,True
+banking77-test-002720,When will I see my new balance after making my bank transfer?,balance_not_updated_after_bank_transfer,balance_not_updated_after_bank_transfer,balance_not_updated_after_bank_transfer,True,True
+banking77-test-002706,The  money I transferred does not show in the balance.,balance_not_updated_after_bank_transfer,balance_not_updated_after_bank_transfer,balance_not_updated_after_bank_transfer,True,True
+banking77-test-002733,I checked the app and saw an extra cash withdrawal that I didn't authorize,cash_withdrawal_not_recognised,declined_cash_withdrawal,declined_cash_withdrawal,True,False
+banking77-test-002750,What do I do if I notice a strange withdrawl in my statement?,cash_withdrawal_not_recognised,extra_charge_on_statement,extra_charge_on_statement,True,False
+banking77-test-002746,I need to cancel my card that got stolen a little while ago. Someone has already taken some money out and I don't want them to take anymore. Can you please do that?,cash_withdrawal_not_recognised,lost_or_stolen_card,lost_or_stolen_card,True,False
+banking77-test-002738,My account has a weird withdrawal.,cash_withdrawal_not_recognised,cash_withdrawal_not_recognised,cash_withdrawal_not_recognised,True,True
+banking77-test-002766,"My work sends me all over the world, can I get a discount for all the money I have to exchange?",exchange_charge,exchange_charge,exchange_charge,True,True
+banking77-test-002782,I was wondering if there were any discounts offered for frequent currency exchanges?,exchange_charge,exchange_charge,exchange_charge,True,True
+banking77-test-002797,"I would like to exchange currencies, but is there an extra charge to do so?",exchange_charge,exchange_charge,exchange_charge,True,True
+banking77-test-002779,How much do I have to pay for the exchange fee?,exchange_charge,exchange_charge,exchange_charge,True,True
+banking77-test-002834,Is there a charge or discount if I use a European bank in a top up?,top_up_by_card_charge,top_up_by_bank_transfer_charge,top_up_by_bank_transfer_charge,True,False
+banking77-test-002831,Any fee for topping up?,top_up_by_card_charge,top_up_by_card_charge,top_up_by_card_charge,True,True
+banking77-test-002815,How much is the charge to top up my card?,top_up_by_card_charge,top_up_by_card_charge,top_up_by_card_charge,True,True
+banking77-test-002833,What are the fees of using an international card to add money?,top_up_by_card_charge,top_up_by_card_charge,top_up_by_card_charge,True,True
+banking77-test-002868,What are the steps in order to activate my new card?,activate_my_card,activate_my_card,activate_my_card,True,True
+banking77-test-002853,WHAT CAN I DO AFTER THE CARD MISSING,activate_my_card,card_swallowed,card_swallowed,True,False
+banking77-test-002864,How can I start using my card?,activate_my_card,activate_my_card,activate_my_card,True,True
+banking77-test-002863,I need help with activating my card,activate_my_card,activate_my_card,activate_my_card,True,True
+banking77-test-002883,Why am I being charged when I withdraw cash?,cash_withdrawal_charge,cash_withdrawal_charge,cash_withdrawal_charge,True,True
+banking77-test-002915,I took cash and got charged a fee,cash_withdrawal_charge,cash_withdrawal_charge,cash_withdrawal_charge,True,True
+banking77-test-002896,I got a fee for an ATM withdrawal.,cash_withdrawal_charge,cash_withdrawal_charge,cash_withdrawal_charge,True,True
+banking77-test-002884,What is this charge on my account for a cash withdrawl?,cash_withdrawal_charge,cash_withdrawal_charge,cash_withdrawal_charge,True,True
+banking77-test-002958,"If my card is about to expire, do I need to order a new one?",card_about_to_expire,card_about_to_expire,card_about_to_expire,True,True
+banking77-test-002960,I need to know the cost and when I will receive a new card to replace an old one.,card_about_to_expire,card_linking,card_linking,True,False
+banking77-test-002930,How much does it cost to get a new card?  Mine is almost expired.  How fast does it come?,card_about_to_expire,card_about_to_expire,card_about_to_expire,True,True
+banking77-test-002942,Will I need to order a new card since mine expires next month?,card_about_to_expire,card_about_to_expire,card_about_to_expire,True,True
+banking77-test-002997,How do I top up with Apple Pay?,apple_pay_or_google_pay,apple_pay_or_google_pay,apple_pay_or_google_pay,True,True
+banking77-test-002995,How do I get the Top Up feature on my apple watch working?,apple_pay_or_google_pay,apple_pay_or_google_pay,apple_pay_or_google_pay,True,True
+banking77-test-002990,How do I top up? Can I use my apple watch?,apple_pay_or_google_pay,apple_pay_or_google_pay,apple_pay_or_google_pay,True,True
+banking77-test-002975,Why can't I use my American Express with Apple Pay to top up my account?,apple_pay_or_google_pay,apple_pay_or_google_pay,apple_pay_or_google_pay,True,True
+banking77-test-003027,"When getting my ID checked, what are the steps involved?",verify_my_identity,verify_my_identity,verify_my_identity,True,True
+banking77-test-003001,What can I use to verify my identify?,verify_my_identity,verify_my_identity,verify_my_identity,True,True
+banking77-test-003015,What's the process for ID verification?,verify_my_identity,verify_my_identity,verify_my_identity,True,True
+banking77-test-003019,What should I do to verify my identity?,verify_my_identity,verify_my_identity,verify_my_identity,True,True
+banking77-test-003064,What countries are you currently in?,country_support,country_support,country_support,True,True
+banking77-test-003078,What countries do you do business in?,country_support,country_support,country_support,True,True
+banking77-test-003042,Are your cards available in Europe?,country_support,country_support,country_support,True,True
+banking77-test-003053,Do you support the EU?,country_support,country_support,country_support,True,True

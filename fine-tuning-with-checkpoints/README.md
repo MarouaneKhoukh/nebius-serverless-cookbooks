@@ -1,253 +1,177 @@
 ---
-title: Fine-Tune Qwen and Resume Saved Training
+title: Fine-Tune Qwen on Real Banking Questions
 category: training
-type: job
-runtime: python
-frameworks: [Axolotl, Transformers, PEFT]
-keywords: [preemptible, LoRA, checkpoints, Qwen]
-difficulty: beginner
+type: cookbook
+runtime: Nebius Serverless AI Job
+frameworks: [Axolotl, PEFT]
+keywords: [preemptible, fine-tuning, qwen, lora, checkpoint, banking77]
+difficulty: intermediate
 ---
 
-<img src="docs/brand/nebius-logo.svg" alt="Nebius" width="150">
+<img src="docs/brand/nebius-logo.svg" alt="Nebius" width="140">
 
-# Fine-Tune Qwen and Resume Saved Training
+# Fine-Tune Qwen on Real Banking Questions
 
-Teach Qwen to classify support requests as **billing**, **technical** or **account** using 120 included examples. You'll save a LoRA adapter—the model changes learned during training—and compare its answers with the original model on 30 separate test examples.
+Train a LoRA adapter for **77 banking intents** using real, human-authored BANKING77 questions. Save training state after 50 steps, restore it in a fresh Job and finish at step 100. Compare the base model and adapter on the same 308 test questions, then download the adapter and report.
 
-Nebius Serverless AI runs the training on a cloud GPU using a prepared Axolotl training environment. You don't need to configure a GPU server. You'll launch a **Job**, which runs your code and finishes when the work ends.
+**Nebius Serverless AI runs Axolotl on a cloud GPU.** Preemptible GPUs offer lower-priced capacity that Nebius can reclaim. Full checkpoints in Object Storage let another Job continue from saved training progress.
 
-**Preemptible instances give you a way to do more with your GPU budget.** They provide GPU capacity at a changing market price that can be lower than the regular rate. The trade-off is that a run can be interrupted. This cookbook saves full training checkpoints in cloud storage, so a new Job can pick up from the last saved step.
-
-For example, during this experiment, this setup was priced at about **$0.84/hour on preemptible compute, compared with $4.55/hour on regular compute**. Prices can change.
-
-![The before-and-after score and resumed training progress](docs/media/result.jpg)
-
-**Powered by Nebius Serverless AI**
+The bounded default uses **1,540 training questions: 20 per intent**, plus **308 test questions: four per intent**. These are selected from the original train/test splits; the loader excludes shared normalized text. With effective batch 16, 100 steps are about one pass over the selected training set.
 
 ## What you need
 
-- macOS or Ubuntu, Git and Python **3.10+**. No local GPU or extra Python packages.
-- A Nebius account with billing enabled and a project in **eu-north1**. A project holds your cloud resources and their permissions.
-- Permission and quota to run **one preemptible H100 GPU**. Quota is your account's resource allowance; check it under **Quotas** in the console if deployment is refused.
-- Permission to create Jobs and an Object Storage bucket in the same project.
+- macOS or Ubuntu, Git and Python **3.10+**. No local GPU, Docker or extra local Python packages.
+- A billing-enabled Nebius project in **eu-north1**, permission to create Jobs and use Object Storage, and quota for one **preemptible H100**.
 
-## 1. Get the files
+## 1. Get the files and sign in
 
 ```bash
 git clone https://github.com/MarouaneKhoukh/nebius-serverless-cookbooks.git
 cd nebius-serverless-cookbooks/fine-tuning-with-checkpoints
-python3 --version
 ```
 
-Run the remaining commands from this directory.
-
-## 2. Sign in to Nebius
-
-The Nebius CLI lets you manage Jobs from your terminal. If it isn't installed:
+Run all commands from this directory. Install the Nebius CLI if needed:
 
 ```bash
 curl -sSL https://artifacts.nebius.cloud/cli/install.sh | bash
 ```
 
-Open a new terminal after installation and return to this cookbook's directory. Use CLI **0.12.303 or newer**; run `nebius update` if your version is older.
-
-In the [Nebius console](https://console.nebius.com), select your eu-north1 project and copy its project ID. Replace the **entire** `YOUR_PROJECT_ID` value below:
-
-If you already have a signed-in CLI profile for this project, skip the `profile create` line and replace `cookbook` in `profile activate` with your profile's name.
+Open a new terminal and return here. Use CLI **0.12.303+**; run `nebius update` if yours is older. Copy your project ID from the [console](https://console.nebius.com), replace the placeholder and complete browser sign-in:
 
 ```bash
+export AI_AGENT="${AI_AGENT:-cookbook}"
 nebius version
 export PROJECT_ID="YOUR_PROJECT_ID"
-export AI_AGENT="${AI_AGENT:-cookbook-reader}"
 nebius profile create cookbook --parent-id "$PROJECT_ID"
 nebius profile activate cookbook
-nebius iam whoami --format json
+nebius iam whoami
 ```
 
-Complete the browser sign-in when prompted.
+Already signed in to this project? Activate that profile instead of creating `cookbook`.
 
-Choose a **subnet**, the network your Jobs will use. List the project's subnets, then replace `YOUR_SUBNET_ID` with a subnet's `metadata.id`. It must allow outbound internet access to download the model.
+Choose a **subnet**, the Job's network, with outbound internet access for model downloads. Copy its `metadata.id`:
 
 ```bash
-nebius vpc subnet list --parent-id "$PROJECT_ID"
+nebius vpc subnet list --parent-id "$PROJECT_ID" --format json
 export SUBNET_ID="YOUR_SUBNET_ID"
 ```
 
-<details>
-<summary>If your project has no subnet</summary>
-
-Create a network and subnet in the same project:
+If none exists, create a network and subnet:
 
 ```bash
 export NETWORK_ID="$(nebius vpc network create --parent-id "$PROJECT_ID" --name cookbook-network --format jsonpath='{.metadata.id}')"
 export SUBNET_ID="$(nebius vpc subnet create --parent-id "$PROJECT_ID" --name cookbook-subnet --network-id "$NETWORK_ID" --format jsonpath='{.metadata.id}')"
 ```
 
-New networks have a default internet route. If your company manages the network, ask for an approved subnet instead. [Network setup](https://docs.nebius.com/vpc/networking/isolation) · [Default routing](https://docs.nebius.com/vpc/routing/overview)
+New networks have a default internet route. Use an approved subnet if your company manages networking.
 
-</details>
+## 2. Inspect the data and choose storage
 
-## 3. Create storage for your progress
+```bash
+python3 scripts/prepare_data.py
+```
 
-A **bucket** stores files in the cloud. The training Jobs will save their checkpoints and final results there, so the files survive when a Job's GPU stops.
+This downloads checksum-verified BANKING77 sources and writes `data/prepared/train.jsonl`, `test.csv` and `provenance.json`. Original question text, label spelling and source IDs are retained. The Job prepares the same files on its VM; you don't upload these local copies.
 
-Choose a unique bucket name and create it in the same project and region as the Jobs:
+Create a private bucket in this project with a unique name, or reuse an existing bucket's ID:
 
 ```bash
 python3 scripts/job.py create-bucket \
   --project-id "$PROJECT_ID" --name "YOUR_UNIQUE_BUCKET_NAME" --yes
-```
 
-Copy the returned bucket ID into `BUCKET_ID`. `RUN_ID` names this training run's folder in the bucket; keep both values for the second Job.
-
-```bash
 export BUCKET_ID="YOUR_BUCKET_ID"
-export RUN_ID="support-lora-demo"
+export RUN_ID="banking77-lora"
 ```
 
-## 4. Train the first ten steps
+Replace `YOUR_BUCKET_ID` with the returned ID. Keep the bucket and run ID for resumption. Retained storage is billed separately; use a new run ID when inputs or settings change.
 
-The supplied configuration uses **Qwen2.5-0.5B-Instruct**, a prepared Axolotl training image, one H100, a 500 GiB temporary disk and a one-hour limit per Job. The script uploads the included code and examples for you.
+## 3. Train to the first checkpoint
 
-Before launching, check the current preemptible H100 rate in the Nebius console. The deployment script uses **Follow Spot price** by default, which accepts the changing price without a maximum. Provisioning and model loading are billed too.
+The configuration uses **Qwen/Qwen3-4B-Instruct-2507**, pinned revision `cdbee75f17c01a7cc42f958dc650907174af0554`, the existing Axolotl image, one **H100**, a **500 GiB temporary disk** and a **one-hour timeout per Job**. The public model needs no Hugging Face token. LoRA settings are in `config/train.yaml`; dataset selection is in `config/data.json`.
 
-<details>
-<summary>Set a maximum GPU price</summary>
-
-A pricing policy sets a maximum **per GPU hour**. A higher maximum can improve allocation priority when demand for the same GPU platform is high. You pay the current market rate while it stays within your limit. Capacity can still be reclaimed. [How allocation works](https://docs.nebius.com/signup-billing/pricing-policy#capacity-allocation)
-
-1. Check the [current price and recent history](https://docs.nebius.com/signup-billing/spot-prices). Choose a maximum within your budget, with room for price increases. A limit below the current rate blocks startup.
-2. In **Billing → Pricing → Pricing policy → Create pricing policy**, enter a name using letters/numbers, select your project and **`gpu-h100-sxm`**, and enter that maximum. Create the policy and copy its ID.
-3. Add `--spot-pricing-policy-id "YOUR_POLICY_ID"` to both `submit` commands below and the `resume` command in step 5, replacing the whole placeholder. The deployment script will use that policy.
-
-Choose the policy before launching. Before changing its maximum, stop the Endpoints using it and wait for any Jobs using it to finish, or cancel them.
-
-A tight limit can cause more interruptions as prices rise. **Follow Spot price** accepts price changes without a cap, including prices above regular rates. A GPU price limit does not cap the total cost of a run or its storage.
-
-[Policy setup](https://docs.nebius.com/signup-billing/manage-pricing-policy) · [Pricing options](https://docs.nebius.com/signup-billing/pricing-policy)
-
-</details>
+Check the current H100 rate under **Serverless AI → Jobs → Create job → Preemptible**. The helper follows the changing spot price without a cap; model loading and restarts use paid time. To use a cap, create a [pricing policy](https://docs.nebius.com/signup-billing/manage-pricing-policy) for `gpu-h100-sxm` and add `--spot-pricing-policy-id "YOUR_POLICY_ID"` to both submit commands. A cap doesn't guarantee capacity.
 
 ```bash
 python3 scripts/job.py submit \
-  --project-id "$PROJECT_ID" --bucket-id "$BUCKET_ID" --subnet-id "$SUBNET_ID" \
-  --run-id "$RUN_ID" --stop-after-step 10 --dry-run
+  --project-id "$PROJECT_ID" --subnet-id "$SUBNET_ID" \
+  --bucket-id "$BUCKET_ID" --run-id "$RUN_ID" \
+  --stop-after-step 50 --dry-run
 
 python3 scripts/job.py submit \
-  --project-id "$PROJECT_ID" --bucket-id "$BUCKET_ID" --subnet-id "$SUBNET_ID" \
-  --run-id "$RUN_ID" --stop-after-step 10 --yes
+  --project-id "$PROJECT_ID" --subnet-id "$SUBNET_ID" \
+  --bucket-id "$BUCKET_ID" --run-id "$RUN_ID" \
+  --stop-after-step 50 --yes
+
+python3 scripts/job.py wait --timeout 3600
+python3 scripts/job.py logs --tail 30
 ```
 
-The first command previews the deployment; the second creates it. Keep the returned Job ID and use it below:
+Keep the Job ID. The first Job evaluates the base model, trains and publishes a full checkpoint at step **50**, then exits deliberately. Look for `checkpoint_published` and `recipe_finished` with `completed: false`. Training still has 50 steps left.
+
+## 4. Restore in a fresh Job
 
 ```bash
-python3 scripts/job.py status --job-id YOUR_FIRST_JOB_ID
-python3 scripts/job.py logs --job-id YOUR_FIRST_JOB_ID
+python3 scripts/job.py resume --dry-run
+python3 scripts/job.py resume --yes
+python3 scripts/job.py wait --timeout 3600
+python3 scripts/job.py logs --tail 30
 ```
 
-Wait for `COMPLETED`. In the logs, look for `checkpoint_published` at `global_step: 10` and `recipe_finished` with `completed: false`.
+Keep `.state/job.json`, the original files, inputs and configuration. Resume keeps the same bucket/run and restores the adapter, optimizer, scheduler, random-generator and trainer state. Look for `resumed_from_step: 50`, `global_step: 100` and `completed: true`.
 
-`COMPLETED` means this ten-step Job has finished. Training still has 20 steps left. This planned stop lets you try restoring progress in a separate Job.
+After an actual interruption, wait for the old Job to be terminal before resubmitting. An unfinished checkpoint may be skipped, so some work can repeat. If no valid checkpoint exists, use a new run ID and submit again. A wait timeout alone doesn't stop compute.
 
-<details>
-<summary>Ask an agent to run it instead</summary>
+## 5. Download the adapter and inspect results
 
-Install the [Nebius agent skills](https://github.com/nebius/skills#install) for your coding agent, then paste the prompt below. The agent needs terminal access and the CLI sign-in from step 2. Skills are optional for the CLI instructions above.
-
-```text
-Run this cookbook in Nebius project <MY_PROJECT_ID> using
-nebius-cloud-basics, nebius-serverless-jobs and
-nebius-serverless-data-secrets. Follow README.md and the supplied config.
-Show the current price and confirm the deployment before launching a
-preemptible H100 Job. Use a bucket in the same project. Train to step 10,
-verify the checkpoint, then launch a new Job with the same bucket and run ID.
-Verify that it resumes at step 10 and finishes at step 30. Download result.zip
-and check it with --require-resume. Compare the before/after scores and
-verify that both Jobs have finished. Keep authentication tokens private.
-```
-
-</details>
-
-## 5. Resume and finish training
-
-Use the same bucket and run ID. This command launches a new Job that loads the saved checkpoint. `--stop-after-step 0` tells it to finish the original 30-step training schedule.
+In **Object Storage → your bucket → your run ID**, download `result.zip` to Downloads. Validate and extract into a new directory:
 
 ```bash
-python3 scripts/job.py resume \
-  --project-id "$PROJECT_ID" --bucket-id "$BUCKET_ID" --subnet-id "$SUBNET_ID" \
-  --run-id "$RUN_ID" --stop-after-step 0 --yes
+python3 scripts/check_result.py "$HOME/Downloads/result.zip" --require-resume
+python3 -m zipfile -e "$HOME/Downloads/result.zip" results
 ```
 
-Keep the new Job ID. Check the latest Job with:
+Open **`results/report.html`**. Check **100/100 steps**, restoration from **step 50**, and before/after predictions on the same 308 questions. Raw scores and per-intent metrics are in `before.json` and `after.json`; the corresponding CSVs work with your own analysis or UI. The adapter is in `results/adapter/`. Full recovery checkpoints remain in the bucket.
+
+![The actual BANKING77 before-and-after scores and restored checkpoint](docs/media/result.jpg)
+
+**Powered by Nebius Serverless AI**
+
+The [recorded run](docs/sample-results/) improved from **199/308 correct (64.6%)** before training to **256/308 (83.1%)** afterward. Invalid answers fell from three to zero. These are results from this small published-benchmark subset, not an estimate of production performance.
+
+See [validation notes](VALIDATION.md) for the measured outcome and exact recovery evidence. The result ZIP also includes the source data, license, selection IDs, configuration and checkpoint proof. A planned stop tests recovery; it does not establish reliability under natural preemption.
+
+## 6. Check that compute has stopped
 
 ```bash
 python3 scripts/job.py status
-python3 scripts/job.py logs
 ```
 
-Wait for `COMPLETED`. Its logs should show `training_started` at step **10**, then `recipe_finished` with `resumed_from_step: 10`, `global_step: 30` and `completed: true`. The Job saves the final adapter and evaluates it on the 30 test examples.
-
-## 6. Download the results
-
-In the Nebius console, open **Object Storage → your bucket → `support-lora-demo`** (or your chosen `RUN_ID`). Select `result.zip`, then choose **Actions → Download**.
-
-From this cookbook's directory, check and unpack the downloaded file:
-
-```bash
-python3 scripts/check_result.py ~/Downloads/result.zip --require-resume
-python3 -m zipfile -e ~/Downloads/result.zip results
-```
-
-Open `results/report.html` in your browser. Compare the before-and-after accuracy and inspect each prediction. A small training run can improve or reduce accuracy; judge it on examples that matter to your task.
-
-Your trained adapter is in `results/adapter/`. The report and adapter are saved on your computer, so you can inspect them after the Jobs finish.
-
-## 7. Check that compute has stopped
-
-A completed, failed or cancelled Job has no running GPU. Check both Job IDs. If either is still active and you are finished, cancel only that Job:
+Check both Job IDs after the recovery test with `status --job-id YOUR_JOB_ID`. To cancel an active Job:
 
 ```bash
 python3 scripts/job.py cancel --job-id YOUR_JOB_ID --yes
 python3 scripts/job.py status --job-id YOUR_JOB_ID
 ```
 
-Wait for `CANCELLED` or another terminal state. The bucket still holds your files and incurs storage charges. Keep it for recovery and downloads; when finished, remove this recipe's files and bucket in the console. Leave shared buckets intact.
+Verify `CANCELLED` or another terminal state. Keep the bucket while needed; later remove only this run's files or its dedicated bucket in the console.
 
-## If the GPU is reclaimed
+## Run with an agent
 
-Check that the previous Job has stopped. If it saved a complete checkpoint, repeat step 5 using the same bucket and run ID. The new Job repeats only the work since the last checkpoint, which is saved every ten training steps.
+Install the [Nebius skills](https://github.com/nebius/skills#install) for an agent with terminal access and the signed-in CLI, then paste:
 
-If the first Job stops before saving any checkpoint, choose a new `RUN_ID` and repeat step 4. Jobs do not automatically restart after a preemption.
+```text
+Run fine-tuning-with-checkpoints from
+https://github.com/MarouaneKhoukh/nebius-serverless-cookbooks.
+Use nebius-cloud-basics, nebius-serverless-jobs and
+nebius-serverless-data-secrets in project <PROJECT_ID>,
+subnet <SUBNET_ID> and bucket <BUCKET_ID>.
+Follow config/train.yaml and config/data.json. Show the current price
+and confirm before launching unapproved compute. Train to step 50,
+restore in a fresh Job and finish at step 100. Download result.zip,
+check --require-resume, inspect all 308 before/after predictions and
+verify both Jobs are terminal. Keep credentials private.
+```
 
-<details>
-<summary>Use your own data or inspect the checkpoints</summary>
+For a different training size, edit `config/data.json` before starting a new run. `train_per_intent: 0` uses all eligible distinct source training texts; increase the training schedule accordingly. The 77-intent taxonomy remains fixed.
 
-Replace `data/train.jsonl` with examples for your task and keep a separate test set in `data/test.csv` with `id,prompt,expected` columns. Update the labels and system prompt in `src/evaluate.py` to match. Use a new run ID after changing data, model or settings.
-
-The training configuration is in `config/train.yaml`. It saves every ten steps and trains for 30 steps in total. Keep the total fixed when resuming. A planned stopping point must fall on a save step below the final step.
-
-The bucket contains full checkpoints, including adapter weights, optimizer, scheduler, RNG and trainer state. Only checkpoints with a valid `complete.json` are restored. The first phase also produces `recovery-SESSION.zip`, whose exact filename appears in the logs. The final `result.zip` includes a checkpoint record and run settings, while the full recovery state remains in the bucket.
-
-The adapter alone is for using the trained model. Resuming training requires the full checkpoint; the second Job loads it from the bucket automatically.
-
-</details>
-
-<details>
-<summary>Troubleshooting and test results</summary>
-
-- **Quota exceeded:** request a higher allowance in the console.
-- **No capacity:** try again when preemptible GPUs become available.
-- **Long startup or no output:** check Job logs. Cancel a stuck Job while diagnosing it.
-- **Run settings changed:** choose a new run ID; keep the existing checkpoints.
-- **No complete checkpoint:** use a new run ID and start again from step 4.
-- **Storage error:** check that the bucket is in the Jobs' project and region and is mounted at `/data` with write access.
-
-The recorded run restored step 10 in a fresh Job and finished at step 30. Its test score changed from 24/30 (80.0%) to 28/30 (93.3%). Recovery used a planned stop; natural GPU preemption was not observed. [Validation and recorded prices](VALIDATION.md) · [Saved report](docs/sample-results/report.html)
-
-Run local checks with `python3 -m unittest discover -s tests -v`.
-
-</details>
-
-[Serverless AI](https://docs.nebius.com/serverless/overview) · [Preemptible instances](https://docs.nebius.com/compute/virtual-machines/preemptible) · [Job management](https://docs.nebius.com/serverless/jobs/manage) · [Axolotl Job template](https://github.com/nebius/serverless-ai-cookbook/tree/main/templates/job-axolotl-finetune)
-
-The sample requests are fictional; no customer data is included.
+Data: [BANKING77 by PolyAI](data/SOURCE.md), [CC BY 4.0](data/LICENSE). Local checks: `python3 -m unittest discover -s tests -v`.

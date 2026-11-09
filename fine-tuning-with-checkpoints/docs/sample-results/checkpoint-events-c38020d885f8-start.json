@@ -1,0 +1,5 @@
+{
+  "event": "training_started",
+  "global_step": 50,
+  "session": "c38020d885f8"
+}

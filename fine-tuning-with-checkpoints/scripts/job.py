@@ -29,12 +29,15 @@ INJECTIONS = {
     "src/spot_checkpoint_plugin.py": "/recipe/spot_checkpoint_plugin.py",
     "src/evaluate.py": "/recipe/evaluate.py",
     "config/train.yaml": "/recipe/train.yaml",
-    "data/train.jsonl": "/recipe/train.jsonl",
-    "data/test.csv": "/recipe/test.csv",
+    "src/banking77.py": "/recipe/banking77.py",
+    "src/data_prep.py": "/recipe/data_prep.py",
+    "config/data.json": "/recipe/data.json",
+    "data/categories.json": "/recipe/categories.json",
+    "data/SOURCE.md": "/recipe/SOURCE.md",
     "docs/brand/nebius-logo.svg": "/recipe/nebius-logo.svg",
 }
 
-# This code expands only the eight bundled recipe files, on VM-local storage.
+# This code expands only the bundled recipe files, on VM-local storage.
 # It does not download code or write checkpoints to the bucket itself.
 BOOTSTRAP = r'''import argparse, base64, hashlib, io, json, os, re, sys, zipfile
 from pathlib import Path
@@ -227,6 +230,7 @@ def job_summary(job):
     metadata, spec, status = job.get("metadata", {}), job.get("spec", {}), job.get("status", {})
     return {"id": metadata.get("id"), "name": metadata.get("name"),
             "project_id": metadata.get("parent_id"), "state": status.get("state"),
+            "reason_code": status.get("state_details", {}).get("code"),
             "spot": spec.get("preemptible", False), "platform": spec.get("platform"),
             "preset": spec.get("preset")}
 
@@ -313,7 +317,9 @@ def submit_attempt(state, args):
     existing = cli(["ai", "job", "get-by-name", "--parent-id", state["project_id"], "--name", state["name"]], allow_not_found=True)
     prior = load_state() if STATE.exists() else {}
     if existing:
-        if prior.get("name") != state["name"] or prior.get("files_hash") != state["files_hash"]:
+        identity = ("name", "files_hash", "project_id", "bucket_id", "run_id", "stop_after_step", "attempt")
+        if (any(prior.get(key) != state.get(key) for key in identity)
+                or prior.get("id") and prior["id"] != existing.get("metadata", {}).get("id")):
             raise RuntimeError("That Job name already exists but is not this tracked submission. Choose a new run ID.")
         job = existing
         print("Found this tracked attempt; no duplicate Job was created.")
@@ -360,7 +366,9 @@ def submit(args):
         if current.get("status", {}).get("state") not in TERMINAL:
             raise RuntimeError("The currently tracked Job is still active. Finish or cancel it before starting another run.")
     prefix = re.sub(r"[^a-z0-9-]", "-", run_id.lower())[:28].strip("-") or "run"
-    name = f"ft-{prefix}-{aggregate[:8]}-phase1"
+    identity = json.dumps({"project":project,"bucket":bucket_id,"run":run_id,"files":aggregate},sort_keys=True)
+    identity_hash = hashlib.sha256(identity.encode()).hexdigest()[:10]
+    name = f"ft-{prefix}-{identity_hash}-phase1"
     state = {"id": None, "name": name, "project_id": project, "bucket_id": bucket_id,
              "bucket_name": bucket.get("metadata", {}).get("name"), "run_id": run_id,
              "stop_after_step": args.stop_after_step, "attempt": 1, "files_hash": aggregate,
@@ -415,7 +423,7 @@ def main():
     create = actions.add_parser("submit")
     for flag in ("project-id", "bucket-id", "run-id"):
         create.add_argument("--" + flag, required=True)
-    create.add_argument("--stop-after-step", type=int, default=10)
+    create.add_argument("--stop-after-step", type=int, default=50)
     retry = actions.add_parser("resume")
     for flag in ("project-id", "bucket-id", "run-id"):
         retry.add_argument("--" + flag)

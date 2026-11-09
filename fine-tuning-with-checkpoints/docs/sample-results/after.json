@@ -1,284 +1,3353 @@
 {
-  "accuracy": 0.9333333333333333,
+  "accuracy": 0.8311688311688312,
   "adapter": true,
-  "correct": 28,
+  "confusions": [
+    {
+      "count": 3,
+      "expected": "get_physical_card",
+      "predicted": "pin_blocked"
+    },
+    {
+      "count": 2,
+      "expected": "card_payment_not_recognised",
+      "predicted": "reverted_card_payment?"
+    },
+    {
+      "count": 2,
+      "expected": "topping_up_by_card",
+      "predicted": "receiving_money"
+    },
+    {
+      "count": 2,
+      "expected": "declined_transfer",
+      "predicted": "declined_card_payment"
+    },
+    {
+      "count": 2,
+      "expected": "Refund_not_showing_up",
+      "predicted": "request_refund"
+    },
+    {
+      "count": 2,
+      "expected": "transfer_into_account",
+      "predicted": "top_up_by_bank_transfer_charge"
+    },
+    {
+      "count": 1,
+      "expected": "card_linking",
+      "predicted": "lost_or_stolen_card"
+    },
+    {
+      "count": 1,
+      "expected": "extra_charge_on_statement",
+      "predicted": "transaction_charged_twice"
+    },
+    {
+      "count": 1,
+      "expected": "extra_charge_on_statement",
+      "predicted": "pending_card_payment"
+    },
+    {
+      "count": 1,
+      "expected": "pending_cash_withdrawal",
+      "predicted": "declined_cash_withdrawal"
+    },
+    {
+      "count": 1,
+      "expected": "fiat_currency_support",
+      "predicted": "receiving_money"
+    },
+    {
+      "count": 1,
+      "expected": "fiat_currency_support",
+      "predicted": "exchange_via_app"
+    },
+    {
+      "count": 1,
+      "expected": "top_up_by_bank_transfer_charge",
+      "predicted": "top_up_by_card_charge"
+    },
+    {
+      "count": 1,
+      "expected": "pending_top_up",
+      "predicted": "top_up_failed"
+    },
+    {
+      "count": 1,
+      "expected": "cancel_transfer",
+      "predicted": "request_refund"
+    },
+    {
+      "count": 1,
+      "expected": "card_payment_fee_charged",
+      "predicted": "extra_charge_on_statement"
+    },
+    {
+      "count": 1,
+      "expected": "transfer_not_received_by_recipient",
+      "predicted": "transfer_timing"
+    },
+    {
+      "count": 1,
+      "expected": "supported_cards_and_currencies",
+      "predicted": "topping_up_by_card"
+    },
+    {
+      "count": 1,
+      "expected": "unable_to_verify_identity",
+      "predicted": "verify_my_identity"
+    },
+    {
+      "count": 1,
+      "expected": "get_physical_card",
+      "predicted": "card_delivery_estimate"
+    }
+  ],
+  "correct": 256,
   "invalid_predictions": 0,
-  "max_new_tokens": 16,
-  "model": "Qwen/Qwen2.5-0.5B-Instruct",
-  "model_revision": "7ae557604adf67be50417f59c2c2f167def9a775",
-  "peak_allocated_bytes": 1045989376,
+  "macro_f1": 0.8209928599538983,
+  "max_new_tokens": 32,
+  "model": "Qwen/Qwen3-4B-Instruct-2507",
+  "model_revision": "cdbee75f17c01a7cc42f958dc650907174af0554",
+  "peak_allocated_bytes": 9904800768,
+  "per_intent": {
+    "Refund_not_showing_up": {
+      "f1": 0.6666666666666666,
+      "precision": 1.0,
+      "recall": 0.5,
+      "support": 4
+    },
+    "activate_my_card": {
+      "f1": 0.8571428571428571,
+      "precision": 1.0,
+      "recall": 0.75,
+      "support": 4
+    },
+    "age_limit": {
+      "f1": 0.888888888888889,
+      "precision": 0.8,
+      "recall": 1.0,
+      "support": 4
+    },
+    "apple_pay_or_google_pay": {
+      "f1": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "support": 4
+    },
+    "atm_support": {
+      "f1": 0.8571428571428571,
+      "precision": 1.0,
+      "recall": 0.75,
+      "support": 4
+    },
+    "automatic_top_up": {
+      "f1": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "support": 4
+    },
+    "balance_not_updated_after_bank_transfer": {
+      "f1": 0.888888888888889,
+      "precision": 0.8,
+      "recall": 1.0,
+      "support": 4
+    },
+    "balance_not_updated_after_cheque_or_cash_deposit": {
+      "f1": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "support": 4
+    },
+    "beneficiary_not_allowed": {
+      "f1": 0.75,
+      "precision": 0.75,
+      "recall": 0.75,
+      "support": 4
+    },
+    "cancel_transfer": {
+      "f1": 0.8571428571428571,
+      "precision": 1.0,
+      "recall": 0.75,
+      "support": 4
+    },
+    "card_about_to_expire": {
+      "f1": 0.8571428571428571,
+      "precision": 1.0,
+      "recall": 0.75,
+      "support": 4
+    },
+    "card_acceptance": {
+      "f1": 0.888888888888889,
+      "precision": 0.8,
+      "recall": 1.0,
+      "support": 4
+    },
+    "card_arrival": {
+      "f1": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "support": 4
+    },
+    "card_delivery_estimate": {
+      "f1": 0.8,
+      "precision": 0.6666666666666666,
+      "recall": 1.0,
+      "support": 4
+    },
+    "card_linking": {
+      "f1": 0.75,
+      "precision": 0.75,
+      "recall": 0.75,
+      "support": 4
+    },
+    "card_not_working": {
+      "f1": 0.8,
+      "precision": 0.6666666666666666,
+      "recall": 1.0,
+      "support": 4
+    },
+    "card_payment_fee_charged": {
+      "f1": 0.75,
+      "precision": 0.75,
+      "recall": 0.75,
+      "support": 4
+    },
+    "card_payment_not_recognised": {
+      "f1": 0.6666666666666666,
+      "precision": 1.0,
+      "recall": 0.5,
+      "support": 4
+    },
+    "card_payment_wrong_exchange_rate": {
+      "f1": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "support": 4
+    },
+    "card_swallowed": {
+      "f1": 0.888888888888889,
+      "precision": 0.8,
+      "recall": 1.0,
+      "support": 4
+    },
+    "cash_withdrawal_charge": {
+      "f1": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "support": 4
+    },
+    "cash_withdrawal_not_recognised": {
+      "f1": 0.4,
+      "precision": 1.0,
+      "recall": 0.25,
+      "support": 4
+    },
+    "change_pin": {
+      "f1": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "support": 4
+    },
+    "compromised_card": {
+      "f1": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "support": 4
+    },
+    "contactless_not_working": {
+      "f1": 0.888888888888889,
+      "precision": 0.8,
+      "recall": 1.0,
+      "support": 4
+    },
+    "country_support": {
+      "f1": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "support": 4
+    },
+    "declined_card_payment": {
+      "f1": 0.6666666666666666,
+      "precision": 0.5,
+      "recall": 1.0,
+      "support": 4
+    },
+    "declined_cash_withdrawal": {
+      "f1": 0.8,
+      "precision": 0.6666666666666666,
+      "recall": 1.0,
+      "support": 4
+    },
+    "declined_transfer": {
+      "f1": 0.4,
+      "precision": 1.0,
+      "recall": 0.25,
+      "support": 4
+    },
+    "direct_debit_payment_not_recognised": {
+      "f1": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "support": 4
+    },
+    "disposable_card_limits": {
+      "f1": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "support": 4
+    },
+    "edit_personal_details": {
+      "f1": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "support": 4
+    },
+    "exchange_charge": {
+      "f1": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "support": 4
+    },
+    "exchange_rate": {
+      "f1": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "support": 4
+    },
+    "exchange_via_app": {
+      "f1": 0.888888888888889,
+      "precision": 0.8,
+      "recall": 1.0,
+      "support": 4
+    },
+    "extra_charge_on_statement": {
+      "f1": 0.4444444444444445,
+      "precision": 0.4,
+      "recall": 0.5,
+      "support": 4
+    },
+    "failed_transfer": {
+      "f1": 0.888888888888889,
+      "precision": 0.8,
+      "recall": 1.0,
+      "support": 4
+    },
+    "fiat_currency_support": {
+      "f1": 0.5714285714285715,
+      "precision": 0.6666666666666666,
+      "recall": 0.5,
+      "support": 4
+    },
+    "get_disposable_virtual_card": {
+      "f1": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "support": 4
+    },
+    "get_physical_card": {
+      "f1": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "support": 4
+    },
+    "getting_spare_card": {
+      "f1": 0.8571428571428571,
+      "precision": 1.0,
+      "recall": 0.75,
+      "support": 4
+    },
+    "getting_virtual_card": {
+      "f1": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "support": 4
+    },
+    "lost_or_stolen_card": {
+      "f1": 0.8,
+      "precision": 0.6666666666666666,
+      "recall": 1.0,
+      "support": 4
+    },
+    "lost_or_stolen_phone": {
+      "f1": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "support": 4
+    },
+    "order_physical_card": {
+      "f1": 0.6666666666666666,
+      "precision": 1.0,
+      "recall": 0.5,
+      "support": 4
+    },
+    "passcode_forgotten": {
+      "f1": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "support": 4
+    },
+    "pending_card_payment": {
+      "f1": 0.75,
+      "precision": 0.75,
+      "recall": 0.75,
+      "support": 4
+    },
+    "pending_cash_withdrawal": {
+      "f1": 0.8571428571428571,
+      "precision": 1.0,
+      "recall": 0.75,
+      "support": 4
+    },
+    "pending_top_up": {
+      "f1": 0.8571428571428571,
+      "precision": 1.0,
+      "recall": 0.75,
+      "support": 4
+    },
+    "pending_transfer": {
+      "f1": 0.8571428571428571,
+      "precision": 1.0,
+      "recall": 0.75,
+      "support": 4
+    },
+    "pin_blocked": {
+      "f1": 0.7272727272727273,
+      "precision": 0.5714285714285714,
+      "recall": 1.0,
+      "support": 4
+    },
+    "receiving_money": {
+      "f1": 0.6,
+      "precision": 0.5,
+      "recall": 0.75,
+      "support": 4
+    },
+    "request_refund": {
+      "f1": 0.7272727272727273,
+      "precision": 0.5714285714285714,
+      "recall": 1.0,
+      "support": 4
+    },
+    "reverted_card_payment?": {
+      "f1": 0.5,
+      "precision": 0.5,
+      "recall": 0.5,
+      "support": 4
+    },
+    "supported_cards_and_currencies": {
+      "f1": 0.75,
+      "precision": 0.75,
+      "recall": 0.75,
+      "support": 4
+    },
+    "terminate_account": {
+      "f1": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "support": 4
+    },
+    "top_up_by_bank_transfer_charge": {
+      "f1": 0.6,
+      "precision": 0.5,
+      "recall": 0.75,
+      "support": 4
+    },
+    "top_up_by_card_charge": {
+      "f1": 0.75,
+      "precision": 0.75,
+      "recall": 0.75,
+      "support": 4
+    },
+    "top_up_by_cash_or_cheque": {
+      "f1": 0.888888888888889,
+      "precision": 0.8,
+      "recall": 1.0,
+      "support": 4
+    },
+    "top_up_failed": {
+      "f1": 0.5714285714285715,
+      "precision": 0.6666666666666666,
+      "recall": 0.5,
+      "support": 4
+    },
+    "top_up_limits": {
+      "f1": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "support": 4
+    },
+    "top_up_reverted": {
+      "f1": 0.888888888888889,
+      "precision": 0.8,
+      "recall": 1.0,
+      "support": 4
+    },
+    "topping_up_by_card": {
+      "f1": 0.3333333333333333,
+      "precision": 0.5,
+      "recall": 0.25,
+      "support": 4
+    },
+    "transaction_charged_twice": {
+      "f1": 0.8,
+      "precision": 0.6666666666666666,
+      "recall": 1.0,
+      "support": 4
+    },
+    "transfer_fee_charged": {
+      "f1": 0.6666666666666666,
+      "precision": 1.0,
+      "recall": 0.5,
+      "support": 4
+    },
+    "transfer_into_account": {
+      "f1": 0.6666666666666666,
+      "precision": 1.0,
+      "recall": 0.5,
+      "support": 4
+    },
+    "transfer_not_received_by_recipient": {
+      "f1": 0.8571428571428571,
+      "precision": 1.0,
+      "recall": 0.75,
+      "support": 4
+    },
+    "transfer_timing": {
+      "f1": 0.6666666666666665,
+      "precision": 0.6,
+      "recall": 0.75,
+      "support": 4
+    },
+    "unable_to_verify_identity": {
+      "f1": 0.8571428571428571,
+      "precision": 1.0,
+      "recall": 0.75,
+      "support": 4
+    },
+    "verify_my_identity": {
+      "f1": 0.888888888888889,
+      "precision": 0.8,
+      "recall": 1.0,
+      "support": 4
+    },
+    "verify_source_of_funds": {
+      "f1": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "support": 4
+    },
+    "verify_top_up": {
+      "f1": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "support": 4
+    },
+    "virtual_card_not_working": {
+      "f1": 0.8571428571428571,
+      "precision": 1.0,
+      "recall": 0.75,
+      "support": 4
+    },
+    "visa_or_mastercard": {
+      "f1": 0.8571428571428571,
+      "precision": 1.0,
+      "recall": 0.75,
+      "support": 4
+    },
+    "why_verify_identity": {
+      "f1": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "support": 4
+    },
+    "wrong_amount_of_cash_received": {
+      "f1": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "support": 4
+    },
+    "wrong_exchange_rate_for_cash_withdrawal": {
+      "f1": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "support": 4
+    }
+  },
   "predictions": [
     {
       "correct": true,
-      "expected": "billing",
-      "id": "eval-b01",
-      "prediction": "billing",
-      "prompt": "My bank statement has two charges for the same order.",
-      "response": "billing",
+      "expected": "card_arrival",
+      "id": "banking77-test-000006",
+      "prediction": "card_arrival",
+      "prompt": "When will I get my card?",
+      "response": "card_arrival",
       "valid_label": true
     },
     {
       "correct": true,
-      "expected": "billing",
-      "id": "eval-b02",
-      "prediction": "billing",
-      "prompt": "Where can I download the invoice for our annual plan?",
-      "response": "billing",
+      "expected": "card_arrival",
+      "id": "banking77-test-000040",
+      "prediction": "card_arrival",
+      "prompt": "Where is the tracking number for the card you sent me?",
+      "response": "card_arrival",
       "valid_label": true
     },
     {
       "correct": true,
-      "expected": "billing",
-      "id": "eval-b03",
-      "prediction": "billing",
-      "prompt": "I would like the unused part of my payment refunded.",
-      "response": "billing",
+      "expected": "card_arrival",
+      "id": "banking77-test-000022",
+      "prediction": "card_arrival",
+      "prompt": "Status of the card I ordered.",
+      "response": "card_arrival",
       "valid_label": true
     },
     {
       "correct": true,
-      "expected": "billing",
-      "id": "eval-b04",
-      "prediction": "billing",
-      "prompt": "Can we switch from monthly payments to yearly payments?",
-      "response": "billing",
+      "expected": "card_arrival",
+      "id": "banking77-test-000030",
+      "prediction": "card_arrival",
+      "prompt": "i want to track the card you sent",
+      "response": "card_arrival",
       "valid_label": true
     },
     {
       "correct": true,
-      "expected": "billing",
-      "id": "eval-b05",
-      "prediction": "billing",
-      "prompt": "The promotional discount was not applied to my purchase.",
-      "response": "billing",
-      "valid_label": true
-    },
-    {
-      "correct": true,
-      "expected": "billing",
-      "id": "eval-b06",
-      "prediction": "billing",
-      "prompt": "Please update the VAT number that appears on our receipts.",
-      "response": "billing",
-      "valid_label": true
-    },
-    {
-      "correct": true,
-      "expected": "billing",
-      "id": "eval-b07",
-      "prediction": "billing",
-      "prompt": "Why did the renewal price increase on this invoice?",
-      "response": "billing",
-      "valid_label": true
-    },
-    {
-      "correct": true,
-      "expected": "billing",
-      "id": "eval-b08",
-      "prediction": "billing",
-      "prompt": "Our credit card expired and the subscription payment failed.",
-      "response": "billing",
-      "valid_label": true
-    },
-    {
-      "correct": true,
-      "expected": "billing",
-      "id": "eval-b09",
-      "prediction": "billing",
-      "prompt": "I need to cancel our paid plan before the next renewal.",
-      "response": "billing",
-      "valid_label": true
-    },
-    {
-      "correct": true,
-      "expected": "billing",
-      "id": "eval-b10",
-      "prediction": "billing",
-      "prompt": "Can your team explain this extra fee on my bill?",
-      "response": "billing",
-      "valid_label": true
-    },
-    {
-      "correct": true,
-      "expected": "technical",
-      "id": "eval-t01",
-      "prediction": "technical",
-      "prompt": "Search results never finish loading after I submit a query.",
-      "response": "technical",
-      "valid_label": true
-    },
-    {
-      "correct": true,
-      "expected": "technical",
-      "id": "eval-t02",
-      "prediction": "technical",
-      "prompt": "The Python SDK throws an exception when creating a project.",
-      "response": "technical",
-      "valid_label": true
-    },
-    {
-      "correct": true,
-      "expected": "technical",
-      "id": "eval-t03",
-      "prediction": "technical",
-      "prompt": "The webhook integration stopped delivering events yesterday.",
-      "response": "technical",
-      "valid_label": true
-    },
-    {
-      "correct": true,
-      "expected": "technical",
-      "id": "eval-t04",
-      "prediction": "technical",
-      "prompt": "Every image uploaded to the gallery looks corrupted.",
-      "response": "technical",
-      "valid_label": true
-    },
-    {
-      "correct": true,
-      "expected": "technical",
-      "id": "eval-t05",
-      "prediction": "technical",
-      "prompt": "The application freezes when I select more than ten files.",
-      "response": "technical",
-      "valid_label": true
-    },
-    {
-      "correct": true,
-      "expected": "technical",
-      "id": "eval-t06",
-      "prediction": "technical",
-      "prompt": "The report download is empty even though the dashboard has data.",
-      "response": "technical",
-      "valid_label": true
-    },
-    {
-      "correct": true,
-      "expected": "technical",
-      "id": "eval-t07",
-      "prediction": "technical",
-      "prompt": "Our API requests have become much slower this morning.",
-      "response": "technical",
-      "valid_label": true
-    },
-    {
-      "correct": true,
-      "expected": "technical",
-      "id": "eval-t08",
-      "prediction": "technical",
-      "prompt": "Notifications arrive twice for every new message.",
-      "response": "technical",
-      "valid_label": true
-    },
-    {
-      "correct": true,
-      "expected": "technical",
-      "id": "eval-t09",
-      "prediction": "technical",
-      "prompt": "The chart displays the wrong timezone for every timestamp.",
-      "response": "technical",
-      "valid_label": true
-    },
-    {
-      "correct": true,
-      "expected": "technical",
-      "id": "eval-t10",
-      "prediction": "technical",
-      "prompt": "The latest update broke the connection to our database.",
-      "response": "technical",
-      "valid_label": true
-    },
-    {
-      "correct": true,
-      "expected": "account",
-      "id": "eval-a01",
-      "prediction": "account",
-      "prompt": "I cannot remember the password for my user account.",
-      "response": "account",
-      "valid_label": true
-    },
-    {
-      "correct": true,
-      "expected": "account",
-      "id": "eval-a02",
-      "prediction": "account",
-      "prompt": "Please remove a former employee from our workspace.",
-      "response": "account",
+      "expected": "card_linking",
+      "id": "banking77-test-000044",
+      "prediction": "card_linking",
+      "prompt": "I have received my card, can you help me put it in the app?",
+      "response": "card_linking",
       "valid_label": true
     },
     {
       "correct": false,
-      "expected": "account",
-      "id": "eval-a03",
-      "prediction": "technical",
-      "prompt": "How do I replace the phone used for two-factor authentication?",
-      "response": "technical",
+      "expected": "card_linking",
+      "id": "banking77-test-000073",
+      "prediction": "lost_or_stolen_card",
+      "prompt": "Can I reactivate a card I thought I lost?",
+      "response": "lost_or_stolen_card",
       "valid_label": true
     },
     {
       "correct": true,
-      "expected": "account",
-      "id": "eval-a04",
-      "prediction": "account",
-      "prompt": "I want to change the display name on my profile.",
-      "response": "account",
+      "expected": "card_linking",
+      "id": "banking77-test-000069",
+      "prediction": "card_linking",
+      "prompt": "I would like to link my card. How do I do it?",
+      "response": "card_linking",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "card_linking",
+      "id": "banking77-test-000072",
+      "prediction": "card_linking",
+      "prompt": "Is there a way to make my old card usable with the app?",
+      "response": "card_linking",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "exchange_rate",
+      "id": "banking77-test-000097",
+      "prediction": "exchange_rate",
+      "prompt": "Can you tell me where you get your exchange rates?",
+      "response": "exchange_rate",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "exchange_rate",
+      "id": "banking77-test-000117",
+      "prediction": "exchange_rate",
+      "prompt": "What kind of foreign exchange rate will I get when I exchange my money?",
+      "response": "exchange_rate",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "exchange_rate",
+      "id": "banking77-test-000084",
+      "prediction": "exchange_rate",
+      "prompt": "Where do you guys acquire your exchange rate?",
+      "response": "exchange_rate",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "exchange_rate",
+      "id": "banking77-test-000099",
+      "prediction": "exchange_rate",
+      "prompt": "What currencies is an exchange rate calculated in?",
+      "response": "exchange_rate",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "card_payment_wrong_exchange_rate",
+      "id": "banking77-test-000126",
+      "prediction": "card_payment_wrong_exchange_rate",
+      "prompt": "This rate is too low. Are you sure your using the right exchange rate.",
+      "response": "card_payment_wrong_exchange_rate",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "card_payment_wrong_exchange_rate",
+      "id": "banking77-test-000142",
+      "prediction": "card_payment_wrong_exchange_rate",
+      "prompt": "When I made a purchase last Saturday, I was charged extra. Did I receive the right exchange rate?",
+      "response": "card_payment_wrong_exchange_rate",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "card_payment_wrong_exchange_rate",
+      "id": "banking77-test-000153",
+      "prediction": "card_payment_wrong_exchange_rate",
+      "prompt": "I paid for something in foreign currency but noticed the exchange rate is incorrect.",
+      "response": "card_payment_wrong_exchange_rate",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "card_payment_wrong_exchange_rate",
+      "id": "banking77-test-000145",
+      "prediction": "card_payment_wrong_exchange_rate",
+      "prompt": "Hi, I have been overcharged for my payment last Saturday. I guess exchange rate was wrong.",
+      "response": "card_payment_wrong_exchange_rate",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "extra_charge_on_statement",
+      "id": "banking77-test-000182",
+      "prediction": "extra_charge_on_statement",
+      "prompt": "I got a extra \u20ac1 fee in my statement",
+      "response": "extra_charge_on_statement",
       "valid_label": true
     },
     {
       "correct": false,
-      "expected": "account",
-      "id": "eval-a05",
-      "prediction": "billing",
-      "prompt": "The invitation link for our new teammate has expired.",
-      "response": "billing",
+      "expected": "extra_charge_on_statement",
+      "id": "banking77-test-000192",
+      "prediction": "transaction_charged_twice",
+      "prompt": "There is a transaction for $1 and I don't know why it was charged.",
+      "response": "transaction_charged_twice",
       "valid_label": true
     },
     {
       "correct": true,
-      "expected": "account",
-      "id": "eval-a06",
-      "prediction": "account",
-      "prompt": "My role does not let me view the team's private projects.",
-      "response": "account",
+      "expected": "extra_charge_on_statement",
+      "id": "banking77-test-000176",
+      "prediction": "extra_charge_on_statement",
+      "prompt": "There is an extra $1 charge",
+      "response": "extra_charge_on_statement",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "extra_charge_on_statement",
+      "id": "banking77-test-000193",
+      "prediction": "pending_card_payment",
+      "prompt": "Can you help me with a weird charge?  It's a pound charge that never goes away from the statement view on the app I'm using.  It's not described as anything but \"Pending\", and that status has never changed during the last two days.",
+      "response": "pending_card_payment",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "pending_cash_withdrawal",
+      "id": "banking77-test-000220",
+      "prediction": "declined_cash_withdrawal",
+      "prompt": "Hey, my card was declined at an ATM in the city centre theatre. My account says the transaction is pending, though. I didn't get the money, though, so what does that mean?",
+      "response": "declined_cash_withdrawal",
       "valid_label": true
     },
     {
       "correct": true,
-      "expected": "account",
-      "id": "eval-a07",
-      "prediction": "account",
-      "prompt": "I no longer have access to the email address used to sign in.",
-      "response": "account",
+      "expected": "pending_cash_withdrawal",
+      "id": "banking77-test-000215",
+      "prediction": "pending_cash_withdrawal",
+      "prompt": "I am still waiting for a cash withdrawal to show",
+      "response": "pending_cash_withdrawal",
       "valid_label": true
     },
     {
       "correct": true,
-      "expected": "account",
-      "id": "eval-a08",
-      "prediction": "account",
-      "prompt": "Can I transfer ownership of this workspace to another person?",
-      "response": "account",
+      "expected": "pending_cash_withdrawal",
+      "id": "banking77-test-000231",
+      "prediction": "pending_cash_withdrawal",
+      "prompt": "Cash withdrawal still pending?",
+      "response": "pending_cash_withdrawal",
       "valid_label": true
     },
     {
       "correct": true,
-      "expected": "account",
-      "id": "eval-a09",
-      "prediction": "account",
-      "prompt": "My account was locked after several failed login attempts.",
-      "response": "account",
+      "expected": "pending_cash_withdrawal",
+      "id": "banking77-test-000218",
+      "prediction": "pending_cash_withdrawal",
+      "prompt": "Why is my ATM cash withdrawal showing up as a pending transaction?",
+      "response": "pending_cash_withdrawal",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "fiat_currency_support",
+      "id": "banking77-test-000247",
+      "prediction": "receiving_money",
+      "prompt": "There is an incoming payment into my account, but it is deactivated. Will they still be processed?",
+      "response": "receiving_money",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "fiat_currency_support",
+      "id": "banking77-test-000251",
+      "prediction": "exchange_via_app",
+      "prompt": "Where can I exchange my money for EUR?",
+      "response": "exchange_via_app",
       "valid_label": true
     },
     {
       "correct": true,
-      "expected": "account",
-      "id": "eval-a10",
-      "prediction": "account",
-      "prompt": "I need to update the contact details saved on my profile.",
-      "response": "account",
+      "expected": "fiat_currency_support",
+      "id": "banking77-test-000256",
+      "prediction": "fiat_currency_support",
+      "prompt": "How do I change currencies to euros?",
+      "response": "fiat_currency_support",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "fiat_currency_support",
+      "id": "banking77-test-000275",
+      "prediction": "fiat_currency_support",
+      "prompt": "How man currencies can I hold?",
+      "response": "fiat_currency_support",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "card_delivery_estimate",
+      "id": "banking77-test-000299",
+      "prediction": "card_delivery_estimate",
+      "prompt": "How long does it take to get my card? Can I choose when to receive it?",
+      "response": "card_delivery_estimate",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "card_delivery_estimate",
+      "id": "banking77-test-000304",
+      "prediction": "card_delivery_estimate",
+      "prompt": "Whats the delivery time to the United States?",
+      "response": "card_delivery_estimate",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "card_delivery_estimate",
+      "id": "banking77-test-000308",
+      "prediction": "card_delivery_estimate",
+      "prompt": "How long does shipping take to get to a US destination?",
+      "response": "card_delivery_estimate",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "card_delivery_estimate",
+      "id": "banking77-test-000316",
+      "prediction": "card_delivery_estimate",
+      "prompt": "What's the U.S. Delivery time?",
+      "response": "card_delivery_estimate",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "automatic_top_up",
+      "id": "banking77-test-000355",
+      "prediction": "automatic_top_up",
+      "prompt": "Can you explain where I can find the auto-top option?",
+      "response": "automatic_top_up",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "automatic_top_up",
+      "id": "banking77-test-000352",
+      "prediction": "automatic_top_up",
+      "prompt": "Can I be topped up once I hit a certain balance?",
+      "response": "automatic_top_up",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "automatic_top_up",
+      "id": "banking77-test-000339",
+      "prediction": "automatic_top_up",
+      "prompt": "How can I top up automatically?",
+      "response": "automatic_top_up",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "automatic_top_up",
+      "id": "banking77-test-000324",
+      "prediction": "automatic_top_up",
+      "prompt": "I'm running out of money, can I  auto top up?",
+      "response": "automatic_top_up",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "card_not_working",
+      "id": "banking77-test-000381",
+      "prediction": "card_not_working",
+      "prompt": "My actual card isn't working.",
+      "response": "card_not_working",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "card_not_working",
+      "id": "banking77-test-000370",
+      "prediction": "card_not_working",
+      "prompt": "My card does not work",
+      "response": "card_not_working",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "card_not_working",
+      "id": "banking77-test-000389",
+      "prediction": "card_not_working",
+      "prompt": "Need help with my card. It's not working.",
+      "response": "card_not_working",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "card_not_working",
+      "id": "banking77-test-000398",
+      "prediction": "card_not_working",
+      "prompt": "Nothing goes through on my card.",
+      "response": "card_not_working",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "exchange_via_app",
+      "id": "banking77-test-000402",
+      "prediction": "exchange_via_app",
+      "prompt": "Tell me how I can exchange between different currency.",
+      "response": "exchange_via_app",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "exchange_via_app",
+      "id": "banking77-test-000427",
+      "prediction": "exchange_via_app",
+      "prompt": "Can am I able to exchange currencies?",
+      "response": "exchange_via_app",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "exchange_via_app",
+      "id": "banking77-test-000437",
+      "prediction": "exchange_via_app",
+      "prompt": "How do I exchange currency?",
+      "response": "exchange_via_app",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "exchange_via_app",
+      "id": "banking77-test-000439",
+      "prediction": "exchange_via_app",
+      "prompt": "Can I exchange currencies with my account?",
+      "response": "exchange_via_app",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "lost_or_stolen_card",
+      "id": "banking77-test-000445",
+      "prediction": "lost_or_stolen_card",
+      "prompt": "My card is lost! What can I do?",
+      "response": "lost_or_stolen_card",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "lost_or_stolen_card",
+      "id": "banking77-test-000446",
+      "prediction": "lost_or_stolen_card",
+      "prompt": "I lost my card",
+      "response": "lost_or_stolen_card",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "lost_or_stolen_card",
+      "id": "banking77-test-000459",
+      "prediction": "lost_or_stolen_card",
+      "prompt": "What should I do if I lost my card?",
+      "response": "lost_or_stolen_card",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "lost_or_stolen_card",
+      "id": "banking77-test-000479",
+      "prediction": "lost_or_stolen_card",
+      "prompt": "My card got stolen!",
+      "response": "lost_or_stolen_card",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "age_limit",
+      "id": "banking77-test-000489",
+      "prediction": "age_limit",
+      "prompt": "What age do I have to be?",
+      "response": "age_limit",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "age_limit",
+      "id": "banking77-test-000517",
+      "prediction": "age_limit",
+      "prompt": "How old does my kids need to be to open an account?",
+      "response": "age_limit",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "age_limit",
+      "id": "banking77-test-000497",
+      "prediction": "age_limit",
+      "prompt": "Can I open a bank account for my newborn baby?",
+      "response": "age_limit",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "age_limit",
+      "id": "banking77-test-000505",
+      "prediction": "age_limit",
+      "prompt": "Can my children have their own account?",
+      "response": "age_limit",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "pin_blocked",
+      "id": "banking77-test-000554",
+      "prediction": "pin_blocked",
+      "prompt": "Can I unblock my pin?",
+      "response": "pin_blocked",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "pin_blocked",
+      "id": "banking77-test-000525",
+      "prediction": "pin_blocked",
+      "prompt": "How do I unblock my pin after entering it wrong too many times?",
+      "response": "pin_blocked",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "pin_blocked",
+      "id": "banking77-test-000535",
+      "prediction": "pin_blocked",
+      "prompt": "What do I do if the bank machine won't accept my PIN attempts anymore?",
+      "response": "pin_blocked",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "pin_blocked",
+      "id": "banking77-test-000528",
+      "prediction": "pin_blocked",
+      "prompt": "How do I reset my PIN, I can't seem to use my card?",
+      "response": "pin_blocked",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "contactless_not_working",
+      "id": "banking77-test-000561",
+      "prediction": "contactless_not_working",
+      "prompt": "Are contactless payments enabled on my new card?",
+      "response": "contactless_not_working",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "contactless_not_working",
+      "id": "banking77-test-000566",
+      "prediction": "contactless_not_working",
+      "prompt": "I tried to pay contactless at the bus today and it didn't work. Any ideas why?",
+      "response": "contactless_not_working",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "contactless_not_working",
+      "id": "banking77-test-000590",
+      "prediction": "contactless_not_working",
+      "prompt": "I wanted to use my contactless at the metro today but it didn't accept it!",
+      "response": "contactless_not_working",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "contactless_not_working",
+      "id": "banking77-test-000564",
+      "prediction": "contactless_not_working",
+      "prompt": "I don't know what's wrong, my contactless stopped working. Tried it in a few different places today and it didn't work in any of them.",
+      "response": "contactless_not_working",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "top_up_by_bank_transfer_charge",
+      "id": "banking77-test-000626",
+      "prediction": "top_up_by_bank_transfer_charge",
+      "prompt": "Is there a charge for topping up by transfer?",
+      "response": "top_up_by_bank_transfer_charge",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "top_up_by_bank_transfer_charge",
+      "id": "banking77-test-000619",
+      "prediction": "top_up_by_card_charge",
+      "prompt": "What are the fees for top-ups?",
+      "response": "top_up_by_card_charge",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "top_up_by_bank_transfer_charge",
+      "id": "banking77-test-000629",
+      "prediction": "top_up_by_bank_transfer_charge",
+      "prompt": "Will I be charged for a SEPA transfer?",
+      "response": "top_up_by_bank_transfer_charge",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "top_up_by_bank_transfer_charge",
+      "id": "banking77-test-000635",
+      "prediction": "top_up_by_bank_transfer_charge",
+      "prompt": "Will I be charged a fee if I receive a SEPA transfer",
+      "response": "top_up_by_bank_transfer_charge",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "pending_top_up",
+      "id": "banking77-test-000666",
+      "prediction": "pending_top_up",
+      "prompt": "Hi I'm a new customer and tried topping up for the first time today, seems it's not working, the thing shows up as pending since half an hour already! Please fix it!",
+      "response": "pending_top_up",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "pending_top_up",
+      "id": "banking77-test-000679",
+      "prediction": "pending_top_up",
+      "prompt": "The top-up has a definite problem! I regularly use your service and haven't had a problem before, but now the top-up just shows pending. Please tell my why it continues to show pending.",
+      "response": "pending_top_up",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "pending_top_up",
+      "id": "banking77-test-000670",
+      "prediction": "pending_top_up",
+      "prompt": "What does it mean when my top up is saying  still pending?",
+      "response": "pending_top_up",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "pending_top_up",
+      "id": "banking77-test-000662",
+      "prediction": "top_up_failed",
+      "prompt": "top up did not complete",
+      "response": "top_up_failed",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "cancel_transfer",
+      "id": "banking77-test-000709",
+      "prediction": "cancel_transfer",
+      "prompt": "Can a transaction be cancelled?",
+      "response": "cancel_transfer",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "cancel_transfer",
+      "id": "banking77-test-000701",
+      "prediction": "cancel_transfer",
+      "prompt": "I transferred the wrong amount and would like to cancel the transaction.",
+      "response": "cancel_transfer",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "cancel_transfer",
+      "id": "banking77-test-000707",
+      "prediction": "cancel_transfer",
+      "prompt": "The transfer I just made needs to be cancelled right now. It was my mistake. Please help me cancel it before it goes through!",
+      "response": "cancel_transfer",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "cancel_transfer",
+      "id": "banking77-test-000714",
+      "prediction": "request_refund",
+      "prompt": "I made an error in payment yesterday and I need it fixed asap because it's for my rent tomorrow.",
+      "response": "request_refund",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "top_up_limits",
+      "id": "banking77-test-000744",
+      "prediction": "top_up_limits",
+      "prompt": "What is the top-ups limit?",
+      "response": "top_up_limits",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "top_up_limits",
+      "id": "banking77-test-000722",
+      "prediction": "top_up_limits",
+      "prompt": "Am I free to top-up as much as I want?",
+      "response": "top_up_limits",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "top_up_limits",
+      "id": "banking77-test-000743",
+      "prediction": "top_up_limits",
+      "prompt": "Is there a limit on top-ups?",
+      "response": "top_up_limits",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "top_up_limits",
+      "id": "banking77-test-000741",
+      "prediction": "top_up_limits",
+      "prompt": "Can you tell me the limits for top ups?",
+      "response": "top_up_limits",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "wrong_amount_of_cash_received",
+      "id": "banking77-test-000792",
+      "prediction": "wrong_amount_of_cash_received",
+      "prompt": "I tried to take out cash but the amount isn't right, so what do I do?",
+      "response": "wrong_amount_of_cash_received",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "wrong_amount_of_cash_received",
+      "id": "banking77-test-000796",
+      "prediction": "wrong_amount_of_cash_received",
+      "prompt": "The ATM didn't give me the the withdraw amount requested.",
+      "response": "wrong_amount_of_cash_received",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "wrong_amount_of_cash_received",
+      "id": "banking77-test-000773",
+      "prediction": "wrong_amount_of_cash_received",
+      "prompt": "How can I request cash back? The ATM just gave me the wrong amount, the app shows the amount that I've been actually charged though...",
+      "response": "wrong_amount_of_cash_received",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "wrong_amount_of_cash_received",
+      "id": "banking77-test-000770",
+      "prediction": "wrong_amount_of_cash_received",
+      "prompt": "Hi. I just withdrew cash from an ATM and received the wrong amount. However, my app shows the correct amount I withdrew. How do I get the rest of the cash?",
+      "response": "wrong_amount_of_cash_received",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "card_payment_fee_charged",
+      "id": "banking77-test-000831",
+      "prediction": "card_payment_fee_charged",
+      "prompt": "Is using my card free?",
+      "response": "card_payment_fee_charged",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "card_payment_fee_charged",
+      "id": "banking77-test-000830",
+      "prediction": "extra_charge_on_statement",
+      "prompt": "Someone needs to make me aware when there are extra charges for payments. I happened to be looking at the app earlier and noticed a charge associated to a payment that was extra that no one made me aware of before at all.",
+      "response": "extra_charge_on_statement",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "card_payment_fee_charged",
+      "id": "banking77-test-000840",
+      "prediction": "card_payment_fee_charged",
+      "prompt": "They charged me for paying with my card.",
+      "response": "card_payment_fee_charged",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "card_payment_fee_charged",
+      "id": "banking77-test-000827",
+      "prediction": "card_payment_fee_charged",
+      "prompt": "Is there a fee when you pay with your card?",
+      "response": "card_payment_fee_charged",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "transfer_not_received_by_recipient",
+      "id": "banking77-test-000861",
+      "prediction": "transfer_not_received_by_recipient",
+      "prompt": "Hey, I need some help figuring out way my transfer is not complete yet. My Landlord hasn't got the money yet.She should have received it by now.",
+      "response": "transfer_not_received_by_recipient",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "transfer_not_received_by_recipient",
+      "id": "banking77-test-000870",
+      "prediction": "transfer_timing",
+      "prompt": "How long will it take for my transaction to be completed?",
+      "response": "transfer_timing",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "transfer_not_received_by_recipient",
+      "id": "banking77-test-000860",
+      "prediction": "transfer_not_received_by_recipient",
+      "prompt": "I sent money.  They haven't received it.",
+      "response": "transfer_not_received_by_recipient",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "transfer_not_received_by_recipient",
+      "id": "banking77-test-000855",
+      "prediction": "transfer_not_received_by_recipient",
+      "prompt": "I completed a money transaction but the recipient hasn't received it",
+      "response": "transfer_not_received_by_recipient",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "supported_cards_and_currencies",
+      "id": "banking77-test-000892",
+      "prediction": "supported_cards_and_currencies",
+      "prompt": "Will you accept my other card from the U.S.?",
+      "response": "supported_cards_and_currencies",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "supported_cards_and_currencies",
+      "id": "banking77-test-000912",
+      "prediction": "supported_cards_and_currencies",
+      "prompt": "What cards to do you support to top up.",
+      "response": "supported_cards_and_currencies",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "supported_cards_and_currencies",
+      "id": "banking77-test-000882",
+      "prediction": "topping_up_by_card",
+      "prompt": "I need support options, I want to top my card",
+      "response": "topping_up_by_card",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "supported_cards_and_currencies",
+      "id": "banking77-test-000909",
+      "prediction": "supported_cards_and_currencies",
+      "prompt": "What options do I have in regards to payment?",
+      "response": "supported_cards_and_currencies",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "getting_virtual_card",
+      "id": "banking77-test-000925",
+      "prediction": "getting_virtual_card",
+      "prompt": "If I don't want a physical card can i get a virtual version?",
+      "response": "getting_virtual_card",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "getting_virtual_card",
+      "id": "banking77-test-000949",
+      "prediction": "getting_virtual_card",
+      "prompt": "How do I order a virtual card?",
+      "response": "getting_virtual_card",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "getting_virtual_card",
+      "id": "banking77-test-000935",
+      "prediction": "getting_virtual_card",
+      "prompt": "Is it possible for me to get a virtual card?",
+      "response": "getting_virtual_card",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "getting_virtual_card",
+      "id": "banking77-test-000930",
+      "prediction": "getting_virtual_card",
+      "prompt": "how do i get a virtual card?",
+      "response": "getting_virtual_card",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "card_acceptance",
+      "id": "banking77-test-000980",
+      "prediction": "card_acceptance",
+      "prompt": "I am traveling to Germany, Will I be able to use my card there?",
+      "response": "card_acceptance",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "card_acceptance",
+      "id": "banking77-test-000982",
+      "prediction": "card_acceptance",
+      "prompt": "Is there any place I cannot use my card?",
+      "response": "card_acceptance",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "card_acceptance",
+      "id": "banking77-test-000979",
+      "prediction": "card_acceptance",
+      "prompt": "Which outlets accept my card?",
+      "response": "card_acceptance",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "card_acceptance",
+      "id": "banking77-test-000975",
+      "prediction": "card_acceptance",
+      "prompt": "What places will accept my card for payment?",
+      "response": "card_acceptance",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "top_up_reverted",
+      "id": "banking77-test-001029",
+      "prediction": "top_up_reverted",
+      "prompt": "Was my top up reversed?",
+      "response": "top_up_reverted",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "top_up_reverted",
+      "id": "banking77-test-001040",
+      "prediction": "top_up_reverted",
+      "prompt": "I'd like to know why my top-up was canceled please.",
+      "response": "top_up_reverted",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "top_up_reverted",
+      "id": "banking77-test-001031",
+      "prediction": "top_up_reverted",
+      "prompt": "Do you know if my top-up has been cancelled?",
+      "response": "top_up_reverted",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "top_up_reverted",
+      "id": "banking77-test-001003",
+      "prediction": "top_up_reverted",
+      "prompt": "Is it possible to tell if my top up has reverted?",
+      "response": "top_up_reverted",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "balance_not_updated_after_cheque_or_cash_deposit",
+      "id": "banking77-test-001052",
+      "prediction": "balance_not_updated_after_cheque_or_cash_deposit",
+      "prompt": "When I deposit cheques and cash, my balance does not update.",
+      "response": "balance_not_updated_after_cheque_or_cash_deposit",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "balance_not_updated_after_cheque_or_cash_deposit",
+      "id": "banking77-test-001068",
+      "prediction": "balance_not_updated_after_cheque_or_cash_deposit",
+      "prompt": "Why does my account not accept cash deposits?",
+      "response": "balance_not_updated_after_cheque_or_cash_deposit",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "balance_not_updated_after_cheque_or_cash_deposit",
+      "id": "banking77-test-001060",
+      "prediction": "balance_not_updated_after_cheque_or_cash_deposit",
+      "prompt": "I Submitted a cheque couple days ago, nothing happened to my account yet.Would you please check What could be the possible issue?",
+      "response": "balance_not_updated_after_cheque_or_cash_deposit",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "balance_not_updated_after_cheque_or_cash_deposit",
+      "id": "banking77-test-001043",
+      "prediction": "balance_not_updated_after_cheque_or_cash_deposit",
+      "prompt": "Is there a reason why my account isn't updating because I used a check to  balance my account?",
+      "response": "balance_not_updated_after_cheque_or_cash_deposit",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "card_payment_not_recognised",
+      "id": "banking77-test-001103",
+      "prediction": "card_payment_not_recognised",
+      "prompt": "I'm concerned about a payment that has recently been made on my card.  I do not recognize the name that the transaction went to, can you help me?",
+      "response": "card_payment_not_recognised",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "card_payment_not_recognised",
+      "id": "banking77-test-001095",
+      "prediction": "reverted_card_payment?",
+      "prompt": "I have a payment I didn't do",
+      "response": "reverted_card_payment?",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "card_payment_not_recognised",
+      "id": "banking77-test-001086",
+      "prediction": "reverted_card_payment?",
+      "prompt": "I did not make this card payment.",
+      "response": "reverted_card_payment?",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "card_payment_not_recognised",
+      "id": "banking77-test-001107",
+      "prediction": "card_payment_not_recognised",
+      "prompt": "I'm not familiar with a card payment.",
+      "response": "card_payment_not_recognised",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "edit_personal_details",
+      "id": "banking77-test-001143",
+      "prediction": "edit_personal_details",
+      "prompt": "Where can I go to update my personal profile?",
+      "response": "edit_personal_details",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "edit_personal_details",
+      "id": "banking77-test-001134",
+      "prediction": "edit_personal_details",
+      "prompt": "I need to change my account details",
+      "response": "edit_personal_details",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "edit_personal_details",
+      "id": "banking77-test-001158",
+      "prediction": "edit_personal_details",
+      "prompt": "How can I edit my personal details?",
+      "response": "edit_personal_details",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "edit_personal_details",
+      "id": "banking77-test-001155",
+      "prediction": "edit_personal_details",
+      "prompt": "I want to change my name.",
+      "response": "edit_personal_details",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "why_verify_identity",
+      "id": "banking77-test-001174",
+      "prediction": "why_verify_identity",
+      "prompt": "Why do you need so much information to verify my identity?",
+      "response": "why_verify_identity",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "why_verify_identity",
+      "id": "banking77-test-001175",
+      "prediction": "why_verify_identity",
+      "prompt": "What is the purpose for the identity check",
+      "response": "why_verify_identity",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "why_verify_identity",
+      "id": "banking77-test-001185",
+      "prediction": "why_verify_identity",
+      "prompt": "Why do I have to give you all of my identification details?",
+      "response": "why_verify_identity",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "why_verify_identity",
+      "id": "banking77-test-001163",
+      "prediction": "why_verify_identity",
+      "prompt": "do I need to verify my identity every time I log into my account?",
+      "response": "why_verify_identity",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "unable_to_verify_identity",
+      "id": "banking77-test-001228",
+      "prediction": "verify_my_identity",
+      "prompt": "How do I show this stupid system that this is really my identity?",
+      "response": "verify_my_identity",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "unable_to_verify_identity",
+      "id": "banking77-test-001201",
+      "prediction": "unable_to_verify_identity",
+      "prompt": "I cannot verify my identity",
+      "response": "unable_to_verify_identity",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "unable_to_verify_identity",
+      "id": "banking77-test-001206",
+      "prediction": "unable_to_verify_identity",
+      "prompt": "It is impossible to verify my identity",
+      "response": "unable_to_verify_identity",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "unable_to_verify_identity",
+      "id": "banking77-test-001224",
+      "prediction": "unable_to_verify_identity",
+      "prompt": "The app doesn't believe that I am me",
+      "response": "unable_to_verify_identity",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "get_physical_card",
+      "id": "banking77-test-001251",
+      "prediction": "pin_blocked",
+      "prompt": "Where in the app can I find my PIN?",
+      "response": "pin_blocked",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "get_physical_card",
+      "id": "banking77-test-001242",
+      "prediction": "card_delivery_estimate",
+      "prompt": "Is the PIN delivered separately?",
+      "response": "card_delivery_estimate",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "get_physical_card",
+      "id": "banking77-test-001252",
+      "prediction": "pin_blocked",
+      "prompt": "I just got my new card but am not sure how to check its PIN.",
+      "response": "pin_blocked",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "get_physical_card",
+      "id": "banking77-test-001270",
+      "prediction": "pin_blocked",
+      "prompt": "I need my PIN",
+      "response": "pin_blocked",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "visa_or_mastercard",
+      "id": "banking77-test-001286",
+      "prediction": "visa_or_mastercard",
+      "prompt": "Do you guys accept mastercard or visa?",
+      "response": "visa_or_mastercard",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "visa_or_mastercard",
+      "id": "banking77-test-001319",
+      "prediction": "visa_or_mastercard",
+      "prompt": "Do you use Mastercard or Visa?",
+      "response": "visa_or_mastercard",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "visa_or_mastercard",
+      "id": "banking77-test-001298",
+      "prediction": "supported_cards_and_currencies",
+      "prompt": "What are the available cards?",
+      "response": "supported_cards_and_currencies",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "visa_or_mastercard",
+      "id": "banking77-test-001293",
+      "prediction": "visa_or_mastercard",
+      "prompt": "Do I get a choice between Visa and Mastercard?",
+      "response": "visa_or_mastercard",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "topping_up_by_card",
+      "id": "banking77-test-001348",
+      "prediction": "top_up_reverted",
+      "prompt": "Cannot access my top up.",
+      "response": "top_up_reverted",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "topping_up_by_card",
+      "id": "banking77-test-001340",
+      "prediction": "receiving_money",
+      "prompt": "Will my friend be able to top off my account?",
+      "response": "receiving_money",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "topping_up_by_card",
+      "id": "banking77-test-001335",
+      "prediction": "receiving_money",
+      "prompt": "I have friends that would like to top-up my account is that possible?",
+      "response": "receiving_money",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "topping_up_by_card",
+      "id": "banking77-test-001321",
+      "prediction": "topping_up_by_card",
+      "prompt": "How can I top up my account with a card?",
+      "response": "topping_up_by_card",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "disposable_card_limits",
+      "id": "banking77-test-001380",
+      "prediction": "disposable_card_limits",
+      "prompt": "I have to have several disposable cards per day.",
+      "response": "disposable_card_limits",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "disposable_card_limits",
+      "id": "banking77-test-001391",
+      "prediction": "disposable_card_limits",
+      "prompt": "How many disposable cards can I own?",
+      "response": "disposable_card_limits",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "disposable_card_limits",
+      "id": "banking77-test-001366",
+      "prediction": "disposable_card_limits",
+      "prompt": "what is the disposable cards limit?",
+      "response": "disposable_card_limits",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "disposable_card_limits",
+      "id": "banking77-test-001363",
+      "prediction": "disposable_card_limits",
+      "prompt": "I need to use my disposable card multiple times a day, is there a cutoff limit?",
+      "response": "disposable_card_limits",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "compromised_card",
+      "id": "banking77-test-001416",
+      "prediction": "compromised_card",
+      "prompt": "I don't recognize some of the transactions on my card, I think someone must have gotten my card info and used it.",
+      "response": "compromised_card",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "compromised_card",
+      "id": "banking77-test-001438",
+      "prediction": "compromised_card",
+      "prompt": "What should I do if I think someone is using my card.",
+      "response": "compromised_card",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "compromised_card",
+      "id": "banking77-test-001418",
+      "prediction": "compromised_card",
+      "prompt": "My card is being used online to make a bunch of purchases! Someone else is using it fraudulently. Can you help me freeze it?",
+      "response": "compromised_card",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "compromised_card",
+      "id": "banking77-test-001425",
+      "prediction": "compromised_card",
+      "prompt": "The transactions showing up are strange, I think my card was used without me knowing.",
+      "response": "compromised_card",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "atm_support",
+      "id": "banking77-test-001461",
+      "prediction": "card_acceptance",
+      "prompt": "Can I get cash with this card anywhere?",
+      "response": "card_acceptance",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "atm_support",
+      "id": "banking77-test-001449",
+      "prediction": "atm_support",
+      "prompt": "Where are the locations of ATMs that accept this card?",
+      "response": "atm_support",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "atm_support",
+      "id": "banking77-test-001448",
+      "prediction": "atm_support",
+      "prompt": "Is there any nearby ATM's?",
+      "response": "atm_support",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "atm_support",
+      "id": "banking77-test-001465",
+      "prediction": "atm_support",
+      "prompt": "Where is the nearest bank machine?",
+      "response": "atm_support",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "direct_debit_payment_not_recognised",
+      "id": "banking77-test-001488",
+      "prediction": "direct_debit_payment_not_recognised",
+      "prompt": "There's a Direct Debit payment in my account that I didn't make",
+      "response": "direct_debit_payment_not_recognised",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "direct_debit_payment_not_recognised",
+      "id": "banking77-test-001512",
+      "prediction": "direct_debit_payment_not_recognised",
+      "prompt": "I don't recognize a debit payment that was made and would like to find out about the payment.",
+      "response": "direct_debit_payment_not_recognised",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "direct_debit_payment_not_recognised",
+      "id": "banking77-test-001519",
+      "prediction": "direct_debit_payment_not_recognised",
+      "prompt": "There's a direct debit I wish to dispute",
+      "response": "direct_debit_payment_not_recognised",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "direct_debit_payment_not_recognised",
+      "id": "banking77-test-001509",
+      "prediction": "direct_debit_payment_not_recognised",
+      "prompt": "I didn't make this direct debit transaction",
+      "response": "direct_debit_payment_not_recognised",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "passcode_forgotten",
+      "id": "banking77-test-001529",
+      "prediction": "passcode_forgotten",
+      "prompt": "How do I reset a forgotten passcode, please?",
+      "response": "passcode_forgotten",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "passcode_forgotten",
+      "id": "banking77-test-001551",
+      "prediction": "passcode_forgotten",
+      "prompt": "Can you help me reset my password?",
+      "response": "passcode_forgotten",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "passcode_forgotten",
+      "id": "banking77-test-001539",
+      "prediction": "passcode_forgotten",
+      "prompt": "Help me reset the passcode.",
+      "response": "passcode_forgotten",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "passcode_forgotten",
+      "id": "banking77-test-001534",
+      "prediction": "passcode_forgotten",
+      "prompt": "I no longer have my passcode.",
+      "response": "passcode_forgotten",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "declined_cash_withdrawal",
+      "id": "banking77-test-001565",
+      "prediction": "declined_cash_withdrawal",
+      "prompt": "Why was my ATM transaction cancelled?",
+      "response": "declined_cash_withdrawal",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "declined_cash_withdrawal",
+      "id": "banking77-test-001600",
+      "prediction": "declined_cash_withdrawal",
+      "prompt": "atm would not give me cash",
+      "response": "declined_cash_withdrawal",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "declined_cash_withdrawal",
+      "id": "banking77-test-001570",
+      "prediction": "declined_cash_withdrawal",
+      "prompt": "I need your help to check my account, please! My card keeps being declined at the ATM, and I've already tried two different ones!",
+      "response": "declined_cash_withdrawal",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "declined_cash_withdrawal",
+      "id": "banking77-test-001584",
+      "prediction": "declined_cash_withdrawal",
+      "prompt": "How come I can't take money out of the ATM?",
+      "response": "declined_cash_withdrawal",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "pending_card_payment",
+      "id": "banking77-test-001602",
+      "prediction": "pending_card_payment",
+      "prompt": "Why is my payment pending?",
+      "response": "pending_card_payment",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "pending_card_payment",
+      "id": "banking77-test-001627",
+      "prediction": "transaction_charged_twice",
+      "prompt": "I was double charged, and the second charge is showing as \"pending\". How long will it be before I get my money back once the second charge has been refunded?",
+      "response": "transaction_charged_twice",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "pending_card_payment",
+      "id": "banking77-test-001619",
+      "prediction": "pending_card_payment",
+      "prompt": "Why is there a pending transaction on my card?",
+      "response": "pending_card_payment",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "pending_card_payment",
+      "id": "banking77-test-001639",
+      "prediction": "pending_card_payment",
+      "prompt": "I have a pending payment in my account that I paid a while back ago and it still hasnt gone through. Why would it show pending for so long?",
+      "response": "pending_card_payment",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "lost_or_stolen_phone",
+      "id": "banking77-test-001646",
+      "prediction": "lost_or_stolen_phone",
+      "prompt": "I can't find my phone.",
+      "response": "lost_or_stolen_phone",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "lost_or_stolen_phone",
+      "id": "banking77-test-001678",
+      "prediction": "lost_or_stolen_phone",
+      "prompt": "How do I use the app if I don't have my phone with me?",
+      "response": "lost_or_stolen_phone",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "lost_or_stolen_phone",
+      "id": "banking77-test-001667",
+      "prediction": "lost_or_stolen_phone",
+      "prompt": "Can I still use the app if I switched phones?",
+      "response": "lost_or_stolen_phone",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "lost_or_stolen_phone",
+      "id": "banking77-test-001660",
+      "prediction": "lost_or_stolen_phone",
+      "prompt": "lost phone, can i still access account?",
+      "response": "lost_or_stolen_phone",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "request_refund",
+      "id": "banking77-test-001694",
+      "prediction": "request_refund",
+      "prompt": "How do I apply for a refund?",
+      "response": "request_refund",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "request_refund",
+      "id": "banking77-test-001709",
+      "prediction": "request_refund",
+      "prompt": "I am not Happy with this product can i get a refund?",
+      "response": "request_refund",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "request_refund",
+      "id": "banking77-test-001707",
+      "prediction": "request_refund",
+      "prompt": "Hello I changed my mind and really need a refund on one of things I bought recently. Can you please cancel the transaction and get my money back. Please it's urgent.",
+      "response": "request_refund",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "request_refund",
+      "id": "banking77-test-001702",
+      "prediction": "request_refund",
+      "prompt": "Can you cancel my purchase?",
+      "response": "request_refund",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "declined_transfer",
+      "id": "banking77-test-001751",
+      "prediction": "declined_transfer",
+      "prompt": "My transfer has been declined and I know it should have went through.",
+      "response": "declined_transfer",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "declined_transfer",
+      "id": "banking77-test-001731",
+      "prediction": "declined_card_payment",
+      "prompt": "The card got declined twice when I tried to use it to buy something online yesterday.",
+      "response": "declined_card_payment",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "declined_transfer",
+      "id": "banking77-test-001756",
+      "prediction": "declined_card_payment",
+      "prompt": "I tried to buy something online yesterday but it wouldn't stop saying declined. Tried again today but same thing happened. What's Broken?",
+      "response": "declined_card_payment",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "declined_transfer",
+      "id": "banking77-test-001735",
+      "prediction": "contactless_not_working",
+      "prompt": "How do I contact customer support about a transfer?",
+      "response": "contactless_not_working",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "Refund_not_showing_up",
+      "id": "banking77-test-001795",
+      "prediction": "request_refund",
+      "prompt": "Why doesn't a return show up im my account from a purchase I made?",
+      "response": "request_refund",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "Refund_not_showing_up",
+      "id": "banking77-test-001792",
+      "prediction": "Refund_not_showing_up",
+      "prompt": "Where is my refund? I have been checking my account all day.",
+      "response": "Refund_not_showing_up",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "Refund_not_showing_up",
+      "id": "banking77-test-001791",
+      "prediction": "request_refund",
+      "prompt": "I did what you told me earlier and contacted the seller for a refund directly, but nothing is happening! It's been a week and I still haven't got anything. Please just give me back my money",
+      "response": "request_refund",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "Refund_not_showing_up",
+      "id": "banking77-test-001800",
+      "prediction": "Refund_not_showing_up",
+      "prompt": "I should have received a refund however it is not showing on my statement",
+      "response": "Refund_not_showing_up",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "declined_card_payment",
+      "id": "banking77-test-001834",
+      "prediction": "declined_card_payment",
+      "prompt": "I finally got my new card and was very excited to use it today. However, my payment kept declining. What is happening?",
+      "response": "declined_card_payment",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "declined_card_payment",
+      "id": "banking77-test-001825",
+      "prediction": "declined_card_payment",
+      "prompt": "I have no idea why my card payment did not work.",
+      "response": "declined_card_payment",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "declined_card_payment",
+      "id": "banking77-test-001817",
+      "prediction": "declined_card_payment",
+      "prompt": "I have a card payment that was declined, but why?",
+      "response": "declined_card_payment",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "declined_card_payment",
+      "id": "banking77-test-001809",
+      "prediction": "declined_card_payment",
+      "prompt": "Can you look at my account ans see why my card was declined",
+      "response": "declined_card_payment",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "pending_transfer",
+      "id": "banking77-test-001849",
+      "prediction": "pending_transfer",
+      "prompt": "I had made a transfer but its still pending.",
+      "response": "pending_transfer",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "pending_transfer",
+      "id": "banking77-test-001878",
+      "prediction": "pending_transfer",
+      "prompt": "My transfer hasn't gone through yet.",
+      "response": "pending_transfer",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "pending_transfer",
+      "id": "banking77-test-001855",
+      "prediction": "pending_transfer",
+      "prompt": "My transfer is still pending and I know the account numbers are correct.  Please help.",
+      "response": "pending_transfer",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "pending_transfer",
+      "id": "banking77-test-001852",
+      "prediction": "transfer_timing",
+      "prompt": "How long can an EU transfer take?",
+      "response": "transfer_timing",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "terminate_account",
+      "id": "banking77-test-001897",
+      "prediction": "terminate_account",
+      "prompt": "I need your help in deleting my account.",
+      "response": "terminate_account",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "terminate_account",
+      "id": "banking77-test-001899",
+      "prediction": "terminate_account",
+      "prompt": "Delete this account!",
+      "response": "terminate_account",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "terminate_account",
+      "id": "banking77-test-001887",
+      "prediction": "terminate_account",
+      "prompt": "Please delete my account right now!",
+      "response": "terminate_account",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "terminate_account",
+      "id": "banking77-test-001881",
+      "prediction": "terminate_account",
+      "prompt": "Can you remove my account please?",
+      "response": "terminate_account",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "card_swallowed",
+      "id": "banking77-test-001921",
+      "prediction": "card_swallowed",
+      "prompt": "What do I do if an ATM \"stole\" my card?",
+      "response": "card_swallowed",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "card_swallowed",
+      "id": "banking77-test-001937",
+      "prediction": "card_swallowed",
+      "prompt": "The ATM won't give me my card back.",
+      "response": "card_swallowed",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "card_swallowed",
+      "id": "banking77-test-001957",
+      "prediction": "card_swallowed",
+      "prompt": "The ATM won't give back my card",
+      "response": "card_swallowed",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "card_swallowed",
+      "id": "banking77-test-001958",
+      "prediction": "card_swallowed",
+      "prompt": "I was at an ATM and it swallowed my card.",
+      "response": "card_swallowed",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "transaction_charged_twice",
+      "id": "banking77-test-001989",
+      "prediction": "transaction_charged_twice",
+      "prompt": "Can you explain why there is a payment showing twice?",
+      "response": "transaction_charged_twice",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "transaction_charged_twice",
+      "id": "banking77-test-001972",
+      "prediction": "transaction_charged_twice",
+      "prompt": "I have been charged twice",
+      "response": "transaction_charged_twice",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "transaction_charged_twice",
+      "id": "banking77-test-001973",
+      "prediction": "transaction_charged_twice",
+      "prompt": "It appears that I am being double charged for some items that I have purchased this past week.  Please review and correct.",
+      "response": "transaction_charged_twice",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "transaction_charged_twice",
+      "id": "banking77-test-001999",
+      "prediction": "transaction_charged_twice",
+      "prompt": "I made a payment that got charged twice instead of once.",
+      "response": "transaction_charged_twice",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "verify_source_of_funds",
+      "id": "banking77-test-002024",
+      "prediction": "verify_source_of_funds",
+      "prompt": "I have to verify the source of my funds",
+      "response": "verify_source_of_funds",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "verify_source_of_funds",
+      "id": "banking77-test-002038",
+      "prediction": "verify_source_of_funds",
+      "prompt": "How do I become aware of where my funds come from?",
+      "response": "verify_source_of_funds",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "verify_source_of_funds",
+      "id": "banking77-test-002040",
+      "prediction": "verify_source_of_funds",
+      "prompt": "What do I need to do to verify the source of my funds?",
+      "response": "verify_source_of_funds",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "verify_source_of_funds",
+      "id": "banking77-test-002008",
+      "prediction": "verify_source_of_funds",
+      "prompt": "I would like to see the source of my money.",
+      "response": "verify_source_of_funds",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "transfer_timing",
+      "id": "banking77-test-002078",
+      "prediction": "transfer_timing",
+      "prompt": "There is an important thing from China that I need to transfer. Approximately how long will this take?",
+      "response": "transfer_timing",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "transfer_timing",
+      "id": "banking77-test-002059",
+      "prediction": "transfer_timing",
+      "prompt": "How long is my Europe transfer wait?",
+      "response": "transfer_timing",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "transfer_timing",
+      "id": "banking77-test-002045",
+      "prediction": "balance_not_updated_after_bank_transfer",
+      "prompt": "How many days does it take until funds are in my account?",
+      "response": "balance_not_updated_after_bank_transfer",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "transfer_timing",
+      "id": "banking77-test-002041",
+      "prediction": "transfer_timing",
+      "prompt": "What is the number of days I have to wait for my Europe transfer?",
+      "response": "transfer_timing",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "reverted_card_payment?",
+      "id": "banking77-test-002120",
+      "prediction": "declined_card_payment",
+      "prompt": "Why has payment been returned?",
+      "response": "declined_card_payment",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "reverted_card_payment?",
+      "id": "banking77-test-002086",
+      "prediction": "reverted_card_payment?",
+      "prompt": "I made a payment but the app reverted the payment.",
+      "response": "reverted_card_payment?",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "reverted_card_payment?",
+      "id": "banking77-test-002106",
+      "prediction": "card_not_working",
+      "prompt": "There must be an issue, why has my card been cancelled?",
+      "response": "card_not_working",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "reverted_card_payment?",
+      "id": "banking77-test-002114",
+      "prediction": "reverted_card_payment?",
+      "prompt": "I did a payment but the app reverted it",
+      "response": "reverted_card_payment?",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "change_pin",
+      "id": "banking77-test-002130",
+      "prediction": "change_pin",
+      "prompt": "I desperately need to change my PIN, but I'm overseas on vacation right now. How can I do this?",
+      "response": "change_pin",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "change_pin",
+      "id": "banking77-test-002145",
+      "prediction": "change_pin",
+      "prompt": "How do I change my PIN?",
+      "response": "change_pin",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "change_pin",
+      "id": "banking77-test-002129",
+      "prediction": "change_pin",
+      "prompt": "I want to set a new PIN",
+      "response": "change_pin",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "change_pin",
+      "id": "banking77-test-002126",
+      "prediction": "change_pin",
+      "prompt": "How might  I change my PIN?",
+      "response": "change_pin",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "beneficiary_not_allowed",
+      "id": "banking77-test-002182",
+      "prediction": "failed_transfer",
+      "prompt": "I couldn't do a transfer to an account",
+      "response": "failed_transfer",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "beneficiary_not_allowed",
+      "id": "banking77-test-002189",
+      "prediction": "beneficiary_not_allowed",
+      "prompt": "My beneficiary has been denied, is this normal?",
+      "response": "beneficiary_not_allowed",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "beneficiary_not_allowed",
+      "id": "banking77-test-002199",
+      "prediction": "beneficiary_not_allowed",
+      "prompt": "i tried to make a transfer to a beneficiary and it didn't go through",
+      "response": "beneficiary_not_allowed",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "beneficiary_not_allowed",
+      "id": "banking77-test-002181",
+      "prediction": "beneficiary_not_allowed",
+      "prompt": "How come I'm not allowed to transfer funds right now? I just keep getting an error message.",
+      "response": "beneficiary_not_allowed",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "transfer_fee_charged",
+      "id": "banking77-test-002219",
+      "prediction": "transfer_fee_charged",
+      "prompt": "Is there a transfer fee?",
+      "response": "transfer_fee_charged",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "transfer_fee_charged",
+      "id": "banking77-test-002218",
+      "prediction": "transfer_fee_charged",
+      "prompt": "I was charged more when I transferred!",
+      "response": "transfer_fee_charged",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "transfer_fee_charged",
+      "id": "banking77-test-002232",
+      "prediction": "card_payment_fee_charged",
+      "prompt": "In the past month I often used this account to manage payments for my new holiday villa. Now all of a sudden your fees have increased exorbitantly! Don't you have a rewards programme for frequent users?",
+      "response": "card_payment_fee_charged",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "transfer_fee_charged",
+      "id": "banking77-test-002222",
+      "prediction": "extra_charge_on_statement",
+      "prompt": "My receipt shows an extra charge on my transfer, why is this?",
+      "response": "extra_charge_on_statement",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "receiving_money",
+      "id": "banking77-test-002246",
+      "prediction": "receiving_money",
+      "prompt": "Is there a problem with receiving my salary in GBP?",
+      "response": "receiving_money",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "receiving_money",
+      "id": "banking77-test-002252",
+      "prediction": "receiving_money",
+      "prompt": "How do people send me money?",
+      "response": "receiving_money",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "receiving_money",
+      "id": "banking77-test-002276",
+      "prediction": "receiving_money",
+      "prompt": "Can I get paid in a different currency?",
+      "response": "receiving_money",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "receiving_money",
+      "id": "banking77-test-002263",
+      "prediction": "fiat_currency_support",
+      "prompt": "Is it possible to deposit money in GBP?",
+      "response": "fiat_currency_support",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "failed_transfer",
+      "id": "banking77-test-002290",
+      "prediction": "failed_transfer",
+      "prompt": "My transfer didn't go through.",
+      "response": "failed_transfer",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "failed_transfer",
+      "id": "banking77-test-002306",
+      "prediction": "failed_transfer",
+      "prompt": "What is stopping my money from transferring?",
+      "response": "failed_transfer",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "failed_transfer",
+      "id": "banking77-test-002293",
+      "prediction": "failed_transfer",
+      "prompt": "I transferred my funds, why did it not go through?",
+      "response": "failed_transfer",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "failed_transfer",
+      "id": "banking77-test-002313",
+      "prediction": "failed_transfer",
+      "prompt": "I've now been trying to do a really standard transfer 5 times already. What's going on, is your system broken or something?!",
+      "response": "failed_transfer",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "transfer_into_account",
+      "id": "banking77-test-002351",
+      "prediction": "transfer_into_account",
+      "prompt": "I want to transfer from accounts in order to Top up. What are the steps necessary.",
+      "response": "transfer_into_account",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "transfer_into_account",
+      "id": "banking77-test-002322",
+      "prediction": "top_up_by_bank_transfer_charge",
+      "prompt": "I'm out of money, can I add money with my bank?",
+      "response": "top_up_by_bank_transfer_charge",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "transfer_into_account",
+      "id": "banking77-test-002326",
+      "prediction": "transfer_into_account",
+      "prompt": "I need to transfer money into my account, how do I go about doing this?",
+      "response": "transfer_into_account",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "transfer_into_account",
+      "id": "banking77-test-002341",
+      "prediction": "top_up_by_bank_transfer_charge",
+      "prompt": "How can I fund my top-up account using my bank account?",
+      "response": "top_up_by_bank_transfer_charge",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "verify_top_up",
+      "id": "banking77-test-002366",
+      "prediction": "verify_top_up",
+      "prompt": "What are the benefits to verifying the top-up?",
+      "response": "verify_top_up",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "verify_top_up",
+      "id": "banking77-test-002392",
+      "prediction": "verify_top_up",
+      "prompt": "Can I verify a top-up and what card is used?",
+      "response": "verify_top_up",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "verify_top_up",
+      "id": "banking77-test-002389",
+      "prediction": "verify_top_up",
+      "prompt": "What is the importance of verifying the top-up?",
+      "response": "verify_top_up",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "verify_top_up",
+      "id": "banking77-test-002379",
+      "prediction": "verify_top_up",
+      "prompt": "Where's the verification code for the top-up card?",
+      "response": "verify_top_up",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "getting_spare_card",
+      "id": "banking77-test-002429",
+      "prediction": "getting_spare_card",
+      "prompt": "May I have a second card?",
+      "response": "getting_spare_card",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "getting_spare_card",
+      "id": "banking77-test-002428",
+      "prediction": "age_limit",
+      "prompt": "Am I allowed to give my daughter one of my cards to use?",
+      "response": "age_limit",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "getting_spare_card",
+      "id": "banking77-test-002431",
+      "prediction": "getting_spare_card",
+      "prompt": "Are there restrictions for ordering extra cards?",
+      "response": "getting_spare_card",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "getting_spare_card",
+      "id": "banking77-test-002422",
+      "prediction": "getting_spare_card",
+      "prompt": "Can I order extra cards?",
+      "response": "getting_spare_card",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "top_up_by_cash_or_cheque",
+      "id": "banking77-test-002451",
+      "prediction": "top_up_by_cash_or_cheque",
+      "prompt": "Where do I locate topping up with cash.",
+      "response": "top_up_by_cash_or_cheque",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "top_up_by_cash_or_cheque",
+      "id": "banking77-test-002446",
+      "prediction": "top_up_by_cash_or_cheque",
+      "prompt": "Is there an option to top up a with cheque?",
+      "response": "top_up_by_cash_or_cheque",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "top_up_by_cash_or_cheque",
+      "id": "banking77-test-002475",
+      "prediction": "top_up_by_cash_or_cheque",
+      "prompt": "I want to do a cash top-up",
+      "response": "top_up_by_cash_or_cheque",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "top_up_by_cash_or_cheque",
+      "id": "banking77-test-002469",
+      "prediction": "top_up_by_cash_or_cheque",
+      "prompt": "how come i can't find anywhere to load using cash",
+      "response": "top_up_by_cash_or_cheque",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "order_physical_card",
+      "id": "banking77-test-002507",
+      "prediction": "card_delivery_estimate",
+      "prompt": "Where can my card be delivered?",
+      "response": "card_delivery_estimate",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "order_physical_card",
+      "id": "banking77-test-002509",
+      "prediction": "order_physical_card",
+      "prompt": "Where do I order my card?",
+      "response": "order_physical_card",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "order_physical_card",
+      "id": "banking77-test-002493",
+      "prediction": "top_up_by_cash_or_cheque",
+      "prompt": "For physical cards, do you charge?",
+      "response": "top_up_by_cash_or_cheque",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "order_physical_card",
+      "id": "banking77-test-002495",
+      "prediction": "order_physical_card",
+      "prompt": "Will I get a real card?",
+      "response": "order_physical_card",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "virtual_card_not_working",
+      "id": "banking77-test-002552",
+      "prediction": "virtual_card_not_working",
+      "prompt": "How come my disposable virtual card used to pay for a gym subscription got rejected?",
+      "response": "virtual_card_not_working",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "virtual_card_not_working",
+      "id": "banking77-test-002546",
+      "prediction": "virtual_card_not_working",
+      "prompt": "My disposable card seems not to be working am I doing something wrong?",
+      "response": "virtual_card_not_working",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "virtual_card_not_working",
+      "id": "banking77-test-002545",
+      "prediction": "card_not_working",
+      "prompt": "My card is just not working at this time.",
+      "response": "card_not_working",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "virtual_card_not_working",
+      "id": "banking77-test-002527",
+      "prediction": "virtual_card_not_working",
+      "prompt": "Are there restrictions for my disposable card since it does not seem to be working?",
+      "response": "virtual_card_not_working",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "wrong_exchange_rate_for_cash_withdrawal",
+      "id": "banking77-test-002599",
+      "prediction": "wrong_exchange_rate_for_cash_withdrawal",
+      "prompt": "The cash withdrawal exchange rate is not correct.",
+      "response": "wrong_exchange_rate_for_cash_withdrawal",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "wrong_exchange_rate_for_cash_withdrawal",
+      "id": "banking77-test-002569",
+      "prediction": "wrong_exchange_rate_for_cash_withdrawal",
+      "prompt": "Why is the exchange rate wrong for my international withdrawal?",
+      "response": "wrong_exchange_rate_for_cash_withdrawal",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "wrong_exchange_rate_for_cash_withdrawal",
+      "id": "banking77-test-002561",
+      "prediction": "wrong_exchange_rate_for_cash_withdrawal",
+      "prompt": "I did not get the right amount of money when I used a different country's currency.",
+      "response": "wrong_exchange_rate_for_cash_withdrawal",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "wrong_exchange_rate_for_cash_withdrawal",
+      "id": "banking77-test-002568",
+      "prediction": "wrong_exchange_rate_for_cash_withdrawal",
+      "prompt": "I attempted to get money using a foreign currency at an ATM but the rate was highly inaccurate!",
+      "response": "wrong_exchange_rate_for_cash_withdrawal",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "get_disposable_virtual_card",
+      "id": "banking77-test-002602",
+      "prediction": "get_disposable_virtual_card",
+      "prompt": "Can I create a disposable virtual card?",
+      "response": "get_disposable_virtual_card",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "get_disposable_virtual_card",
+      "id": "banking77-test-002616",
+      "prediction": "get_disposable_virtual_card",
+      "prompt": "I want to get a disposable virtual card.",
+      "response": "get_disposable_virtual_card",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "get_disposable_virtual_card",
+      "id": "banking77-test-002633",
+      "prediction": "get_disposable_virtual_card",
+      "prompt": "Where can I get a disposable virtual card?",
+      "response": "get_disposable_virtual_card",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "get_disposable_virtual_card",
+      "id": "banking77-test-002615",
+      "prediction": "get_disposable_virtual_card",
+      "prompt": "What do I do to get a disposable virtual card?",
+      "response": "get_disposable_virtual_card",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "top_up_failed",
+      "id": "banking77-test-002655",
+      "prediction": "top_up_failed",
+      "prompt": "Why caused my top up to not work?",
+      "response": "top_up_failed",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "top_up_failed",
+      "id": "banking77-test-002658",
+      "prediction": "top_up_failed",
+      "prompt": "My funding to my card didn't go through.",
+      "response": "top_up_failed",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "top_up_failed",
+      "id": "banking77-test-002676",
+      "prediction": "declined_card_payment",
+      "prompt": "I really need money from my card today, but my card is getting declined. Please help!!",
+      "response": "declined_card_payment",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "top_up_failed",
+      "id": "banking77-test-002668",
+      "prediction": "beneficiary_not_allowed",
+      "prompt": "I tried to top up. Why was it denied?",
+      "response": "beneficiary_not_allowed",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "balance_not_updated_after_bank_transfer",
+      "id": "banking77-test-002710",
+      "prediction": "balance_not_updated_after_bank_transfer",
+      "prompt": "Why doesn't it show that I did a balance transfer?",
+      "response": "balance_not_updated_after_bank_transfer",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "balance_not_updated_after_bank_transfer",
+      "id": "banking77-test-002698",
+      "prediction": "balance_not_updated_after_bank_transfer",
+      "prompt": "I had cash transferred but the balance did not change.",
+      "response": "balance_not_updated_after_bank_transfer",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "balance_not_updated_after_bank_transfer",
+      "id": "banking77-test-002720",
+      "prediction": "balance_not_updated_after_bank_transfer",
+      "prompt": "When will I see my new balance after making my bank transfer?",
+      "response": "balance_not_updated_after_bank_transfer",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "balance_not_updated_after_bank_transfer",
+      "id": "banking77-test-002706",
+      "prediction": "balance_not_updated_after_bank_transfer",
+      "prompt": "The  money I transferred does not show in the balance.",
+      "response": "balance_not_updated_after_bank_transfer",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "cash_withdrawal_not_recognised",
+      "id": "banking77-test-002733",
+      "prediction": "declined_cash_withdrawal",
+      "prompt": "I checked the app and saw an extra cash withdrawal that I didn't authorize",
+      "response": "declined_cash_withdrawal",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "cash_withdrawal_not_recognised",
+      "id": "banking77-test-002750",
+      "prediction": "extra_charge_on_statement",
+      "prompt": "What do I do if I notice a strange withdrawl in my statement?",
+      "response": "extra_charge_on_statement",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "cash_withdrawal_not_recognised",
+      "id": "banking77-test-002746",
+      "prediction": "lost_or_stolen_card",
+      "prompt": "I need to cancel my card that got stolen a little while ago. Someone has already taken some money out and I don't want them to take anymore. Can you please do that?",
+      "response": "lost_or_stolen_card",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "cash_withdrawal_not_recognised",
+      "id": "banking77-test-002738",
+      "prediction": "cash_withdrawal_not_recognised",
+      "prompt": "My account has a weird withdrawal.",
+      "response": "cash_withdrawal_not_recognised",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "exchange_charge",
+      "id": "banking77-test-002766",
+      "prediction": "exchange_charge",
+      "prompt": "My work sends me all over the world, can I get a discount for all the money I have to exchange?",
+      "response": "exchange_charge",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "exchange_charge",
+      "id": "banking77-test-002782",
+      "prediction": "exchange_charge",
+      "prompt": "I was wondering if there were any discounts offered for frequent currency exchanges?",
+      "response": "exchange_charge",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "exchange_charge",
+      "id": "banking77-test-002797",
+      "prediction": "exchange_charge",
+      "prompt": "I would like to exchange currencies, but is there an extra charge to do so?",
+      "response": "exchange_charge",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "exchange_charge",
+      "id": "banking77-test-002779",
+      "prediction": "exchange_charge",
+      "prompt": "How much do I have to pay for the exchange fee?",
+      "response": "exchange_charge",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "top_up_by_card_charge",
+      "id": "banking77-test-002834",
+      "prediction": "top_up_by_bank_transfer_charge",
+      "prompt": "Is there a charge or discount if I use a European bank in a top up?",
+      "response": "top_up_by_bank_transfer_charge",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "top_up_by_card_charge",
+      "id": "banking77-test-002831",
+      "prediction": "top_up_by_card_charge",
+      "prompt": "Any fee for topping up?",
+      "response": "top_up_by_card_charge",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "top_up_by_card_charge",
+      "id": "banking77-test-002815",
+      "prediction": "top_up_by_card_charge",
+      "prompt": "How much is the charge to top up my card?",
+      "response": "top_up_by_card_charge",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "top_up_by_card_charge",
+      "id": "banking77-test-002833",
+      "prediction": "top_up_by_card_charge",
+      "prompt": "What are the fees of using an international card to add money?",
+      "response": "top_up_by_card_charge",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "activate_my_card",
+      "id": "banking77-test-002868",
+      "prediction": "activate_my_card",
+      "prompt": "What are the steps in order to activate my new card?",
+      "response": "activate_my_card",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "activate_my_card",
+      "id": "banking77-test-002853",
+      "prediction": "card_swallowed",
+      "prompt": "WHAT CAN I DO AFTER THE CARD MISSING",
+      "response": "card_swallowed",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "activate_my_card",
+      "id": "banking77-test-002864",
+      "prediction": "activate_my_card",
+      "prompt": "How can I start using my card?",
+      "response": "activate_my_card",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "activate_my_card",
+      "id": "banking77-test-002863",
+      "prediction": "activate_my_card",
+      "prompt": "I need help with activating my card",
+      "response": "activate_my_card",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "cash_withdrawal_charge",
+      "id": "banking77-test-002883",
+      "prediction": "cash_withdrawal_charge",
+      "prompt": "Why am I being charged when I withdraw cash?",
+      "response": "cash_withdrawal_charge",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "cash_withdrawal_charge",
+      "id": "banking77-test-002915",
+      "prediction": "cash_withdrawal_charge",
+      "prompt": "I took cash and got charged a fee",
+      "response": "cash_withdrawal_charge",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "cash_withdrawal_charge",
+      "id": "banking77-test-002896",
+      "prediction": "cash_withdrawal_charge",
+      "prompt": "I got a fee for an ATM withdrawal.",
+      "response": "cash_withdrawal_charge",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "cash_withdrawal_charge",
+      "id": "banking77-test-002884",
+      "prediction": "cash_withdrawal_charge",
+      "prompt": "What is this charge on my account for a cash withdrawl?",
+      "response": "cash_withdrawal_charge",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "card_about_to_expire",
+      "id": "banking77-test-002958",
+      "prediction": "card_about_to_expire",
+      "prompt": "If my card is about to expire, do I need to order a new one?",
+      "response": "card_about_to_expire",
+      "valid_label": true
+    },
+    {
+      "correct": false,
+      "expected": "card_about_to_expire",
+      "id": "banking77-test-002960",
+      "prediction": "card_linking",
+      "prompt": "I need to know the cost and when I will receive a new card to replace an old one.",
+      "response": "card_linking",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "card_about_to_expire",
+      "id": "banking77-test-002930",
+      "prediction": "card_about_to_expire",
+      "prompt": "How much does it cost to get a new card?  Mine is almost expired.  How fast does it come?",
+      "response": "card_about_to_expire",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "card_about_to_expire",
+      "id": "banking77-test-002942",
+      "prediction": "card_about_to_expire",
+      "prompt": "Will I need to order a new card since mine expires next month?",
+      "response": "card_about_to_expire",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "apple_pay_or_google_pay",
+      "id": "banking77-test-002997",
+      "prediction": "apple_pay_or_google_pay",
+      "prompt": "How do I top up with Apple Pay?",
+      "response": "apple_pay_or_google_pay",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "apple_pay_or_google_pay",
+      "id": "banking77-test-002995",
+      "prediction": "apple_pay_or_google_pay",
+      "prompt": "How do I get the Top Up feature on my apple watch working?",
+      "response": "apple_pay_or_google_pay",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "apple_pay_or_google_pay",
+      "id": "banking77-test-002990",
+      "prediction": "apple_pay_or_google_pay",
+      "prompt": "How do I top up? Can I use my apple watch?",
+      "response": "apple_pay_or_google_pay",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "apple_pay_or_google_pay",
+      "id": "banking77-test-002975",
+      "prediction": "apple_pay_or_google_pay",
+      "prompt": "Why can't I use my American Express with Apple Pay to top up my account?",
+      "response": "apple_pay_or_google_pay",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "verify_my_identity",
+      "id": "banking77-test-003027",
+      "prediction": "verify_my_identity",
+      "prompt": "When getting my ID checked, what are the steps involved?",
+      "response": "verify_my_identity",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "verify_my_identity",
+      "id": "banking77-test-003001",
+      "prediction": "verify_my_identity",
+      "prompt": "What can I use to verify my identify?",
+      "response": "verify_my_identity",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "verify_my_identity",
+      "id": "banking77-test-003015",
+      "prediction": "verify_my_identity",
+      "prompt": "What's the process for ID verification?",
+      "response": "verify_my_identity",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "verify_my_identity",
+      "id": "banking77-test-003019",
+      "prediction": "verify_my_identity",
+      "prompt": "What should I do to verify my identity?",
+      "response": "verify_my_identity",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "country_support",
+      "id": "banking77-test-003064",
+      "prediction": "country_support",
+      "prompt": "What countries are you currently in?",
+      "response": "country_support",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "country_support",
+      "id": "banking77-test-003078",
+      "prediction": "country_support",
+      "prompt": "What countries do you do business in?",
+      "response": "country_support",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "country_support",
+      "id": "banking77-test-003042",
+      "prediction": "country_support",
+      "prompt": "Are your cards available in Europe?",
+      "response": "country_support",
+      "valid_label": true
+    },
+    {
+      "correct": true,
+      "expected": "country_support",
+      "id": "banking77-test-003053",
+      "prediction": "country_support",
+      "prompt": "Do you support the EU?",
+      "response": "country_support",
       "valid_label": true
     }
   ],
   "seed": 42,
-  "total": 30
+  "total": 308
 }

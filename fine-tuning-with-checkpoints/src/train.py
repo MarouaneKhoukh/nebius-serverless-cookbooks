@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import hashlib
 import importlib.metadata
 import json
@@ -17,7 +18,9 @@ from pathlib import Path
 
 from checkpoint_store import (ensure_contract, latest_checkpoint, restore_checkpoint,
                               sha256, write_json)
-from evaluate import SYSTEM_PROMPT, evaluate, read_examples, render_report
+from evaluate import LABELS, SYSTEM_PROMPT, evaluate, read_examples, render_report
+from data_prep import prepare
+from banking77 import REVISION
 
 
 def defaults():
@@ -45,8 +48,7 @@ def main() -> None:
     root = defaults()
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", type=Path, default=root / ("config/train.yaml" if (root / "config").is_dir() else "train.yaml"))
-    parser.add_argument("--train", type=Path, default=root / ("data/train.jsonl" if (root / "data").is_dir() else "train.jsonl"))
-    parser.add_argument("--test", type=Path, default=root / ("data/test.csv" if (root / "data").is_dir() else "test.csv"))
+    parser.add_argument("--data-config", type=Path, default=root / ("config/data.json" if (root / "config").is_dir() else "data.json"))
     parser.add_argument("--logo", type=Path, default=root / ("docs/brand/nebius-logo.svg" if (root / "docs").is_dir() else "nebius-logo.svg"))
     parser.add_argument("--artifact-dir", type=Path, default=Path(os.environ.get("ARTIFACT_DIR", "/data/support-lora-demo")))
     parser.add_argument("--local-dir", type=Path, default=Path("/workspace/spot-cookbook"))
@@ -59,6 +61,13 @@ def main() -> None:
         raise ValueError("Controlled stop must be a positive save-step boundary below max_steps")
     if not args.logo.is_file():
         raise ValueError("The authentic Nebius logo must be included with the recipe")
+    inputs = args.local_dir / "inputs"
+    selection = json.loads(args.data_config.read_text())
+    provenance = prepare(args.local_dir / "dataset-cache", inputs, selection)
+    if json.loads((inputs / "categories.json").read_text()) != list(LABELS):
+        raise ValueError("Prepared intent labels differ from the pinned taxonomy")
+    args.train, args.test = inputs / "train.jsonl", inputs / "test.csv"
+    print(json.dumps({"event":"data_ready", **provenance["selection"]}), flush=True)
     examples = read_examples(args.test)
     train_rows = [json.loads(line) for line in args.train.read_text().splitlines() if line.strip()]
     prompts = {row["messages"][1]["content"] for row in train_rows}
@@ -66,13 +75,14 @@ def main() -> None:
         raise ValueError("Training prompts must be unique and separate from the held-out set")
     contract = {"schema": 1, "model": cfg["base_model"], "config_sha256": sha256(args.config),
                 "train_sha256": sha256(args.train), "test_sha256": sha256(args.test),
-                "system_prompt": SYSTEM_PROMPT}
+                "system_prompt": SYSTEM_PROMPT, "dataset": provenance}
     existing_contract = args.artifact_dir / "run_contract.json"
     if existing_contract.exists():
         model_revision = json.loads(existing_contract.read_text())["model_revision"]
     else:
-        from huggingface_hub import HfApi
-        model_revision = HfApi().model_info(cfg["base_model"]).sha
+        model_revision = cfg["revision_of_model"]
+    if model_revision != cfg["revision_of_model"]:
+        raise ValueError("The saved model revision differs from the configured pin")
     contract["model_revision"] = model_revision
     contract_hash = hashlib.sha256(json.dumps(contract, sort_keys=True).encode()).hexdigest()
     args.artifact_dir.mkdir(parents=True, exist_ok=True)
@@ -101,7 +111,16 @@ def main() -> None:
     runtime_config = args.local_dir / "train.yaml"
     runtime_config.write_text(yaml.safe_dump(cfg, sort_keys=False), encoding="utf-8")
     before_path = args.artifact_dir / "before.json"
-    if not before_path.exists():
+    before_valid = False
+    if before_path.exists():
+        try:
+            previous = json.loads(before_path.read_text())
+            before_valid = (previous["model_revision"] == model_revision and
+                [r["id"] for r in previous["predictions"]] == [r["id"] for r in examples] and
+                previous["total"] == len(examples))
+        except (ValueError, KeyError, TypeError):
+            pass
+    if not before_valid:
         print(json.dumps({"event": "evaluating_base", "examples": len(examples)}), flush=True)
         write_json(before_path, evaluate(cfg["base_model"], examples, revision=model_revision))
     session = uuid.uuid4().hex[:12]
@@ -128,6 +147,10 @@ def main() -> None:
                "controlled_stop": bool(args.stop_after_step), "training_wall_seconds": time.monotonic() - start,
                "checkpoint_directory": published.name,
                "contract_hash": contract_hash, "recovery_exercise": "separate Jobs with a controlled checkpoint stop"}
+    summary.update({"dataset":"BANKING77", "train_examples":len(train_rows), "test_examples":len(examples),
+                    "effective_batch_size":cfg["micro_batch_size"] * cfg["gradient_accumulation_steps"],
+                    "trainer_epoch":json.loads((published / "trainer_state.json").read_text()).get("epoch"),
+                    "dataset_selection":provenance["selection"]})
     summary["runtime_versions"] = {package: importlib.metadata.version(package) for package in ("axolotl", "torch", "transformers", "peft")}
     write_json(args.artifact_dir / f"summary-{session}.json", summary)
     stage = args.local_dir / f"result-{session}"
@@ -138,6 +161,13 @@ def main() -> None:
     shutil.copyfile(args.artifact_dir / "run_contract.json", stage / "run_contract.json")
     shutil.copyfile(published / "trainer_state.json", stage / "trainer_state.json")
     shutil.copyfile(before_path, stage / "before.json")
+    shutil.copyfile(args.train, stage / "train.jsonl")
+    shutil.copyfile(args.test, stage / "test.csv")
+    shutil.copyfile(inputs / "provenance.json", stage / "dataset_provenance.json")
+    license_path = args.local_dir / "dataset-cache" / ("banking77-" + REVISION) / "LICENSE"
+    shutil.copyfile(license_path, stage / "DATA_LICENSE")
+    source_path = root / ("data/SOURCE.md" if (root / "data").is_dir() else "SOURCE.md")
+    shutil.copyfile(source_path, stage / "DATA_SOURCE.md")
     after_path = stage / "after.json"
     if summary["completed"]:
         adapter = stage / "adapter"
@@ -155,6 +185,11 @@ def main() -> None:
     after = json.loads(after_path.read_text()) if summary["completed"] else None
     report = stage / "report.html"
     report.write_text(render_report(before, after, summary, args.logo), encoding="utf-8")
+    for name, result in (("before", before), ("after", after)):
+        if result is None: continue
+        with (stage / (name + "_predictions.csv")).open("w",newline="",encoding="utf-8") as stream:
+            writer=csv.DictWriter(stream,fieldnames=["id","prompt","expected","prediction","response","valid_label","correct"],extrasaction="ignore",lineterminator="\n")
+            writer.writeheader();writer.writerows(result["predictions"])
     final_files = list(stage.iterdir())
     final_files.extend(args.artifact_dir.glob("summary-*.json"))
     final_files.extend(args.artifact_dir.glob("checkpoint-events-*.json"))

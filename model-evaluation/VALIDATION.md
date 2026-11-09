@@ -27,6 +27,10 @@ Nine standard-library checks passed, covering actual reference score reproductio
 
 No new model inference was requested during these checks.
 
+## Cross-cookbook comparison
+
+The evaluator also consumed the actual fine-tuning cookbook's before/after CSVs: all 308 IDs aligned, and it reproduced 199/308 (64.6%) before training and 256/308 (83.1%) afterward. Paired outcomes were 195 both correct, 61 correct only after training, four correct only before and 48 both wrong. This uses the same prompt/settings within that training experiment, rather than comparing it directly with the first cookbook's few-shot prompt.
+
 ## Cost and resource state
 
 This evaluator performs no cloud calls and creates no cloud resources by default. The original source inference Jobs are terminal and their GPU was released. Hourly GPU quotes do not measure scoring costs or establish a quality/cost advantage for Qwen.

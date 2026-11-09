@@ -1,13 +1,27 @@
 {
+  "checkpoint_directory": "checkpoint-100-ec7bacfe01c9",
   "completed": true,
-  "contract_hash": "75049c4178a80fa60e1fa0bf595d87a8daab5e6c0720c2df8ff87a2160c61d6a",
+  "contract_hash": "596258799d99d7e1b1b143634ce7c2cc1f7661266e449708801f9132e707babd",
   "controlled_stop": false,
-  "global_step": 30,
-  "max_steps": 30,
-  "model": "Qwen/Qwen2.5-0.5B-Instruct",
-  "model_revision": "7ae557604adf67be50417f59c2c2f167def9a775",
+  "dataset": "BANKING77",
+  "dataset_selection": {
+    "excluded_duplicate_train_texts": 4,
+    "excluded_train_rows_matching_official_test_text": 6,
+    "seed": 42,
+    "selection": "Per-intent seeded sampling after excluding official-test text from training and deduplicating normalized text.",
+    "test_per_intent": 4,
+    "test_rows": 308,
+    "train_per_intent": 20,
+    "train_test_normalized_text_overlap": 0,
+    "training_rows": 1540
+  },
+  "effective_batch_size": 16,
+  "global_step": 100,
+  "max_steps": 100,
+  "model": "Qwen/Qwen3-4B-Instruct-2507",
+  "model_revision": "cdbee75f17c01a7cc42f958dc650907174af0554",
   "recovery_exercise": "separate Jobs with a controlled checkpoint stop",
-  "resumed_from_step": 10,
+  "resumed_from_step": 50,
   "runtime_versions": {
     "axolotl": "0.16.0.dev0",
     "peft": "0.18.1",
@@ -15,5 +29,9 @@
     "transformers": "5.3.0"
   },
   "schema": 1,
-  "training_wall_seconds": 64.54774000399999
+  "session": "c38020d885f8",
+  "test_examples": 308,
+  "train_examples": 1540,
+  "trainer_epoch": 1.0311688311688312,
+  "training_wall_seconds": 161.612712477
 }

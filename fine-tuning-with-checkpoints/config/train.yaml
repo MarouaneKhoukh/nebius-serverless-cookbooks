@@ -1,4 +1,5 @@
-base_model: Qwen/Qwen2.5-0.5B-Instruct
+base_model: Qwen/Qwen3-4B-Instruct-2507
+revision_of_model: cdbee75f17c01a7cc42f958dc650907174af0554
 model_type: AutoModelForCausalLM
 tokenizer_type: AutoTokenizer
 trust_remote_code: false
@@ -18,21 +19,21 @@ datasets:
     train_on_eos: turn
 val_set_size: 0
 dataset_prepared_path: /workspace/prepared
-sequence_len: 256
+sequence_len: 1024
 sample_packing: false
 pad_to_sequence_len: true
 train_on_inputs: false
 
-micro_batch_size: 2
-gradient_accumulation_steps: 2
+micro_batch_size: 4
+gradient_accumulation_steps: 4
 gradient_checkpointing: true
 learning_rate: 0.0002
 lr_scheduler: cosine
 warmup_steps: 2
-max_steps: 30
+max_steps: 100
 seed: 42
 logging_steps: 1
-save_steps: 10
+save_steps: 50
 save_strategy: steps
 save_total_limit: 2
 save_only_model: false
