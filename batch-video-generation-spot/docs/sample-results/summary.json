@@ -1,0 +1,50 @@
+{
+  "model": "Wan-AI/Wan2.1-T2V-1.3B-Diffusers",
+  "input_rows": 3,
+  "completed": 3,
+  "settings": {
+    "model": "Wan-AI/Wan2.1-T2V-1.3B-Diffusers",
+    "size": "832x480",
+    "num_frames": 17,
+    "fps": 16,
+    "num_inference_steps": 20,
+    "guidance_scale": 5.0,
+    "flow_shift": 3.0,
+    "boundary_ratio": 0.0
+  },
+  "outputs": [
+    {
+      "id": "paper-boat",
+      "sha256": "28aebd8ccfaea712b63c946c091c5fe79d780abed9d125d1a3e94c7a59d37dc5",
+      "validation": {
+        "width": 832,
+        "height": 480,
+        "frames_decoded": 17,
+        "duration_seconds": 1.0625,
+        "decode_passed": true
+      }
+    },
+    {
+      "id": "mountain-lake",
+      "sha256": "70cb0d851019f05f5e53d36dde6675020bce22d4cd4441f4e7ec0f1b4ea1cbb8",
+      "validation": {
+        "width": 832,
+        "height": 480,
+        "frames_decoded": 17,
+        "duration_seconds": 1.0625,
+        "decode_passed": true
+      }
+    },
+    {
+      "id": "red-ball",
+      "sha256": "18f82e6639e32c216278194bc6c9b645d22d8c5b54f2b8f09baf74c1e613ea94",
+      "validation": {
+        "width": 832,
+        "height": 480,
+        "frames_decoded": 17,
+        "duration_seconds": 1.0625,
+        "decode_passed": true
+      }
+    }
+  ]
+}
