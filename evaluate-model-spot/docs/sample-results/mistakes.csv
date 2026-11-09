@@ -1,0 +1,7 @@
+id,prompt,expected,predicted,response
+eval-b04,Can we switch from monthly payments to yearly payments?,billing,technical,Technical
+eval-a02,Please remove a former employee from our workspace.,account,technical,Technical
+eval-a03,How do I replace the phone used for two-factor authentication?,account,technical,Technical
+eval-a05,The invitation link for our new teammate has expired.,account,billing,Billing
+eval-a06,My role does not let me view the team's private projects.,account,technical,Technical
+eval-a07,I no longer have access to the email address used to sign in.,account,technical,Technical

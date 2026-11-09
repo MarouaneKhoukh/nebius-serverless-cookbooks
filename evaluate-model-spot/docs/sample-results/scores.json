@@ -1,0 +1,31 @@
+{
+  "total_examples": 30,
+  "evaluated_examples": 30,
+  "remaining": 0,
+  "complete": true,
+  "correct": 24,
+  "incorrect": 6,
+  "invalid_predictions": 0,
+  "accuracy": 0.8,
+  "confusion_matrix": {
+    "billing": {
+      "billing": 9,
+      "technical": 1,
+      "account": 0,
+      "invalid": 0
+    },
+    "technical": {
+      "billing": 0,
+      "technical": 10,
+      "account": 0,
+      "invalid": 0
+    },
+    "account": {
+      "billing": 1,
+      "technical": 4,
+      "account": 5,
+      "invalid": 0
+    }
+  },
+  "model": "Qwen/Qwen2.5-0.5B-Instruct"
+}

@@ -1,0 +1,31 @@
+id,prompt,expected,predicted,response,correct
+eval-b01,My bank statement has two charges for the same order.,billing,billing,Billing,True
+eval-b02,Where can I download the invoice for our annual plan?,billing,billing,billing,True
+eval-b03,I would like the unused part of my payment refunded.,billing,billing,Billing,True
+eval-b04,Can we switch from monthly payments to yearly payments?,billing,technical,Technical,False
+eval-b05,The promotional discount was not applied to my purchase.,billing,billing,Billing,True
+eval-b06,Please update the VAT number that appears on our receipts.,billing,billing,billing,True
+eval-b07,Why did the renewal price increase on this invoice?,billing,billing,billing,True
+eval-b08,Our credit card expired and the subscription payment failed.,billing,billing,Billing,True
+eval-b09,I need to cancel our paid plan before the next renewal.,billing,billing,Billing,True
+eval-b10,Can your team explain this extra fee on my bill?,billing,billing,Billing,True
+eval-t01,Search results never finish loading after I submit a query.,technical,technical,technical,True
+eval-t02,The Python SDK throws an exception when creating a project.,technical,technical,technical,True
+eval-t03,The webhook integration stopped delivering events yesterday.,technical,technical,technical,True
+eval-t04,Every image uploaded to the gallery looks corrupted.,technical,technical,technical,True
+eval-t05,The application freezes when I select more than ten files.,technical,technical,Technical,True
+eval-t06,The report download is empty even though the dashboard has data.,technical,technical,Technical,True
+eval-t07,Our API requests have become much slower this morning.,technical,technical,Technical,True
+eval-t08,Notifications arrive twice for every new message.,technical,technical,Technical,True
+eval-t09,The chart displays the wrong timezone for every timestamp.,technical,technical,technical,True
+eval-t10,The latest update broke the connection to our database.,technical,technical,Technical,True
+eval-a01,I cannot remember the password for my user account.,account,account,account,True
+eval-a02,Please remove a former employee from our workspace.,account,technical,Technical,False
+eval-a03,How do I replace the phone used for two-factor authentication?,account,technical,Technical,False
+eval-a04,I want to change the display name on my profile.,account,account,account,True
+eval-a05,The invitation link for our new teammate has expired.,account,billing,Billing,False
+eval-a06,My role does not let me view the team's private projects.,account,technical,Technical,False
+eval-a07,I no longer have access to the email address used to sign in.,account,technical,Technical,False
+eval-a08,Can I transfer ownership of this workspace to another person?,account,account,Account,True
+eval-a09,My account was locked after several failed login attempts.,account,account,account,True
+eval-a10,I need to update the contact details saved on my profile.,account,account,account,True

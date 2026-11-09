@@ -1,0 +1,10 @@
+{
+  "image": "vllm/vllm-openai:v0.19.1",
+  "model": "Qwen/Qwen2.5-0.5B-Instruct",
+  "platform": "gpu-l40s-a",
+  "preset": "1gpu-8vcpu-32gb",
+  "disk_size": "500Gi",
+  "container_port": "8000/http",
+  "container_command": "python3",
+  "args": ["-m", "vllm.entrypoints.openai.api_server", "--model", "Qwen/Qwen2.5-0.5B-Instruct", "--host", "0.0.0.0", "--port", "8000", "--max-model-len", "4096", "--gpu-memory-utilization", "0.6"]
+}
