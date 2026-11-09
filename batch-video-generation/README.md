@@ -37,7 +37,7 @@ Watch the recorded samples: [paper boat](docs/sample-results/paper-boat.mp4), [m
 
 ```bash
 git clone https://github.com/MarouaneKhoukh/nebius-serverless-cookbooks.git
-cd nebius-serverless-cookbooks/batch-video-generation-spot
+cd nebius-serverless-cookbooks/batch-video-generation
 python3 --version
 ```
 

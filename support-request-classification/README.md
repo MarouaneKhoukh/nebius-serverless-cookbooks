@@ -34,7 +34,7 @@ For example, during this experiment, this setup was priced at about **$0.80/hour
 
 ```bash
 git clone https://github.com/MarouaneKhoukh/nebius-serverless-cookbooks.git
-cd nebius-serverless-cookbooks/batch-inference-spot
+cd nebius-serverless-cookbooks/support-request-classification
 python3 --version
 ```
 
@@ -142,7 +142,7 @@ Expect **12 completed requests**. Open `results/report.html` in your browser, or
 - `results/responses.csv`: each request, the model's answer and its label.
 - `results/summary.json`: completed and remaining counts.
 
-The small model will make some mistakes. To measure them, continue with [Evaluate a Model on Your Own Examples](../evaluate-model-spot/README.md).
+The small model will make some mistakes. To measure them, continue with [Evaluate a Model on Your Own Examples](../model-evaluation/README.md).
 
 ## 5. Stop the Endpoint
 

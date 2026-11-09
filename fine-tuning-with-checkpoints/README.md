@@ -35,7 +35,7 @@ For example, during this experiment, this setup was priced at about **$0.84/hour
 
 ```bash
 git clone https://github.com/MarouaneKhoukh/nebius-serverless-cookbooks.git
-cd nebius-serverless-cookbooks/fine-tune-resume-spot
+cd nebius-serverless-cookbooks/fine-tuning-with-checkpoints
 python3 --version
 ```
 

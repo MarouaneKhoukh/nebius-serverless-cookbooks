@@ -34,7 +34,7 @@ For example, during this experiment, this setup was priced at about **$0.80/hour
 
 ```bash
 git clone https://github.com/MarouaneKhoukh/nebius-serverless-cookbooks.git
-cd nebius-serverless-cookbooks/document-embeddings-spot
+cd nebius-serverless-cookbooks/document-search
 python3 --version
 ```
 

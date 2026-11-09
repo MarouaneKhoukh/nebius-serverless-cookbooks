@@ -34,7 +34,7 @@ For example, during this experiment, this setup was priced at about **$0.80/hour
 
 ```bash
 git clone https://github.com/MarouaneKhoukh/nebius-serverless-cookbooks.git
-cd nebius-serverless-cookbooks/evaluate-model-spot
+cd nebius-serverless-cookbooks/model-evaluation
 python3 --version
 ```
 
@@ -92,7 +92,7 @@ The supplied configuration runs **Qwen2.5-0.5B-Instruct** with vLLM on one L40S 
 
 Before launching, check the current rate under **Serverless AI → Endpoints → Create endpoint → Preemptible**. The deployment script uses **Follow Spot price** by default, which accepts the changing price without a maximum. Model loading and idle time are billed too. You'll stop the Endpoint in step 5.
 
-If you ran the [classification cookbook](../batch-inference-spot/README.md), you can use its Endpoint through the reuse option below. Otherwise, create one:
+If you ran the [classification cookbook](../support-request-classification/README.md), you can use its Endpoint through the reuse option below. Otherwise, create one:
 
 <details>
 <summary>Set a maximum GPU price</summary>
@@ -197,7 +197,7 @@ Completed examples are skipped. A request whose answer wasn't saved may run agai
 
 Copy `data/evaluation.csv`, keeping the `id,prompt,expected` columns, unique IDs and one expected label per row. For a different classification task, edit `LABELS` and `SYSTEM_PROMPT` together in `src/runner.py`.
 
-Keep evaluation examples separate from training data. To compare a model before and after fine-tuning, use the same test examples and scoring rule. Continue with [Fine-Tune Qwen and Resume Saved Training](../fine-tune-resume-spot/README.md) to try this.
+Keep evaluation examples separate from training data. To compare a model before and after fine-tuning, use the same test examples and scoring rule. Continue with [Fine-Tune Qwen and Resume Saved Training](../fine-tuning-with-checkpoints/README.md) to try this.
 
 Use a new output directory when changing the input, model or settings. To try client resumption, run the step 4 command with `--output-dir results-resume --limit 5`, then repeat it without `--limit 5`. The second run skips the first five answers.
 
