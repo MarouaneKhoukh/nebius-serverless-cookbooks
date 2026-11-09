@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "fingerprint": "aaf68ca7adc224b3273334539aa51e161c49adf209fb5f03e69f2e438de7af78",
+  "model": "Qwen/Qwen3-Embedding-0.6B",
+  "model_revision": "",
+  "dimensions": 1024,
+  "documents": 55,
+  "chunks_total": 2138,
+  "chunks_saved": 2138,
+  "remaining": 0,
+  "complete": true,
+  "chunk_words": 160,
+  "vectors": "vectors.jsonl",
+  "metadata": "metadata.jsonl",
+  "corpus": {
+    "dataset": "Python standard library documentation",
+    "version": "3.13.9",
+    "archive_sha256": "2522c3aee3c6617e99f7db5e43356471108739e35fe8a97b5d10da33832ff141",
+    "archive_url": "https://docs.python.org/ftp/python/doc/3.13.9/python-3.13.9-docs-text.zip",
+    "license": "PSF-2.0; documentation code examples also 0BSD"
+  }
+}

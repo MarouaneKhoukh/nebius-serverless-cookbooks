@@ -1,0 +1,110 @@
+{
+  "schema": 1,
+  "description": "Twelve original questions from the Python 3.13.9 Library and Extension FAQ. FAQ answer text is excluded from the search corpus. Expected source documents were curated from modules named in the FAQ answers, restricted to this corpus. These are source-level retrieval checks, not an independent benchmark or exhaustive relevance judgments.",
+  "source_url": "https://docs.python.org/release/3.13.9/faq/library.html",
+  "source_commit": "8183fa5e3f78ca6ab862de7fb8b14f3d929421e0",
+  "license": "PSF-2.0",
+  "queries": [
+    {
+      "id": "python-faq-01",
+      "text": "Is there an equivalent to C's onexit() in Python?",
+      "expected_sources": [
+        "library/atexit.txt"
+      ],
+      "question_source": "https://docs.python.org/release/3.13.9/faq/library.html"
+    },
+    {
+      "id": "python-faq-02",
+      "text": "How do I test a Python program or component?",
+      "expected_sources": [
+        "library/unittest.txt",
+        "library/doctest.txt"
+      ],
+      "question_source": "https://docs.python.org/release/3.13.9/faq/library.html"
+    },
+    {
+      "id": "python-faq-03",
+      "text": "How do I program using threads?",
+      "expected_sources": [
+        "library/threading.txt"
+      ],
+      "question_source": "https://docs.python.org/release/3.13.9/faq/library.html"
+    },
+    {
+      "id": "python-faq-04",
+      "text": "How do I parcel out work among a bunch of worker threads?",
+      "expected_sources": [
+        "library/concurrent.futures.txt",
+        "library/queue.txt"
+      ],
+      "question_source": "https://docs.python.org/release/3.13.9/faq/library.html"
+    },
+    {
+      "id": "python-faq-05",
+      "text": "How do I copy a file?",
+      "expected_sources": [
+        "library/shutil.txt"
+      ],
+      "question_source": "https://docs.python.org/release/3.13.9/faq/library.html"
+    },
+    {
+      "id": "python-faq-06",
+      "text": "How do I read (or write) binary data?",
+      "expected_sources": [
+        "library/struct.txt",
+        "library/array.txt"
+      ],
+      "question_source": "https://docs.python.org/release/3.13.9/faq/library.html"
+    },
+    {
+      "id": "python-faq-07",
+      "text": "How do I run a subprocess with pipes connected to both input and output?",
+      "expected_sources": [
+        "library/subprocess.txt"
+      ],
+      "question_source": "https://docs.python.org/release/3.13.9/faq/library.html"
+    },
+    {
+      "id": "python-faq-08",
+      "text": "How do I send mail from a Python script?",
+      "expected_sources": [
+        "library/smtplib.txt",
+        "library/email.txt"
+      ],
+      "question_source": "https://docs.python.org/release/3.13.9/faq/library.html"
+    },
+    {
+      "id": "python-faq-09",
+      "text": "How do I avoid blocking in the connect() method of a socket?",
+      "expected_sources": [
+        "library/socket.txt"
+      ],
+      "question_source": "https://docs.python.org/release/3.13.9/faq/library.html"
+    },
+    {
+      "id": "python-faq-10",
+      "text": "Are there any interfaces to database packages in Python?",
+      "expected_sources": [
+        "library/sqlite3.txt"
+      ],
+      "question_source": "https://docs.python.org/release/3.13.9/faq/library.html"
+    },
+    {
+      "id": "python-faq-11",
+      "text": "How do you implement persistent objects in Python?",
+      "expected_sources": [
+        "library/pickle.txt",
+        "library/shelve.txt"
+      ],
+      "question_source": "https://docs.python.org/release/3.13.9/faq/library.html"
+    },
+    {
+      "id": "python-faq-12",
+      "text": "How do I generate random numbers in Python?",
+      "expected_sources": [
+        "library/random.txt"
+      ],
+      "question_source": "https://docs.python.org/release/3.13.9/faq/library.html"
+    }
+  ]
+}

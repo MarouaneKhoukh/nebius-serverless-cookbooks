@@ -1,28 +1,34 @@
 {
-  "query": "How do I reset my password?",
+  "query": "How do I copy a file?",
   "instruction": "Given a question, retrieve relevant passages from the document collection that answer it",
-  "index_fingerprint": "7b9d6b2fc3a71ee54b84c2b7d7ce942eee8d52bc9819defa403f0d473c47b8a1",
+  "index_fingerprint": "aaf68ca7adc224b3273334539aa51e161c49adf209fb5f03e69f2e438de7af78",
   "matches": [
     {
-      "id": "43fbc814570cf0b04492a6b26852e04947998620b458a033c5d1a6425bcb4839",
-      "source": "account-access.txt",
-      "chunk_index": 0,
-      "text": "Reset your account password If you cannot sign in because you forgot your password, open the sign-in page and choose Forgot password. Enter the email address registered to your account. Follow the password reset link sent to that mailbox and choose a new password. The link expires after thirty minutes. If you cannot access the registered mailbox or your two-factor authentication device, contact the workspace administrator. Never share passwords or verification codes in a support message. These are fictional instructions for the cookbook's sample team.",
-      "similarity": 0.7236898425875015
+      "id": "388efcb655085ca061fcf6549d1bb0d31e8df14b8201a6410ea530e5d0c36901",
+      "source": "library/shutil.txt",
+      "chunk_index": 1,
+      "text": "Copy the contents of the *file-like object* *fsrc* to the file-like object *fdst*. The integer *length*, if given, is the buffer size. In particular, a negative *length* value means to copy the data without looping over the source data in chunks; by default the data is read in chunks to avoid uncontrolled memory consumption. Note that if the current file position of the *fsrc* object is not 0, only the contents from the current file position to the end of the file will be copied. shutil.copyfile(src, dst, *, follow_symlinks=True) Copy the contents (no metadata) of the file named *src* to a file named *dst* and return *dst* in the most efficient way possible. *src* and *dst* are *path-like objects* or path names given as strings. *dst* must be the complete target file name; look at \"copy()\" for a copy that accepts a target directory path. If *src* and *dst* specify the same file, \"SameFileError\" is raised.",
+      "source_url": "https://docs.python.org/release/3.13.9/library/shutil.html",
+      "title": "\"shutil\" — High-level file operations",
+      "similarity": 0.6371899558265804
     },
     {
-      "id": "61355a21e6f0114f93f35aa4703bcc1e605cdeacecc1e092b6317fb882b39337",
-      "source": "office-hours.txt",
-      "chunk_index": 0,
-      "text": "Office hours and building access The sample office is open Monday through Friday from nine in the morning until six in the evening. Use your assigned badge at the entrance. Visitors should register with reception and stay with their host while inside the building. Reserve meeting rooms in the shared calendar. Cancel a reservation if plans change so another team can use the room. Contact reception for a replacement badge or help with building access. These locations and policies are fictional examples.",
-      "similarity": 0.36434406678933456
+      "id": "6236d9897b8ff9faa5511a740edcf4e0f1138614c93fed36bf1ff021f9efd97e",
+      "source": "library/shutil.txt",
+      "chunk_index": 21,
+      "text": "On macOS fcopyfile is used to copy the file content (not metadata). On Linux \"os.sendfile()\" is used. On Windows \"shutil.copyfile()\" uses a bigger default buffer size (1 MiB instead of 64 KiB) and a \"memoryview()\"-based variant of \"shutil.copyfileobj()\" is used. If the fast-copy operation fails and no data was written in the destination file then shutil will silently fallback on using less efficient \"copyfileobj()\" function internally. Changed in version 3.8. copytree example ---------------- An example that uses the \"ignore_patterns()\" helper: from shutil import copytree, ignore_patterns copytree(source, destination, ignore=ignore_patterns('*.pyc', 'tmp*')) This will copy everything except \".pyc\" files and files or directories whose name starts with \"tmp\". Another example that uses the *ignore* argument to add a logging call: from shutil import copytree import logging def _logpath(path, names): logging.info('Working in %s', path) return [] # nothing will be ignored copytree(source, destination, ignore=_logpath) rmtree example --------------",
+      "source_url": "https://docs.python.org/release/3.13.9/library/shutil.html",
+      "title": "\"shutil\" — High-level file operations",
+      "similarity": 0.6332781025757239
     },
     {
-      "id": "a7d08be00dd987aaf20cc84b0c871431c06e41611eeb527901138b608b64b955",
-      "source": "technical-support.txt",
-      "chunk_index": 0,
-      "text": "Reporting a technical problem If an application feature fails, collect the error message, approximate time and a short set of steps that reproduce the issue. Include the affected application version and whether the problem also occurs in another browser. Do not include passwords, access tokens or private customer data in a screenshot. For an urgent outage, contact the sample on-call support channel. Routine bugs can be filed in the issue tracker. Describe the expected result and the result you observed. These instructions are fictional sample content.",
-      "similarity": 0.33323853268241865
+      "id": "3bb2d2a52ca2ff473c1bb4d22d7c4f2c60cf99dc33b9a938bcac308223a2f53f",
+      "source": "library/shutil.txt",
+      "chunk_index": 3,
+      "text": "This exception is raised if source and destination in \"copyfile()\" are the same file. Added in version 3.4. shutil.copymode(src, dst, *, follow_symlinks=True) Copy the permission bits from *src* to *dst*. The file contents, owner, and group are unaffected. *src* and *dst* are *path-like objects* or path names given as strings. If *follow_symlinks* is false, and both *src* and *dst* are symbolic links, \"copymode()\" will attempt to modify the mode of *dst* itself (rather than the file it points to). This functionality is not available on every platform; please see \"copystat()\" for more information. If \"copymode()\" cannot modify symbolic links on the local platform, and it is asked to do so, it will do nothing and return. Raises an auditing event \"shutil.copymode\" with arguments \"src\", \"dst\". Changed in version 3.3: Added *follow_symlinks* argument. shutil.copystat(src, dst, *, follow_symlinks=True)",
+      "source_url": "https://docs.python.org/release/3.13.9/library/shutil.html",
+      "title": "\"shutil\" — High-level file operations",
+      "similarity": 0.5747495752532688
     }
   ]
 }

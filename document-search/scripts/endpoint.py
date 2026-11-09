@@ -137,9 +137,10 @@ def create(args):
     if args.subnet_id:
         command += ['--subnet-id', args.subnet_id]
     print(shlex.join([CLI, *command, '--dry-run' if args.dry_run else '--async']))
-    print('SPOT GPU: paid from provisioning through stop, including model download and idle time. '
-          + ('The selected policy caps the hourly market price; capacity is not guaranteed.' if args.spot_pricing_policy_id
-             else 'Following the Spot market price without a price cap; capacity is not guaranteed.'))
+    print('Preemptible L40S: running compute, model download and idle time are billable. '
+          'L40S currently has a flat preemptible rate; check the console price. '
+          + ('A pricing policy was supplied; it does not reserve capacity.' if args.spot_pricing_policy_id
+             else 'No price-cap policy was selected; capacity is not guaranteed.'))
     if args.dry_run:
         cli([*command, '--dry-run'])
         print('Configuration validated; no Endpoint was created.')
@@ -150,13 +151,13 @@ def create(args):
                     '--name', args.name], required=False)
     if existing and existing.get('metadata', {}).get('id'):
         if not existing.get('spec', {}).get('preemptible'):
-            raise RuntimeError('That name exists on regular compute; select a new name for this Spot recipe.')
+            raise RuntimeError('That name exists on regular compute; select a new name for this preemptible recipe.')
         previous = load_state() if STATE.exists() else {}
         if (previous.get('id') != existing['metadata']['id'] or previous.get('config_sha256') != config_hash
                 or previous.get('launch_options') != launch_options):
             raise RuntimeError('That name is already in use outside this exact tracked configuration. Choose a new name, or deliberately attach its ID.')
         ep = existing
-        print('Using the existing Spot Endpoint with this exact name; no duplicate was created.')
+        print('Using the existing preemptible Endpoint with this exact name; no duplicate was created.')
     else:
         cli([*command, '--async', '--retries', '1'])
         ep = None

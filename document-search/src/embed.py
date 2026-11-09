@@ -12,12 +12,14 @@ import math
 import os
 from pathlib import Path
 import re
+import shutil
 import sys
 import tempfile
 import time
 import urllib.error
 import urllib.parse
 import urllib.request
+from retrieval import BM25, aggregate, load_queries, source_metrics
 
 MODEL = "Qwen/Qwen3-Embedding-0.6B"
 DIMENSIONS = 1024
@@ -76,11 +78,21 @@ def artwork() -> str:
 
 def report(path: Path, title: str, summary: str, fields: list[str], records: list[dict]) -> None:
     headers = "".join("<th>" + html.escape(name) + "</th>" for name in fields)
-    body = "".join("<tr>" + "".join("<td>" + html.escape(str(record.get(field, ""))) + "</td>" for field in fields) + "</tr>" for record in records)
+    widths = {3: [23, 13, 64], 4: [35, 25, 25, 15], 6: [27, 23, 16, 16, 9, 9]}.get(len(fields), [100 / len(fields)] * len(fields))
+    columns = "<colgroup>" + "".join(f'<col style="width:{width}%">' for width in widths) + "</colgroup>"
+    def cell(record, field):
+        value = html.escape(str(record.get(field, "")))
+        url = record.get("source_url", "")
+        if field == "source" and isinstance(url, str):
+            parsed = urllib.parse.urlparse(url)
+            if parsed.scheme == "https" and parsed.hostname and not parsed.username and not parsed.password:
+                return '<a href="' + html.escape(url, quote=True) + '">' + value + '</a>'
+        return value
+    body = "".join("<tr>" + "".join('<td data-label="' + html.escape(field, quote=True) + '">' + cell(record, field) + "</td>" for field in fields) + "</tr>" for record in records)
     atomic_write(path, "<!doctype html><html lang='en'><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>" + html.escape(title)
-        + "</title><style>body{font:16px/1.55 system-ui;color:#24271f;background:#f7f7ef;padding:32px;margin:0}main{max-width:1180px;margin:auto}header{display:flex;gap:24px;align-items:center;flex-wrap:wrap}header svg{width:140px;height:auto}h1{font-size:32px;line-height:1.15}.summary{padding:20px;background:#e1f58a;border-radius:12px}.table{overflow:auto;background:white;border:1px solid #d8ddce;border-radius:12px}table{border-collapse:collapse;width:100%}th,td{text-align:left;vertical-align:top;padding:14px;border-bottom:1px solid #e1e4db}th{background:#ecefe3}footer{margin-top:24px;color:#555a4c}</style><main><header>"
+        + "</title><style>body{font:16px/1.55 system-ui;color:#24271f;background:#f7f7ef;padding:32px;margin:0}main{max-width:1180px;margin:auto}header{display:flex;gap:24px;align-items:center;flex-wrap:wrap}header svg{width:140px;height:auto}h1{font-size:32px;line-height:1.15}.summary{padding:20px;background:#e1f58a;border-radius:12px}.table{overflow:auto;background:white;border:1px solid #d8ddce;border-radius:12px}table{border-collapse:collapse;width:100%;table-layout:fixed}th,td{text-align:left;vertical-align:top;padding:14px;border-bottom:1px solid #e1e4db;overflow-wrap:anywhere}th{background:#ecefe3}footer{margin-top:24px;color:#555a4c}@media(max-width:900px){body{padding:18px;font-size:15px}th,td{padding:9px;font-size:13px}h1{font-size:28px}}@media(max-width:600px){table,tbody,tr,td{display:block}colgroup,thead{display:none}tr{padding:10px 0;border-bottom:1px solid #d8ddce}td{display:grid;grid-template-columns:34% 1fr;gap:10px;border:0}td::before{content:attr(data-label);font-weight:700}}</style><main><header>"
         + artwork() + "<strong>Powered by Nebius Serverless AI</strong></header><h1>" + html.escape(title) + "</h1><p class='summary'>" + html.escape(summary)
-        + "</p><div class='table'><table><thead><tr>" + headers + "</tr></thead><tbody>" + body
+        + "</p><div class='table'><table>" + columns + "<thead><tr>" + headers + "</tr></thead><tbody>" + body
         + "</tbody></table></div><footer>Saved model results.</footer></main></html>")
 
 
@@ -88,21 +100,29 @@ def load_chunks(directory: Path, words: int = 160) -> list[dict]:
     if not directory.is_dir() or not 10 <= words <= 500:
         raise RecipeError("Input must be a document directory; --chunk-words must be between 10 and 500")
     chunks = []
+    corpus_path = directory / ".corpus.json"
+    corpus = read_json(corpus_path) if corpus_path.is_file() else None
+    catalog = {item["path"]: item for item in corpus["documents"]} if corpus else {}
     paths = sorted(path for path in directory.rglob("*") if path.is_file() and path.suffix.lower() in {".txt", ".md"})
     if not paths:
         raise RecipeError("Input directory has no .txt or .md documents")
+    if corpus and {path.relative_to(directory).as_posix() for path in paths} != set(catalog):
+        raise RecipeError("Prepared corpus files changed. Run scripts/prepare_data.py again, or use a separate input directory.")
     for path in paths:
         if path.is_symlink():
             raise RecipeError(f"Replace the symlink with a deliberate input file: {path.name}")
         if path.stat().st_size > 5 * 1024 * 1024:
             raise RecipeError(f"Document exceeds the 5 MiB starter limit: {path.name}. Split it into smaller text files.")
+        raw = path.read_bytes()
+        relative = path.relative_to(directory).as_posix()
+        if corpus and hashlib.sha256(raw).hexdigest() != catalog[relative]["sha256"]:
+            raise RecipeError(f"Prepared corpus checksum changed: {relative}. Run scripts/prepare_data.py again.")
         try:
-            content = path.read_text(encoding="utf-8").strip()
+            content = raw.decode("utf-8").strip()
         except UnicodeError:
             raise RecipeError(f"Document is not UTF-8 text: {path.name}") from None
         if not content:
             raise RecipeError(f"Document is empty: {path.name}")
-        relative = path.relative_to(directory).as_posix()
         paragraphs = [part.split() for part in re.split(r"\n\s*\n", content) if part.strip()]
         packed: list[str] = []
         current: list[str] = []
@@ -117,7 +137,10 @@ def load_chunks(directory: Path, words: int = 160) -> list[dict]:
         if current:
             packed.append(" ".join(current))
         for index, text in enumerate(packed):
-            chunks.append({"id": digest({"source": relative, "chunk_index": index, "text": text}), "document_id": digest(relative), "source": relative, "chunk_index": index, "text": text, "text_sha256": hashlib.sha256(text.encode()).hexdigest()})
+            chunk = {"id": digest({"source": relative, "chunk_index": index, "text": text}), "document_id": digest(relative), "source": relative, "chunk_index": index, "text": text, "text_sha256": hashlib.sha256(text.encode()).hexdigest()}
+            if corpus:
+                chunk.update(source_url=catalog[relative]["source_url"], title=catalog[relative]["title"])
+            chunks.append(chunk)
     return chunks
 
 
@@ -214,8 +237,10 @@ def load_saved(chunks: list[dict], output: Path, fingerprint: str, dimensions: i
 
 def export_index(chunks: list[dict], records: list[dict], output: Path, settings: dict, fingerprint: str) -> dict:
     atomic_write(output / "vectors.jsonl", "".join(json.dumps({"id": record["id"], "vector": record["vector"]}) + "\n" for record in records))
-    atomic_write(output / "metadata.jsonl", "".join(json.dumps({key: record[key] for key in ("id", "document_id", "source", "chunk_index", "text", "text_sha256")}, ensure_ascii=False) + "\n" for record in records))
+    atomic_write(output / "metadata.jsonl", "".join(json.dumps({key: record[key] for key in ("id", "document_id", "source", "chunk_index", "text", "text_sha256", "source_url", "title") if key in record}, ensure_ascii=False) + "\n" for record in records))
     manifest = {"schema": 1, "fingerprint": fingerprint, "model": settings["model"], "model_revision": settings["model_revision"], "dimensions": settings["dimensions"], "documents": len({chunk["source"] for chunk in chunks}), "chunks_total": len(chunks), "chunks_saved": len(records), "remaining": len(chunks) - len(records), "complete": len(records) == len(chunks), "chunk_words": settings["chunk_words"], "vectors": "vectors.jsonl", "metadata": "metadata.jsonl"}
+    if settings.get("corpus"):
+        manifest["corpus"] = settings["corpus"]
     write_json(output / "manifest.json", manifest)
     report(output / "index.html", "Saved Document Embeddings", f"{len(records)} / {len(chunks)} chunks saved · {manifest['documents']} documents · {settings['dimensions']}-dimensional vectors", ["source", "chunk_index", "text"], records)
     return manifest
@@ -240,9 +265,7 @@ def index_collection(chunks: list[dict], output: Path, settings: dict, embed, *,
         records = load_saved(chunks, output, fingerprint, settings["dimensions"])
         done = {record["id"] for record in records}
         pending = [chunk for chunk in chunks if chunk["id"] not in done]
-        for chunk in chunks:
-            if chunk["id"] in done:
-                print(f"saved: {chunk['source']} chunk {chunk['chunk_index']}", flush=True)
+        print(f"Reused {len(records)} saved chunks; {len(pending)} remain.", flush=True)
         if limit is not None:
             pending = pending[:limit]
         try:
@@ -254,7 +277,7 @@ def index_collection(chunks: list[dict], output: Path, settings: dict, embed, *,
                 vectors = [unit_vector(vector, settings["dimensions"]) for vector in vectors]
                 for chunk, vector in zip(batch, vectors):
                     write_json(output / "items" / (chunk["id"] + ".json"), {**chunk, "vector": vector, "fingerprint": fingerprint})
-                    print(f"completed: {chunk['source']} chunk {chunk['chunk_index']}", flush=True)
+                print(f"Saved {len(done) + start + len(batch)} / {len(chunks)} chunks.", flush=True)
         finally:
             records = load_saved(chunks, output, fingerprint, settings["dimensions"])
             manifest = export_index(chunks, records, output, settings, fingerprint)
@@ -267,9 +290,7 @@ def cosine(left: list[float], right: list[float]) -> float:
     return max(-1.0, min(1.0, sum(a * b for a, b in zip(left, right))))
 
 
-def query_collection(output: Path, text: str, endpoint: Endpoint, *, top_k: int = 3) -> list[dict]:
-    if not text.strip() or len(text.split()) > 500 or not 1 <= top_k <= 20:
-        raise RecipeError("Supply a non-empty query of at most 500 words and --top-k 1–20")
+def load_index(output: Path) -> tuple[dict, list[dict]]:
     manifest = read_json(output / "manifest.json")
     if not manifest.get("complete"):
         raise RecipeError("Index is incomplete. Finish the index command before querying it.")
@@ -285,13 +306,88 @@ def query_collection(output: Path, text: str, endpoint: Endpoint, *, top_k: int 
         records.append(record)
     if len(records) != manifest["chunks_saved"]:
         raise RecipeError("Saved chunk count does not match the manifest")
+    return manifest, records
+
+
+def semantic_rank(records: list[dict], query: list[float], top_k: int) -> list[dict]:
+    return sorted(({**{key: record[key] for key in ("id", "source", "chunk_index", "text", "source_url", "title") if key in record}, "similarity": cosine(query, record["vector"])} for record in records), key=lambda record: (-record["similarity"], record["id"]))[:top_k]
+
+
+def query_collection(output: Path, text: str, endpoint: Endpoint, *, top_k: int = 3) -> list[dict]:
+    if not text.strip() or len(text.split()) > 500 or not 1 <= top_k <= 20:
+        raise RecipeError("Supply a non-empty query of at most 500 words and --top-k 1–20")
+    manifest, records = load_index(output)
     endpoint.ready(manifest["model"])
     instructed = f"Instruct: {QUERY_INSTRUCTION}\nQuery:{text.strip()}"
     query = endpoint.embed([instructed], manifest["model"], manifest["dimensions"])[0]
-    ranked = sorted(({"id": record["id"], "source": record["source"], "chunk_index": record["chunk_index"], "text": record["text"], "similarity": cosine(query, record["vector"])} for record in records), key=lambda record: (-record["similarity"], record["id"]))[:top_k]
+    ranked = semantic_rank(records, query, top_k)
     write_json(output / "search.json", {"query": text, "instruction": QUERY_INSTRUCTION, "index_fingerprint": manifest["fingerprint"], "matches": ranked})
     report(output / "search.html", "Search Documents by Meaning", f"Query: {text} · {manifest['chunks_saved']} saved chunks · {manifest['model']}", ["source", "similarity", "text"], ranked)
     return ranked
+
+
+def check_queries(output: Path, queries_path: Path, endpoint: Endpoint, *, top_k: int = 5) -> dict:
+    if not 1 <= top_k <= 20:
+        raise RecipeError("--top-k must be 1–20")
+    manifest, records = load_index(output)
+    queries, provenance = load_queries(queries_path, {record["source"] for record in records})
+    endpoint.ready(manifest["model"])
+    vectors = []
+    for start in range(0, len(queries), 16):
+        vectors.extend(endpoint.embed([f"Instruct: {QUERY_INSTRUCTION}\nQuery:{row['text']}" for row in queries[start:start + 16]], manifest["model"], manifest["dimensions"]))
+    if len(vectors) != len(queries):
+        raise RecipeError("The Endpoint did not return one vector for every query check.")
+    lexical = BM25(records)
+    rows, display = [], []
+    for query, vector in zip(queries, vectors):
+        matches, baseline = semantic_rank(records, vector, top_k), lexical.search(query["text"], top_k=top_k)
+        row = {**query, "semantic": source_metrics(matches, query["expected_sources"]),
+               "bm25": source_metrics(baseline, query["expected_sources"]),
+               "semantic_matches": matches, "bm25_matches": baseline}
+        rows.append(row)
+        display.append({"question": query["text"], "expected": ", ".join(query["expected_sources"]),
+                        "Qwen first": matches[0]["source"], "BM25 first": baseline[0]["source"],
+                        f"Qwen top {top_k}": row["semantic"]["hit_at_k"], f"BM25 top {top_k}": row["bm25"]["hit_at_k"]})
+    summary = {"schema": 1, "index_fingerprint": manifest["fingerprint"], "corpus": manifest.get("corpus"),
+               "query_provenance": provenance, "semantic": aggregate(rows, "semantic", top_k),
+               "bm25": aggregate(rows, "bm25", top_k), "results": rows,
+               "note": "Source-level checks on these documented questions; not a blind retrieval benchmark or answer-quality score."}
+    write_json(output / "retrieval-checks.json", summary)
+    report(output / "retrieval-checks.html", "Search the Python Documentation",
+           f"{len(queries)} FAQ questions · {manifest['documents']} source documents · {manifest['chunks_saved']} chunks · Qwen source hit@{top_k}: {summary['semantic']['hit_at_k']:.1%} · BM25: {summary['bm25']['hit_at_k']:.1%}",
+           ["question", "expected", "Qwen first", "BM25 first", f"Qwen top {top_k}", f"BM25 top {top_k}"], display)
+    return summary
+
+
+
+def render_saved_reports(output: Path) -> None:
+    """Rebuild presentation from recorded results without calling the model."""
+    manifest, records = load_index(output)
+    report(output / "index.html", "Saved Document Embeddings",
+           f"{len(records)} / {manifest['chunks_total']} chunks saved · {manifest['documents']} documents · {manifest['dimensions']}-dimensional vectors",
+           ["source", "chunk_index", "text"], records)
+    search_path = output / "search.json"
+    if search_path.is_file():
+        search = read_json(search_path)
+        if search["index_fingerprint"] != manifest["fingerprint"]:
+            raise RecipeError("Saved search belongs to a different index.")
+        report(output / "search.html", "Search the Python Documentation",
+               f"Query: {search['query']} · {manifest['chunks_saved']} saved chunks · {manifest['model']}",
+               ["source", "similarity", "text"], search["matches"])
+    checks_path = output / "retrieval-checks.json"
+    if checks_path.is_file():
+        checks = read_json(checks_path)
+        if checks["index_fingerprint"] != manifest["fingerprint"]:
+            raise RecipeError("Saved query checks belong to a different index.")
+        top_k = checks["semantic"]["top_k"]
+        display = [{"question": row["text"], "expected": ", ".join(row["expected_sources"]),
+                    "Qwen first": row["semantic_matches"][0]["source"],
+                    "BM25 first": row["bm25_matches"][0]["source"],
+                    f"Qwen top {top_k}": row["semantic"]["hit_at_k"],
+                    f"BM25 top {top_k}": row["bm25"]["hit_at_k"]} for row in checks["results"]]
+        report(output / "retrieval-checks.html", "Search the Python Documentation",
+               f"{len(display)} FAQ questions · {manifest['documents']} source documents · {manifest['chunks_saved']} chunks · Qwen source hit@{top_k}: {checks['semantic']['hit_at_k']:.1%} · BM25: {checks['bm25']['hit_at_k']:.1%}",
+               ["question", "expected", "Qwen first", "BM25 first", f"Qwen top {top_k}", f"BM25 top {top_k}"], display)
 
 
 def main(argv=None) -> int:
@@ -304,32 +400,53 @@ def main(argv=None) -> int:
     index.add_argument("--model-revision", default=os.environ.get("MODEL_REVISION", ""))
     index.add_argument("--dimensions", type=int, choices=[DIMENSIONS], default=DIMENSIONS, help="Native size used by this recipe (1024)")
     index.add_argument("--chunk-words", type=int, default=160)
-    index.add_argument("--batch-size", type=int, default=2)
+    index.add_argument("--batch-size", type=int, default=16)
     index.add_argument("--limit-chunks", type=int)
     query = sub.add_parser("query", help="Embed one query and search saved vectors locally")
     query.add_argument("--output-dir", type=Path, default=Path("results"))
     query.add_argument("--text", required=True)
     query.add_argument("--top-k", type=int, default=3)
+    check = sub.add_parser("check", help="Compare documented FAQ retrieval checks with a BM25 baseline")
+    check.add_argument("--output-dir", type=Path, default=Path("results"))
+    check.add_argument("--queries", type=Path, default=Path("data/queries.json"))
+    check.add_argument("--top-k", type=int, default=5)
+    render = sub.add_parser("render", help="Rebuild saved HTML reports offline, without an Endpoint")
+    render.add_argument("--output-dir", type=Path, default=Path("results"))
     args = parser.parse_args(argv)
     try:
         artwork()
+        if args.command == "render":
+            render_saved_reports(args.output_dir)
+            print(f"Rebuilt HTML reports in {args.output_dir}; no model requests were made.")
+            return 0
         endpoint = Endpoint.from_environment()
         if args.command == "index":
             if args.dimensions != DIMENSIONS:
                 raise RecipeError("This recipe uses the native 1024-dimensional model output")
             chunks = load_chunks(args.input_dir, args.chunk_words)
             settings = {"model": args.model, "model_revision": args.model_revision, "dimensions": args.dimensions, "chunk_words": args.chunk_words}
+            corpus_path = args.input_dir / ".corpus.json"
+            if corpus_path.is_file():
+                corpus = read_json(corpus_path)
+                settings["corpus"] = {key: corpus[key] for key in ("dataset", "version", "archive_sha256", "archive_url", "license")}
             endpoint.ready(args.model)
             result = index_collection(chunks, args.output_dir, settings, endpoint.embed, batch_size=args.batch_size, limit=args.limit_chunks)
+            if corpus_path.is_file():
+                shutil.copyfile(args.input_dir / "DATA_LICENSE", args.output_dir / "DATA_LICENSE")
+                shutil.copyfile(Path(__file__).resolve().parents[1] / "data/SOURCE.md", args.output_dir / "DATA_SOURCE.md")
             print(f"Saved {result['chunks_saved']} / {result['chunks_total']} chunks; dimensions={result['dimensions']}; complete={result['complete']}")
             print(f"Wrote {args.output_dir / 'vectors.jsonl'} and {args.output_dir / 'index.html'}")
-        else:
+        elif args.command == "query":
             ranked = query_collection(args.output_dir, args.text, endpoint, top_k=args.top_k)
             for rank, record in enumerate(ranked, 1):
                 print(f"{rank}. {record['source']} — cosine {record['similarity']:.4f}")
             print(f"Wrote {args.output_dir / 'search.json'} and {args.output_dir / 'search.html'}")
+        else:
+            result = check_queries(args.output_dir, args.queries, endpoint, top_k=args.top_k)
+            print(json.dumps({"semantic": result["semantic"], "bm25": result["bm25"]}, indent=2))
+            print(f"Wrote {args.output_dir / 'retrieval-checks.json'} and {args.output_dir / 'retrieval-checks.html'}")
         return 0
-    except (RecipeError, OSError, KeyError) as exc:
+    except (RecipeError, OSError, KeyError, ValueError) as exc:
         print(f"Error: {exc}", file=sys.stderr)
         return 1
 

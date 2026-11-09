@@ -1,71 +1,68 @@
 ---
-title: Search Documents by Meaning
+title: Search the Python Docs by Meaning
 category: inference
 type: cookbook
 runtime: Nebius Serverless AI Endpoint
 frameworks: [vLLM]
-keywords: [preemptible, embeddings, documents, qwen, semantic-search]
+keywords: [preemptible, embeddings, python, retrieval, qwen]
 difficulty: beginner
 ---
 
 <img src="docs/brand/nebius-logo.svg" alt="Nebius" width="140">
 
-# Search Documents by Meaning
+# Search the Python Docs by Meaning
 
-Build a small search tool for a folder of text documents. Qwen turns the text into **embeddings**, lists of numbers that represent its meaning. You'll save those embeddings, ask a question and see the closest matching documents in a browser report. Six example documents are included.
+Search **55 real Python standard-library reference documents** with Qwen3-Embedding-0.6B. You'll save **2,138 passage embeddings**, ask a question and inspect the sources in a browser report. Twelve original Python FAQ questions let you compare semantic retrieval with a CPU keyword baseline.
 
-Nebius Serverless AI runs Qwen on a cloud GPU, so you don't need to configure a GPU server. You'll create an **Endpoint**, a model API you call over HTTPS. Your computer stores the document text, embeddings and search results.
+Nebius Serverless AI hosts Qwen behind an **Endpoint**, an authenticated HTTPS model API. Your computer prepares the documents, saves vectors and searches them. No local GPU or vector database is required.
 
-**Preemptible instances give you a way to do more with your GPU budget.** They provide GPU capacity at a changing market price that can be lower than the regular rate. The trade-off is that a run can be interrupted. This cookbook saves each completed chunk on your computer, so you can resume indexing and process only the unfinished text.
-
-For example, during this experiment, this setup was priced at about **$0.80/hour on preemptible compute, compared with $1.60/hour on regular compute**. Prices can change.
-
-![A password-reset search returning the account-access document](docs/media/result.jpg)
-
-**Powered by Nebius Serverless AI**
+A **preemptible GPU** can offer a lower rate, but Nebius can reclaim it. Saved passage vectors survive on your computer, so indexing can continue later. New questions need the model Endpoint available; already saved reports open without it.
 
 ## What you need
 
-- macOS or Ubuntu, Git and Python **3.10+**. No local GPU, database or extra Python packages.
-- A Nebius account with billing enabled and a project in **eu-north1**. A project holds your cloud resources and their permissions.
-- Permission and quota to run **one preemptible L40S GPU**. Quota is your account's resource allowance; check **Quotas** in the console if deployment is refused.
+- macOS or Ubuntu, Git and **Python 3.10+**. The local tools use Python's standard library.
+- A billing-enabled Nebius project in **eu-north1**, permission to create Endpoints and quota for **one preemptible L40S**.
 
-## 1. Get the files
+## 1. Get the files and real corpus
 
 ```bash
 git clone https://github.com/MarouaneKhoukh/nebius-serverless-cookbooks.git
 cd nebius-serverless-cookbooks/document-search
-python3 --version
+python3 scripts/prepare_data.py
 ```
 
-Run the remaining commands from this directory.
+Run all remaining commands from this directory. Preparation downloads the official **Python 3.13.9** text archive, verifies its checksum and the selected files, and retains the PSF license. The result is 55 documents in `data/documents/`. [Data provenance and license](data/SOURCE.md).
+
+Try the CPU baseline before renting a GPU:
+
+```bash
+python3 scripts/run_baseline.py --output-dir results-bm25
+```
+
+Open `results-bm25/report.html`. BM25 searches the same chunks by words. If it meets your needs, use it; the GPU path lets you compare a semantic model on these same questions.
 
 ## 2. Sign in to Nebius
 
-The Nebius CLI creates and manages your Endpoint from the terminal. If it isn't installed:
+Install the CLI if needed:
 
 ```bash
 curl -sSL https://artifacts.nebius.cloud/cli/install.sh | bash
 ```
 
-Open a new terminal after installation and return to this cookbook's directory. Use CLI **0.12.303 or newer**; run `nebius update` if yours is older.
-
-In the [Nebius console](https://console.nebius.com), select your eu-north1 project and copy its project ID. Replace the **entire** `YOUR_PROJECT_ID` value:
-
-If you already have a signed-in CLI profile for this project, use its name in place of `cookbook` and skip `profile create`. Otherwise, create the `cookbook` profile:
+Open a new terminal and return to this directory. Use CLI **0.12.303+**; run `nebius update` if yours is older. Copy your project ID from the [console](https://console.nebius.com), replace the placeholder and complete browser sign-in:
 
 ```bash
+export AI_AGENT="${AI_AGENT:-cookbook}"
 nebius version
 export NEBIUS_PROJECT_ID="YOUR_PROJECT_ID"
-export AI_AGENT="${AI_AGENT:-cookbook}"
 nebius profile create cookbook --parent-id "$NEBIUS_PROJECT_ID"
 nebius profile activate cookbook
 nebius iam whoami
 ```
 
-Complete the browser sign-in when prompted.
+Already signed in to this project? Activate that profile instead of creating `cookbook`.
 
-Choose a **subnet**, the network your Endpoint will use. List the project's subnets and replace `YOUR_SUBNET_ID` with a subnet's `metadata.id`. It must allow outbound internet access to download the model.
+Choose a **subnet**, the Endpoint's network, with outbound internet access for model downloads. Copy its `metadata.id`:
 
 ```bash
 nebius vpc subnet list --parent-id "$NEBIUS_PROJECT_ID" --format json
@@ -73,150 +70,143 @@ export NEBIUS_SUBNET_ID="YOUR_SUBNET_ID"
 ```
 
 <details>
-<summary>If your project has no subnet</summary>
-
-Create a network and subnet in the same project:
+<summary>If the project has no subnet</summary>
 
 ```bash
 export NEBIUS_NETWORK_ID="$(nebius vpc network create --parent-id "$NEBIUS_PROJECT_ID" --name cookbook-network --format jsonpath='{.metadata.id}')"
 export NEBIUS_SUBNET_ID="$(nebius vpc subnet create --parent-id "$NEBIUS_PROJECT_ID" --name cookbook-subnet --network-id "$NEBIUS_NETWORK_ID" --format jsonpath='{.metadata.id}')"
 ```
 
-New networks have a default internet route. If your company manages the network, ask for an approved subnet instead. [Network setup](https://docs.nebius.com/vpc/networking/isolation) · [Default routing](https://docs.nebius.com/vpc/routing/overview)
+New networks have a default internet route. Use an approved subnet if your company manages networking.
 
 </details>
 
 ## 3. Start the embedding model
 
-The supplied configuration runs **Qwen3-Embedding-0.6B** with vLLM on one L40S and a 500 GiB temporary disk. Use this embedding model for the recipe; the Qwen chat model in the classification cookbook serves a different task.
+The [configuration](config/endpoint.json) uses **Qwen/Qwen3-Embedding-0.6B**, the vLLM **0.19.1** pooling runner, one L40S and a **500 GiB temporary disk**. The model is public; no Hugging Face token is required.
 
-Before launching, check the current rate under **Serverless AI → Endpoints → Create endpoint → Preemptible**. The deployment script uses **Follow Spot price** by default, which accepts the changing price without a maximum. Model loading and idle time are billed too. You'll stop the Endpoint in step 6.
+Check the rate under **Serverless AI → Endpoints → Create endpoint → Preemptible**. L40S currently has a [flat preemptible rate](https://nebius.com/prices), although the CLI calls its setting **Follow Spot price**. Model loading and idle time are billable.
 
-<details>
-<summary>Set a maximum GPU price</summary>
-
-A pricing policy sets a maximum **per GPU hour**. A higher maximum can improve allocation priority when demand for the same GPU platform is high. You pay the current market rate while it stays within your limit. Capacity can still be reclaimed. [How allocation works](https://docs.nebius.com/signup-billing/pricing-policy#capacity-allocation)
-
-1. Check the [current price and recent history](https://docs.nebius.com/signup-billing/spot-prices). Choose a maximum within your budget, with room for price increases. A limit below the current rate blocks startup.
-2. In **Billing → Pricing → Pricing policy → Create pricing policy**, enter a name using letters/numbers, select your project and **`gpu-l40s-a`**, and enter that maximum. Create the policy and copy its ID.
-3. Add `--spot-pricing-policy-id "YOUR_POLICY_ID"` to both `create` commands below, replacing the whole placeholder. The deployment script will use that policy.
-
-Choose the policy before launching. Before changing its maximum, stop the Endpoints using it and wait for any Jobs using it to finish, or cancel them.
-
-A tight limit can cause more interruptions as prices rise. **Follow Spot price** accepts price changes without a cap, including prices above regular rates. A GPU price limit does not cap the total cost of a run or its storage.
-
-[Policy setup](https://docs.nebius.com/signup-billing/manage-pricing-policy) · [Pricing options](https://docs.nebius.com/signup-billing/pricing-policy)
-
-</details>
+Preview, create and wait for the model API:
 
 ```bash
-python3 scripts/endpoint.py create --project-id "$NEBIUS_PROJECT_ID" --subnet-id "$NEBIUS_SUBNET_ID" --name cookbook-embeddings-spot --dry-run
-python3 scripts/endpoint.py create --project-id "$NEBIUS_PROJECT_ID" --subnet-id "$NEBIUS_SUBNET_ID" --name cookbook-embeddings-spot --yes
+python3 scripts/endpoint.py create \
+  --project-id "$NEBIUS_PROJECT_ID" --subnet-id "$NEBIUS_SUBNET_ID" \
+  --name cookbook-python-doc-search --dry-run
+
+python3 scripts/endpoint.py create \
+  --project-id "$NEBIUS_PROJECT_ID" --subnet-id "$NEBIUS_SUBNET_ID" \
+  --name cookbook-python-doc-search --yes
+
 python3 scripts/endpoint.py wait --timeout 1800
 ```
 
-The first command previews the deployment; the second creates it. Wait for the model API to be ready before continuing. The deployment script passes the API address and authentication token to the client.
+The helper passes the Endpoint URL and token privately to client commands. If readiness times out, inspect Endpoint logs and stop unused compute.
 
 <details>
-<summary>Ask an agent to run it instead</summary>
+<summary>Reuse an existing embedding Endpoint</summary>
 
-Install the [Nebius agent skills](https://github.com/nebius/skills#install) for your coding agent, then paste the prompt below. The agent needs terminal access and the CLI sign-in from step 2. Skills are optional for the CLI instructions above.
+Instead of creating one, copy the ID of a preemptible Endpoint serving this exact embedding model with the pooling runner:
+
+```bash
+python3 scripts/endpoint.py attach --project-id "$NEBIUS_PROJECT_ID" --id YOUR_ENDPOINT_ID
+python3 scripts/endpoint.py wait --timeout 1800
+```
+
+A chat model Endpoint cannot create the required embedding vectors.
+
+</details>
+
+<details>
+<summary>Run with an agent</summary>
+
+Install the [Nebius skills](https://github.com/nebius/skills#install) for an agent with terminal access and the signed-in CLI, then paste:
 
 ```text
-Run this cookbook in Nebius project <MY_PROJECT_ID> using
-nebius-cloud-basics and nebius-serverless-endpoints. Follow README.md and
-config/endpoint.json. Show the current price and confirm the deployment
-before creating a preemptible Endpoint. Wait for Qwen3-Embedding-0.6B,
-index the six sample documents, and check the saved vectors and metadata.
-Run the password-reset search and inspect its results. Stop this cookbook's
-Endpoint and verify STOPPED. Keep authentication tokens private.
+Run document-search in MarouaneKhoukh/nebius-serverless-cookbooks.
+Use nebius-cloud-basics and nebius-serverless-endpoints in project
+<PROJECT_ID> and subnet <SUBNET_ID>. Follow config/endpoint.json.
+Prepare the pinned Python corpus. Show the price and confirm before
+launching unapproved compute. Index all 2,138 chunks, verify saved
+results, compare the 12 FAQ queries with BM25, then stop only this
+Endpoint and verify STOPPED. Keep tokens private.
 ```
 
 </details>
 
-## 4. Process the documents
+## 4. Save the document vectors
 
 ```bash
-python3 scripts/endpoint.py run -- python3 src/embed.py index --input-dir data/documents --output-dir results
+python3 scripts/endpoint.py run -- \
+  python3 src/embed.py index --input-dir data/documents \
+  --output-dir results --batch-size 16
+
+python3 scripts/check_result.py --input-dir data/documents --output-dir results
 ```
 
-The tool splits documents into smaller pieces called **chunks** and saves an embedding for each one. These six short documents produce **six chunks**, each with a 1,024-number vector.
+Expect **55 documents, 2,138 saved chunks and 1,024 dimensions**. Each completed chunk is saved independently on your computer. The checker verifies IDs, source text, vector/metadata alignment and the retained license.
 
-Check that all six were saved:
+`vectors.jsonl` and `metadata.jsonl` are the reusable collection. Keep them together. The HTML is only a report view; you can use the exported data with your own interface or vector database.
+
+## 5. Search and compare
 
 ```bash
-python3 -c 'import json; m=json.load(open("results/manifest.json")); print(m); assert m["complete"] and m["chunks_saved"] == 6 and m["dimensions"] == 1024'
+python3 scripts/endpoint.py run -- \
+  python3 src/embed.py query --output-dir results \
+  --text "How do I copy a file?" --top-k 5
 ```
 
-Your computer now has:
+Open **`results/search.html`** and follow a source link to read the original reference. A similarity score expresses closeness, not the probability that a passage answers the question.
 
-- `results/vectors.jsonl`: an ID and embedding for each chunk.
-- `results/metadata.jsonl`: the matching IDs, source filenames and text.
-- `results/index.html`: a browser view of the saved collection.
-
-Keep vectors and their matching metadata together when importing them into a vector database.
-
-## 5. Search the collection
+Run all twelve FAQ checks against Qwen and BM25:
 
 ```bash
-python3 scripts/endpoint.py run -- python3 src/embed.py query --output-dir results --text "How do I reset my password?"
+python3 scripts/endpoint.py run -- \
+  python3 src/embed.py check --output-dir results \
+  --queries data/queries.json --top-k 5
+
+python3 scripts/check_result.py --input-dir data/documents \
+  --output-dir results --require-checks
 ```
 
-Open `results/search.html` in your browser, or read `results/search.json`. The account-access document should appear first for this sample question.
+Open **`results/retrieval-checks.html`**. The report shows both methods' ranked source documents and source hit rates. The FAQ answers are excluded from the index. Expected sources are curated from the FAQ's reference modules; these are diagnostic checks, not a blind benchmark or exhaustive relevance judgments. Inspect passages before choosing a search method. [Validation notes](VALIDATION.md).
 
-For each search, Qwen embeds the question and your computer compares it with the saved document embeddings. A new question needs the Endpoint running; opening an already saved report doesn't.
+![Recorded retrieval checks against the Python documentation](docs/media/result.jpg)
 
-## 6. Stop the Endpoint
+**Powered by Nebius Serverless AI**
 
-```bash
-python3 scripts/endpoint.py stop
-```
+In the [recorded checks](docs/sample-results/), an expected reference appeared among the first five chunks for **11/12 questions with Qwen** and **10/12 with BM25**. These counts apply to the curated source checks above; inspect the returned passages as well.
 
-Wait for `STOPPED`. This releases the GPU and temporary disk; your local collection and reports remain. The Endpoint stays running and billable until you stop it, even after indexing and search finish.
+## 6. Resume or stop
 
-## If the GPU is reclaimed
+To check saved progress deliberately, use a new output directory and add `--limit-chunks 64` to the index command. Repeat the command without that limit: it should reuse 64 chunks and finish 2,074. Rerunning a complete index sends no new document-embedding requests.
 
-Your saved embeddings remain on your computer. When capacity is available, restart the Endpoint and continue with the same input and results directory:
+After an actual interruption, keep the original documents, settings and output directory. When capacity is available, explicitly start the Endpoint, wait, then repeat indexing:
 
 ```bash
 python3 scripts/endpoint.py start
 python3 scripts/endpoint.py wait --timeout 1800
-python3 scripts/endpoint.py run -- python3 src/embed.py index --input-dir data/documents --output-dir results
-python3 scripts/endpoint.py stop
+python3 scripts/endpoint.py run -- \
+  python3 src/embed.py index --input-dir data/documents --output-dir results --batch-size 16
 ```
 
-Completed chunks are skipped. A batch whose vectors weren't saved may be processed again. The Endpoint needs an explicit restart; it doesn't recover automatically.
+An unfinished chunk may run again. Finish the collection before querying. A new question needs the Endpoint running.
 
-<details>
-<summary>Use your own documents or try resuming</summary>
+Stop when finished, including after retries:
 
-Put UTF-8 `.txt` or `.md` files in a folder and change `--input-dir`. The tool accepts files up to 5 MiB and splits them into chunks of up to 160 words. Use `--chunk-words` to change that size. Extract text from PDFs before adding them.
+```bash
+python3 scripts/endpoint.py stop
+python3 scripts/endpoint.py status
+```
 
-Use a new output directory when changing documents, chunking or model settings. Keep the results directory on lasting storage if you run the client in a temporary notebook.
+Verify **STOPPED** to release the GPU and temporary disk. Local vectors and reports remain. Until stopped, the Endpoint stays billable between requests.
 
-To try client resumption, run step 4 with `--output-dir results-recovery --limit-chunks 2`, then repeat it without `--limit-chunks 2`. The second run reuses the first two chunks. This tests saved progress without waiting for a real interruption. Stop the Endpoint afterwards.
+## Use your own documents
 
-</details>
+Use UTF-8 `.txt` or `.md` files, up to 5 MiB each, in a separate folder and change `--input-dir`. Extract PDF text first. Choose a new output directory when changing documents, chunking or model settings. The included source checks apply only to the pinned Python corpus.
 
-<details>
-<summary>Troubleshooting and test results</summary>
+For quota or capacity errors, check the console and retry when capacity is available. For changed-file errors, restore the original corpus with `scripts/prepare_data.py` or use a new input/output directory. Local checks create no cloud resources:
 
-- **Sign-in or API 401/403 error:** check your CLI profile and the Endpoint's token-authentication setting.
-- **Wrong model:** use this cookbook's embedding configuration rather than the chat Endpoint from the first two cookbooks.
-- **Quota exceeded:** request a higher allowance in the console.
-- **No capacity:** try again when preemptible L40S GPUs become available.
-- **`RUNNING` but the API isn't ready:** use the wait command; check Endpoint logs if it times out.
-- **Index incomplete:** repeat the index command before searching.
-- **Input or settings changed:** choose a new output directory to keep separate collections apart.
-
-The client uses native 1,024-dimensional output. It omits the API's `dimensions` override because the pinned vLLM runtime rejects that field for this model. It also checks vectors and matching IDs before saving them. Similarity scores express closeness between vectors, not the probability that a result answers a question.
-
-The recorded run saved six vectors, reused completed chunks and returned the account-access document first for the password-reset query. Natural GPU preemption was not observed. [Validation and recorded prices](VALIDATION.md) · [Saved search results](docs/sample-results/search.json)
-
-Run local checks with `python3 -m unittest discover -s tests -v`.
-
-</details>
-
-[Serverless AI](https://docs.nebius.com/serverless/overview) · [Preemptible instances](https://docs.nebius.com/compute/virtual-machines/preemptible) · [Endpoint stop/start](https://docs.nebius.com/serverless/maintenance/stop-start) · [Qwen embedding model](https://huggingface.co/Qwen/Qwen3-Embedding-0.6B) · [vLLM embedding API](https://docs.vllm.ai/en/stable/serving/online_serving/openai_compatible_server/)
-
-The six documents are fictional examples, available under CC0 1.0. They are not Nebius company policies.
+```bash
+python3 -m unittest discover -s tests -q
+```

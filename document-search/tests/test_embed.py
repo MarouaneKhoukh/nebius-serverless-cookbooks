@@ -11,7 +11,7 @@ from unittest.mock import patch
 import urllib.error
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from embed import Endpoint, MODEL, QUERY_INSTRUCTION, RecipeError, index_collection, load_chunks, query_collection, read_json, report, unit_vector
+from embed import Endpoint, MODEL, QUERY_INSTRUCTION, RecipeError, index_collection, load_chunks, main, query_collection, read_json, report, unit_vector
 
 
 class EmbeddingTests(unittest.TestCase):
@@ -30,11 +30,10 @@ class EmbeddingTests(unittest.TestCase):
     def tearDown(self):
         self.temporary.cleanup()
 
-    def test_bundled_documents_have_stable_distinct_chunk_ids(self):
-        directory = Path(__file__).resolve().parents[1] / "data" / "documents"
-        chunks = load_chunks(directory)
+    def test_input_documents_have_stable_distinct_chunk_ids(self):
+        chunks = load_chunks(self.documents)
         self.assertEqual(len(chunks), 6)
-        self.assertEqual(chunks, load_chunks(directory))
+        self.assertEqual(chunks, load_chunks(self.documents))
         self.assertEqual(len({chunk["id"] for chunk in chunks}), len(chunks))
 
     def test_chunking_preserves_all_words_and_respects_size(self):
@@ -119,6 +118,21 @@ class EmbeddingTests(unittest.TestCase):
         self.assertEqual(calls, [["Instruct: " + QUERY_INSTRUCTION + "\nQuery:Where is my invoice?"]])
         self.assertEqual(len(results), 3)
         self.assertEqual(results[0]["similarity"], 1.0)
+
+    def test_render_cli_uses_saved_results_without_endpoint_or_data_changes(self):
+        index_collection(self.chunks, self.output, self.settings, lambda texts, *args: [self.vector] * len(texts))
+        class QueryEndpoint:
+            def ready(self, model):
+                pass
+            def embed(inner, texts, model, dimensions):
+                return [self.vector]
+        query_collection(self.output, "Which document?", QueryEndpoint())
+        saved = {name: (self.output / name).read_bytes() for name in ("manifest.json", "vectors.jsonl", "metadata.jsonl", "search.json")}
+        (self.output / "search.html").unlink()
+        with patch.object(Endpoint, "from_environment", side_effect=AssertionError("render must stay offline")):
+            self.assertEqual(main(["render", "--output-dir", str(self.output)]), 0)
+        self.assertTrue((self.output / "search.html").is_file())
+        self.assertEqual(saved, {name: (self.output / name).read_bytes() for name in saved})
 
     def test_partial_index_cannot_be_queried_as_complete(self):
         index_collection(self.chunks, self.output, self.settings, lambda texts, *args: [self.vector] * len(texts), limit=2)

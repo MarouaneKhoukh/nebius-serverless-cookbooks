@@ -1,0 +1,1386 @@
+{
+  "schema": 1,
+  "index_fingerprint": "aaf68ca7adc224b3273334539aa51e161c49adf209fb5f03e69f2e438de7af78",
+  "corpus": {
+    "dataset": "Python standard library documentation",
+    "version": "3.13.9",
+    "archive_sha256": "2522c3aee3c6617e99f7db5e43356471108739e35fe8a97b5d10da33832ff141",
+    "archive_url": "https://docs.python.org/ftp/python/doc/3.13.9/python-3.13.9-docs-text.zip",
+    "license": "PSF-2.0; documentation code examples also 0BSD"
+  },
+  "query_provenance": {
+    "schema": 1,
+    "description": "Twelve original questions from the Python 3.13.9 Library and Extension FAQ. FAQ answer text is excluded from the search corpus. Expected source documents were curated from modules named in the FAQ answers, restricted to this corpus. These are source-level retrieval checks, not an independent benchmark or exhaustive relevance judgments.",
+    "source_url": "https://docs.python.org/release/3.13.9/faq/library.html",
+    "source_commit": "8183fa5e3f78ca6ab862de7fb8b14f3d929421e0",
+    "license": "PSF-2.0"
+  },
+  "semantic": {
+    "queries": 12,
+    "top_k": 5,
+    "hit_at_1": 0.75,
+    "hit_at_k": 0.9166666666666666,
+    "mean_reciprocal_rank_at_k": 0.8333333333333334,
+    "scoring_unit": "expected source document, not a graded answer or passage"
+  },
+  "bm25": {
+    "queries": 12,
+    "top_k": 5,
+    "hit_at_1": 0.6666666666666666,
+    "hit_at_k": 0.8333333333333334,
+    "mean_reciprocal_rank_at_k": 0.7291666666666666,
+    "scoring_unit": "expected source document, not a graded answer or passage"
+  },
+  "results": [
+    {
+      "id": "python-faq-01",
+      "text": "Is there an equivalent to C's onexit() in Python?",
+      "expected_sources": [
+        "library/atexit.txt"
+      ],
+      "question_source": "https://docs.python.org/release/3.13.9/faq/library.html",
+      "semantic": {
+        "hit_at_1": true,
+        "hit_at_k": true,
+        "reciprocal_rank_at_k": 1.0
+      },
+      "bm25": {
+        "hit_at_1": false,
+        "hit_at_k": false,
+        "reciprocal_rank_at_k": 0.0
+      },
+      "semantic_matches": [
+        {
+          "id": "eb479b2bbf6097031b27f5d03030b4e0ce47fbf085431192673ae60252c96730",
+          "source": "library/atexit.txt",
+          "chunk_index": 0,
+          "text": "\"atexit\" — Exit handlers ************************ ====================================================================== The \"atexit\" module defines functions to register and unregister cleanup functions. Functions thus registered are automatically executed upon normal interpreter termination. \"atexit\" runs these functions in the *reverse* order in which they were registered; if you register \"A\", \"B\", and \"C\", at interpreter termination time they will be run in the order \"C\", \"B\", \"A\". **Note:** The functions registered via this module are not called when the program is killed by a signal not handled by Python, when a Python fatal internal error is detected, or when \"os._exit()\" is called. **Note:** The effect of registering or unregistering functions from within a cleanup function is undefined. Changed in version 3.7: When used with C-API subinterpreters, registered functions are local to the interpreter they were registered in. atexit.register(func, *args, **kwargs)",
+          "source_url": "https://docs.python.org/release/3.13.9/library/atexit.html",
+          "title": "\"atexit\" — Exit handlers",
+          "similarity": 0.6507312761962271
+        },
+        {
+          "id": "44a79c570bb07573615973ba9069c674a6157f77c8f94b24313ea5fb93c0a93b",
+          "source": "library/atexit.txt",
+          "chunk_index": 1,
+          "text": "Register *func* as a function to be executed at termination. Any optional arguments that are to be passed to *func* must be passed as arguments to \"register()\". It is possible to register the same function and arguments more than once. At normal program termination (for instance, if \"sys.exit()\" is called or the main module’s execution completes), all functions registered are called in last in, first out order. The assumption is that lower level modules will normally be imported before higher level modules and thus must be cleaned up later. If an exception is raised during execution of the exit handlers, a traceback is printed (unless \"SystemExit\" is raised) and the exception information is saved. After all exit handlers have had a chance to run, the last exception to be raised is re-raised. This function returns *func*, which makes it possible to use it as a decorator. Warning:",
+          "source_url": "https://docs.python.org/release/3.13.9/library/atexit.html",
+          "title": "\"atexit\" — Exit handlers",
+          "similarity": 0.6170067961801515
+        },
+        {
+          "id": "aa5eaba2b5efbc5b04945600f296f7d016954e30f8fc5ea8f0cacccf90587e39",
+          "source": "library/os.txt",
+          "chunk_index": 132,
+          "text": "For \"execve()\" on some platforms, *path* may also be specified as an open file descriptor. This functionality may not be supported on your platform; you can check whether or not it is available using \"os.supports_fd\". If it is unavailable, using it will raise a \"NotImplementedError\". Raises an auditing event \"os.exec\" with arguments \"path\", \"args\", \"env\". Availability: Unix, Windows, not WASI, not Android, not iOS. Changed in version 3.3: Added support for specifying *path* as an open file descriptor for \"execve()\". Changed in version 3.6: Accepts a *path-like object*. os._exit(n) Exit the process with status *n*, without calling cleanup handlers, flushing stdio buffers, etc. Note: The standard way to exit is \"sys.exit(n)\". \"_exit()\" should normally only be used in the child process after a \"fork()\". The following exit codes are defined and can be used with \"_exit()\", although they are not required. These are typically used for system programs written in Python, such as a mail server’s external command delivery program.",
+          "source_url": "https://docs.python.org/release/3.13.9/library/os.html",
+          "title": "\"os\" — Miscellaneous operating system interfaces",
+          "similarity": 0.5885741136358825
+        },
+        {
+          "id": "9f57e01d11b34a4a6d2f4202aaac911e2fb185b4910f97eb45c50710fa55a354",
+          "source": "library/atexit.txt",
+          "chunk_index": 2,
+          "text": "Starting new threads or calling \"os.fork()\" from a registered function can lead to race condition between the main Python runtime thread freeing thread states while internal \"threading\" routines or the new process try to use that state. This can lead to crashes rather than clean shutdown. Changed in version 3.12: Attempts to start a new thread or \"os.fork()\" a new process in a registered function now leads to \"RuntimeError\". atexit.unregister(func) Remove *func* from the list of functions to be run at interpreter shutdown. \"unregister()\" silently does nothing if *func* was not previously registered. If *func* has been registered more than once, every occurrence of that function in the \"atexit\" call stack will be removed. Equality comparisons (\"==\") are used internally during unregistration, so function references do not need to have matching identities. See also: Module \"readline\" Useful example of \"atexit\" to read and write \"readline\" history files. \"atexit\" Example ================",
+          "source_url": "https://docs.python.org/release/3.13.9/library/atexit.html",
+          "title": "\"atexit\" — Exit handlers",
+          "similarity": 0.57965516840332
+        },
+        {
+          "id": "aaaad9b3879ea8de3bb7d34c34bcfbf1ccfcad517d49c4d357dd7930acd0a153",
+          "source": "library/contextlib.txt",
+          "chunk_index": 17,
+          "text": "with ExitStack() as stack: files = [stack.enter_context(open(fname)) for fname in filenames] # Hold onto the close method, but don't call it yet. close_files = stack.pop_all().close # If opening any file fails, all previously opened files will be # closed automatically. If all files are opened successfully, # they will remain open even after the with statement ends. # close_files() can then be invoked explicitly to close them all. close() Immediately unwinds the callback stack, invoking callbacks in the reverse order of registration. For any context managers and exit callbacks registered, the arguments passed in will indicate that no exception occurred. class contextlib.AsyncExitStack An asynchronous context manager, similar to \"ExitStack\", that supports combining both synchronous and asynchronous context managers, as well as having coroutines for cleanup logic. The \"close()\" method is not implemented; \"aclose()\" must be used instead. async enter_async_context(cm) Similar to \"ExitStack.enter_context()\" but expects an asynchronous context manager.",
+          "source_url": "https://docs.python.org/release/3.13.9/library/contextlib.html",
+          "title": "\"contextlib\" — Utilities for \"with\"-statement contexts",
+          "similarity": 0.5729415571122397
+        }
+      ],
+      "bm25_matches": [
+        {
+          "id": "6e09971b0828e2c2c5d96e24d867979099c0d551548c0ccd3976bcfe35c8b059",
+          "source": "library/decimal.txt",
+          "chunk_index": 37,
+          "text": "The \"Context\" class defines several general purpose methods as well as a large number of methods for doing arithmetic directly in a given context. In addition, for each of the \"Decimal\" methods described above (with the exception of the \"adjusted()\" and \"as_tuple()\" methods) there is a corresponding \"Context\" method. For example, for a \"Context\" instance \"C\" and \"Decimal\" instance \"x\", \"C.exp(x)\" is equivalent to \"x.exp(context=C)\". Each \"Context\" method accepts a Python integer (an instance of \"int\") anywhere that a Decimal instance is accepted. clear_flags() Resets all of the flags to \"0\". clear_traps() Resets all of the traps to \"0\". Added in version 3.3. copy() Return a duplicate of the context. copy_decimal(num, /) Return a copy of the Decimal instance num. create_decimal(num='0', /) Creates a new Decimal instance from *num* but using *self* as context. Unlike the \"Decimal\" constructor, the context precision, rounding method, flags, and traps are applied to the conversion.",
+          "source_url": "https://docs.python.org/release/3.13.9/library/decimal.html",
+          "title": "\"decimal\" — Decimal fixed-point and floating-point arithmetic",
+          "score": 7.748726391564511
+        },
+        {
+          "id": "b7fa7422a777394f778be3e922581d1ddce9a0b427aa84889d0fdd4952f34e8c",
+          "source": "library/os.txt",
+          "chunk_index": 31,
+          "text": "See also: The \"stat()\" function. os.fstatvfs(fd, /) Return information about the filesystem containing the file associated with file descriptor *fd*, like \"statvfs()\". As of Python 3.3, this is equivalent to \"os.statvfs(fd)\". Availability: Unix. os.fsync(fd) Force write of file with filedescriptor *fd* to disk. On Unix, this calls the native \"fsync()\" function; on Windows, the MS \"_commit()\" function. If you’re starting with a buffered Python *file object* *f*, first do \"f.flush()\", and then do \"os.fsync(f.fileno())\", to ensure that all internal buffers associated with *f* are written to disk. Availability: Unix, Windows. os.ftruncate(fd, length, /) Truncate the file corresponding to file descriptor *fd*, so that it is at most *length* bytes in size. As of Python 3.3, this is equivalent to \"os.truncate(fd, length)\". Raises an auditing event \"os.truncate\" with arguments \"fd\", \"length\". Availability: Unix, Windows. Changed in version 3.5: Added support for Windows os.get_blocking(fd, /)",
+          "source_url": "https://docs.python.org/release/3.13.9/library/os.html",
+          "title": "\"os\" — Miscellaneous operating system interfaces",
+          "score": 7.669470471104995
+        },
+        {
+          "id": "9d015a0a3a8156711a1579f212cef45de6a11d8ec85f1e1de8fc5d13881fae60",
+          "source": "library/os.txt",
+          "chunk_index": 30,
+          "text": "Return system configuration information relevant to an open file. *name* specifies the configuration value to retrieve; it may be a string which is the name of a defined system value; these names are specified in a number of standards (POSIX.1, Unix 95, Unix 98, and others). Some platforms define additional names as well. The names known to the host operating system are given in the \"pathconf_names\" dictionary. For configuration variables not included in that mapping, passing an integer for *name* is also accepted. If *name* is a string and is not known, \"ValueError\" is raised. If a specific value for *name* is not supported by the host system, even if it is included in \"pathconf_names\", an \"OSError\" is raised with \"errno.EINVAL\" for the error number. As of Python 3.3, this is equivalent to \"os.pathconf(fd, name)\". Availability: Unix. os.fstat(fd) Get the status of the file descriptor *fd*. Return a \"stat_result\" object. As of Python 3.3, this is equivalent to \"os.stat(fd)\".",
+          "source_url": "https://docs.python.org/release/3.13.9/library/os.html",
+          "title": "\"os\" — Miscellaneous operating system interfaces",
+          "score": 7.662362484554388
+        },
+        {
+          "id": "6f4be058fc4e5bf44a7b8e64c0d7a52fb2e27e5790fd2c8348f525d0319ee044",
+          "source": "library/urllib.parse.txt",
+          "chunk_index": 10,
+          "text": "Changed in version 3.2: Add *encoding* and *errors* parameters. Changed in version 3.8: Added *max_num_fields* parameter. Changed in version 3.10: Added *separator* parameter with the default value of \"&\". Python versions earlier than Python 3.10 allowed using both \";\" and \"&\" as query parameter separator. This has been changed to allow only a single separator key, with \"&\" as the default separator. urllib.parse.urlunparse(parts) Construct a URL from a tuple as returned by \"urlparse()\". The *parts* argument can be any six-item iterable. This may result in a slightly different, but equivalent URL, if the URL that was parsed originally had unnecessary delimiters (for example, a \"?\" with an empty query; the RFC states that these are equivalent). urllib.parse.urlsplit(urlstring, scheme='', allow_fragments=True)",
+          "source_url": "https://docs.python.org/release/3.13.9/library/urllib.parse.html",
+          "title": "\"urllib.parse\" — Parse URLs into components",
+          "score": 7.654722530911588
+        },
+        {
+          "id": "37a6ecb64c4a95bc7db8d40ead6e8adf97bc2fb42c4c3bcc06251c2c001d820f",
+          "source": "library/itertools.txt",
+          "chunk_index": 22,
+          "text": "def starmap(function, iterable): # starmap(pow, [(2,5), (3,2), (10,3)]) → 32 9 1000 for args in iterable: yield function(*args) itertools.takewhile(predicate, iterable) Make an iterator that returns elements from the *iterable* as long as the *predicate* is true. Roughly equivalent to: def takewhile(predicate, iterable): # takewhile(lambda x: x<5, [1,4,6,3,8]) → 1 4 for x in iterable: if not predicate(x): break yield x Note, the element that first fails the predicate condition is consumed from the input iterator and there is no way to access it. This could be an issue if an application wants to further consume the input iterator after *takewhile* has been run to exhaustion. To work around this problem, consider using more-itertools before_and_after() instead. itertools.tee(iterable, n=2) Return *n* independent iterators from a single iterable. Roughly equivalent to: def tee(iterable, n=2): if n < 0: raise ValueError if n == 0: return () iterator = _tee(iterable) result = [iterator] for _ in range(n - 1): result.append(_tee(iterator)) return tuple(result) class _tee:",
+          "source_url": "https://docs.python.org/release/3.13.9/library/itertools.html",
+          "title": "\"itertools\" — Functions creating iterators for efficient looping",
+          "score": 7.425136216741526
+        }
+      ]
+    },
+    {
+      "id": "python-faq-02",
+      "text": "How do I test a Python program or component?",
+      "expected_sources": [
+        "library/unittest.txt",
+        "library/doctest.txt"
+      ],
+      "question_source": "https://docs.python.org/release/3.13.9/faq/library.html",
+      "semantic": {
+        "hit_at_1": true,
+        "hit_at_k": true,
+        "reciprocal_rank_at_k": 1.0
+      },
+      "bm25": {
+        "hit_at_1": true,
+        "hit_at_k": true,
+        "reciprocal_rank_at_k": 1.0
+      },
+      "semantic_matches": [
+        {
+          "id": "808b64b4cb1ac242a7d4720f73a2ca6af5d2e1c0925793f34c8098dbe760cecc",
+          "source": "library/unittest.txt",
+          "chunk_index": 2,
+          "text": "The Python Testing Tools Taxonomy An extensive list of Python testing tools including functional testing frameworks and mock object libraries. Testing in Python Mailing List A special-interest-group for discussion of testing, and testing tools, in Python. The script \"Tools/unittestgui/unittestgui.py\" in the Python source distribution is a GUI tool for test discovery and execution. This is intended largely for ease of use for those new to unit testing. For production environments it is recommended that tests be driven by a continuous integration system such as Buildbot, Jenkins, GitHub Actions, or AppVeyor. Basic example ============= The \"unittest\" module provides a rich set of tools for constructing and running tests. This section demonstrates that a small subset of the tools suffice to meet the needs of most users. Here is a short script to test three string methods: import unittest class TestStringMethods(unittest.TestCase): def test_upper(self): self.assertEqual('foo'.upper(), 'FOO') def test_isupper(self): self.assertTrue('FOO'.isupper()) self.assertFalse('Foo'.isupper())",
+          "source_url": "https://docs.python.org/release/3.13.9/library/unittest.html",
+          "title": "\"unittest\" — Unit testing framework",
+          "similarity": 0.635021181439036
+        },
+        {
+          "id": "cb1f12853e95d659a67e11f6fe4b79c0f12b97ccc27e9b5cd5a4d2399fde9d7a",
+          "source": "library/unittest.txt",
+          "chunk_index": 5,
+          "text": "The unittest module can be used from the command line to run tests from modules, classes or even individual test methods: python -m unittest test_module1 test_module2 python -m unittest test_module.TestClass python -m unittest test_module.TestClass.test_method You can pass in a list with any combination of module names, and fully qualified class or method names. Test modules can be specified by file path as well: python -m unittest tests/test_something.py This allows you to use the shell filename completion to specify the test module. The file specified must still be importable as a module. The path is converted to a module name by removing the ‘.py’ and converting path separators into ‘.’. If you want to execute a test file that isn’t importable as a module you should execute the file directly instead. You can run tests with more detail (higher verbosity) by passing in the -v flag: python -m unittest -v test_module When executed without arguments Test Discovery is started:",
+          "source_url": "https://docs.python.org/release/3.13.9/library/unittest.html",
+          "title": "\"unittest\" — Unit testing framework",
+          "similarity": 0.6097925413965858
+        },
+        {
+          "id": "dbafd5bc733aaf6d728322f5721a3b1dce05df3fd9e43829a9122978d18061d4",
+          "source": "library/doctest.txt",
+          "chunk_index": 34,
+          "text": "Optional arguments *extraglobs*, *verbose*, *report*, *optionflags*, *raise_on_error*, and *globs* are the same as for function \"testfile()\" above, except that *globs* defaults to \"m.__dict__\". doctest.run_docstring_examples(f, globs, verbose=False, name='NoName', compileflags=None, optionflags=0) Test examples associated with object *f*; for example, *f* may be a string, a module, a function, or a class object. A shallow copy of dictionary argument *globs* is used for the execution context. Optional argument *name* is used in failure messages, and defaults to \"\"NoName\"\". If optional argument *verbose* is true, output is generated even if there are no failures. By default, output is generated only in case of an example failure. Optional argument *compileflags* gives the set of flags that should be used by the Python compiler when running the examples. By default, or if \"None\", flags are deduced corresponding to the set of future features found in *globs*. Optional argument *optionflags* works as for function \"testfile()\" above. Unittest API ============",
+          "source_url": "https://docs.python.org/release/3.13.9/library/doctest.html",
+          "title": "\"doctest\" — Test interactive Python examples",
+          "similarity": 0.5818703480086894
+        },
+        {
+          "id": "0c0806fc995e28c5144fc9484d00405c7b7318d74573e0fece02625fd240db89",
+          "source": "library/unittest.txt",
+          "chunk_index": 1,
+          "text": "test case A *test case* is the individual unit of testing. It checks for a specific response to a particular set of inputs. \"unittest\" provides a base class, \"TestCase\", which may be used to create new test cases. test suite A *test suite* is a collection of test cases, test suites, or both. It is used to aggregate tests that should be executed together. test runner A *test runner* is a component which orchestrates the execution of tests and provides the outcome to the user. The runner may use a graphical interface, a textual interface, or return a special value to indicate the results of executing the tests. See also: Module \"doctest\" Another test-support module with a very different flavor. Simple Smalltalk Testing: With Patterns Kent Beck’s original paper on testing frameworks using the pattern shared by \"unittest\". pytest Third-party unittest framework with a lighter-weight syntax for writing tests. For example, \"assert func(10) == 42\".",
+          "source_url": "https://docs.python.org/release/3.13.9/library/unittest.html",
+          "title": "\"unittest\" — Unit testing framework",
+          "similarity": 0.580277147990784
+        },
+        {
+          "id": "c3fa778d4eb6b6a1639057b6156c7779680f3f3c374a0379e26200eca64acac6",
+          "source": "library/doctest.txt",
+          "chunk_index": 6,
+          "text": "The \"doctest\" module can be invoked as a script from the command line: python -m doctest [-v] [-o OPTION] [-f] file [file ...] -v, --verbose Detailed report of all examples tried is printed to standard output, along with assorted summaries at the end: python -m doctest -v example.py This will import \"example.py\" as a standalone module and run \"testmod()\" on it. Note that this may not work correctly if the file is part of a package and imports other submodules from that package. If the file name does not end with \".py\", \"doctest\" infers that it must be run with \"testfile()\" instead: python -m doctest -v example.txt -o, --option <option> Option flags control various aspects of doctest’s behavior, see section Option Flags. Added in version 3.4. -f, --fail-fast This is shorthand for \"-o FAIL_FAST\". Added in version 3.4. How It Works ============",
+          "source_url": "https://docs.python.org/release/3.13.9/library/doctest.html",
+          "title": "\"doctest\" — Test interactive Python examples",
+          "similarity": 0.5798548953165978
+        }
+      ],
+      "bm25_matches": [
+        {
+          "id": "0c0806fc995e28c5144fc9484d00405c7b7318d74573e0fece02625fd240db89",
+          "source": "library/unittest.txt",
+          "chunk_index": 1,
+          "text": "test case A *test case* is the individual unit of testing. It checks for a specific response to a particular set of inputs. \"unittest\" provides a base class, \"TestCase\", which may be used to create new test cases. test suite A *test suite* is a collection of test cases, test suites, or both. It is used to aggregate tests that should be executed together. test runner A *test runner* is a component which orchestrates the execution of tests and provides the outcome to the user. The runner may use a graphical interface, a textual interface, or return a special value to indicate the results of executing the tests. See also: Module \"doctest\" Another test-support module with a very different flavor. Simple Smalltalk Testing: With Patterns Kent Beck’s original paper on testing frameworks using the pattern shared by \"unittest\". pytest Third-party unittest framework with a lighter-weight syntax for writing tests. For example, \"assert func(10) == 42\".",
+          "source_url": "https://docs.python.org/release/3.13.9/library/unittest.html",
+          "title": "\"unittest\" — Unit testing framework",
+          "score": 10.704104255718173
+        },
+        {
+          "id": "e74611ead5134f239578f64ef1cedbac7044b5584dcbb323118caa99aae7db41",
+          "source": "library/unittest.txt",
+          "chunk_index": 72,
+          "text": "You can run tests with more detailed information by passing in the verbosity argument: if __name__ == '__main__': unittest.main(verbosity=2) The *defaultTest* argument is either the name of a single test or an iterable of test names to run if no test names are specified via *argv*. If not specified or \"None\" and no test names are provided via *argv*, all tests found in *module* are run. The *argv* argument can be a list of options passed to the program, with the first element being the program name. If not specified or \"None\", the values of \"sys.argv\" are used. The *testRunner* argument can either be a test runner class or an already created instance of it. By default \"main\" calls \"sys.exit()\" with an exit code indicating success (0) or failure (1) of the tests run. An exit code of 5 indicates that no tests were run or skipped. The *testLoader* argument has to be a \"TestLoader\" instance, and defaults to \"defaultTestLoader\".",
+          "source_url": "https://docs.python.org/release/3.13.9/library/unittest.html",
+          "title": "\"unittest\" — Unit testing framework",
+          "score": 10.345701739354114
+        },
+        {
+          "id": "5186efa11e8f58a83979c7a64bfacec986a7ac9787a7fa6f764d83226d1bbea4",
+          "source": "library/doctest.txt",
+          "chunk_index": 9,
+          "text": "The value of \"example.__test__[\"numbers\"]\" will be treated as a docstring and all the tests inside it will be run. It is important to note that the value can be mapped to a function, class object, or module; if so, \"doctest\" searches them recursively for docstrings, which are then scanned for tests. Any classes found are recursively searched similarly, to test docstrings in their contained methods and nested classes. Note: \"doctest\" can only automatically discover classes and functions that are defined at the module level or inside other classes.Since nested classes and functions only exist when an outer function is called, they cannot be discovered. Define them outside to make them visible. How are Docstring Examples Recognized? -------------------------------------- In most cases a copy-and-paste of an interactive console session works fine, but doctest isn’t trying to do an exact emulation of any specific Python shell.",
+          "source_url": "https://docs.python.org/release/3.13.9/library/doctest.html",
+          "title": "\"doctest\" — Test interactive Python examples",
+          "score": 10.142332383928391
+        },
+        {
+          "id": "50a7c223f6839c707cccd8230b1bc4b95308447b0b8939e9767e7de7f153d787",
+          "source": "library/multiprocessing.txt",
+          "chunk_index": 103,
+          "text": "Make sure that the main module can be safely imported by a new Python interpreter without causing unintended side effects (such as starting a new process). For example, using the *spawn* or *forkserver* start method running the following module would fail with a \"RuntimeError\": from multiprocessing import Process def foo(): print('hello') p = Process(target=foo) p.start() Instead one should protect the “entry point” of the program by using \"if __name__ == '__main__':\" as follows: from multiprocessing import Process, freeze_support, set_start_method def foo(): print('hello') if __name__ == '__main__': freeze_support() set_start_method('spawn') p = Process(target=foo) p.start() (The \"freeze_support()\" line can be omitted if the program will be run normally instead of frozen.) This allows the newly spawned Python interpreter to safely import the module and then run the module’s \"foo()\" function. Similar restrictions apply if a pool or manager is created in the main module. Examples ======== Demonstration of how to create and use customized managers and proxies:",
+          "source_url": "https://docs.python.org/release/3.13.9/library/multiprocessing.html",
+          "title": "\"multiprocessing\" — Process-based parallelism",
+          "score": 10.089694007237647
+        },
+        {
+          "id": "01a37be122c527dc35f11047f0ba17c0e8f635654309e68df5b2bd64e9cd4920",
+          "source": "library/doctest.txt",
+          "chunk_index": 27,
+          "text": "\"doctest\" is serious about requiring exact matches in expected output. If even a single character doesn’t match, the test fails. This will probably surprise you a few times, as you learn exactly what Python does and doesn’t guarantee about output. For example, when printing a set, Python doesn’t guarantee that the element is printed in any particular order, so a test like >>> foo() {\"spam\", \"eggs\"} is vulnerable! One workaround is to do >>> foo() == {\"spam\", \"eggs\"} True instead. Another is to do >>> d = sorted(foo()) >>> d ['eggs', 'spam'] There are others, but you get the idea. Another bad idea is to print things that embed an object address, like >>> id(1.0) # certain to fail some of the time 7948648 >>> class C: pass >>> C() # the default repr() for instances embeds an address <C object at 0x00AC18F0> The \"ELLIPSIS\" directive gives a nice approach for the last example:",
+          "source_url": "https://docs.python.org/release/3.13.9/library/doctest.html",
+          "title": "\"doctest\" — Test interactive Python examples",
+          "score": 10.023370148929626
+        }
+      ]
+    },
+    {
+      "id": "python-faq-03",
+      "text": "How do I program using threads?",
+      "expected_sources": [
+        "library/threading.txt"
+      ],
+      "question_source": "https://docs.python.org/release/3.13.9/faq/library.html",
+      "semantic": {
+        "hit_at_1": true,
+        "hit_at_k": true,
+        "reciprocal_rank_at_k": 1.0
+      },
+      "bm25": {
+        "hit_at_1": true,
+        "hit_at_k": true,
+        "reciprocal_rank_at_k": 1.0
+      },
+      "semantic_matches": [
+        {
+          "id": "80d2c9932d8e864842146f64d35432041d2f30c69b33ea20d9a4490a8db0aa77",
+          "source": "library/threading.txt",
+          "chunk_index": 14,
+          "text": "The \"Thread\" class represents an activity that is run in a separate thread of control. There are two ways to specify the activity: by passing a callable object to the constructor, or by overriding the \"run()\" method in a subclass. No other methods (except for the constructor) should be overridden in a subclass. In other words, *only* override the \"__init__()\" and \"run()\" methods of this class. Once a thread object is created, its activity must be started by calling the thread’s \"start()\" method. This invokes the \"run()\" method in a separate thread of control. Once the thread’s activity is started, the thread is considered ‘alive’. It stops being alive when its \"run()\" method terminates – either normally, or by raising an unhandled exception. The \"is_alive()\" method tests whether the thread is alive. Other threads can call a thread’s \"join()\" method. This blocks the calling thread until the thread whose \"join()\" method is called is terminated.",
+          "source_url": "https://docs.python.org/release/3.13.9/library/threading.html",
+          "title": "\"threading\" — Thread-based parallelism",
+          "similarity": 0.5981636855039342
+        },
+        {
+          "id": "78579d42b00777f812eff395946629793b4afebe26ec60d7df94ee736307b581",
+          "source": "library/threading.txt",
+          "chunk_index": 0,
+          "text": "\"threading\" — Thread-based parallelism ************************************** **Source code:** Lib/threading.py ====================================================================== This module constructs higher-level threading interfaces on top of the lower level \"_thread\" module. Availability: not WASI. This module does not work or is not available on WebAssembly. See WebAssembly platforms for more information. Introduction ============ The \"threading\" module provides a way to run multiple threads (smaller units of a process) concurrently within a single process. It allows for the creation and management of threads, making it possible to execute tasks in parallel, sharing memory space. Threads are particularly useful when tasks are I/O bound, such as file operations or making network requests, where much of the time is spent waiting for external resources. A typical use case for \"threading\" includes managing a pool of worker threads that can process multiple tasks concurrently. Here’s a basic example of creating and starting threads using \"Thread\": import threading import time",
+          "source_url": "https://docs.python.org/release/3.13.9/library/threading.html",
+          "title": "\"threading\" — Thread-based parallelism",
+          "similarity": 0.5926830349576204
+        },
+        {
+          "id": "048c069bdfcab25f0a0e55748829e815e08622b944017dc8a1638312abd94205",
+          "source": "library/threading.txt",
+          "chunk_index": 15,
+          "text": "A thread has a name. The name can be passed to the constructor, and read or changed through the \"name\" attribute. If the \"run()\" method raises an exception, \"threading.excepthook()\" is called to handle it. By default, \"threading.excepthook()\" ignores silently \"SystemExit\". A thread can be flagged as a “daemon thread”. The significance of this flag is that the entire Python program exits when only daemon threads are left. The initial value is inherited from the creating thread. The flag can be set through the \"daemon\" property or the *daemon* constructor argument. Note: Daemon threads are abruptly stopped at shutdown. Their resources (such as open files, database transactions, etc.) may not be released properly. If you want your threads to stop gracefully, make them non-daemonic and use a suitable signalling mechanism such as an \"Event\". There is a “main thread” object; this corresponds to the initial thread of control in the Python program. It is not a daemon thread.",
+          "source_url": "https://docs.python.org/release/3.13.9/library/threading.html",
+          "title": "\"threading\" — Thread-based parallelism",
+          "similarity": 0.5574564593224621
+        },
+        {
+          "id": "f4833bbed627f6a129c5deef67eca13ffcdab64f2766e6dd56a845c2e08a42d2",
+          "source": "library/threading.txt",
+          "chunk_index": 3,
+          "text": "Unlike the \"multiprocessing\" module, which uses separate processes to bypass the *global interpreter lock* (GIL), the threading module operates within a single process, meaning that all threads share the same memory space. However, the GIL limits the performance gains of threading when it comes to CPU-bound tasks, as only one thread can execute Python bytecode at a time. Despite this, threads remain a useful tool for achieving concurrency in many scenarios. As of Python 3.13, experimental *free-threaded* builds can disable the GIL, enabling true parallel execution of threads, but this feature is not available by default (see **PEP 703**). Reference ========= This module defines the following functions: threading.active_count() Return the number of \"Thread\" objects currently alive. The returned count is equal to the length of the list returned by \"enumerate()\". The function \"activeCount\" is a deprecated alias for this function. threading.current_thread()",
+          "source_url": "https://docs.python.org/release/3.13.9/library/threading.html",
+          "title": "\"threading\" — Thread-based parallelism",
+          "similarity": 0.5572344237454215
+        },
+        {
+          "id": "e4de60e6681c33b79c934894da1753ded4d46dee8d4215fb90e247f50850f75f",
+          "source": "library/threading.txt",
+          "chunk_index": 6,
+          "text": "Return the native integral Thread ID of the current thread assigned by the kernel. This is a non-negative integer. Its value may be used to uniquely identify this particular thread system-wide (until the thread terminates, after which the value may be recycled by the OS). Availability: Windows, FreeBSD, Linux, macOS, OpenBSD, NetBSD, AIX, DragonFlyBSD, GNU/kFreeBSD. Added in version 3.8. Changed in version 3.13: Added support for GNU/kFreeBSD. threading.enumerate() Return a list of all \"Thread\" objects currently active. The list includes daemonic threads and dummy thread objects created by \"current_thread()\". It excludes terminated threads and threads that have not yet been started. However, the main thread is always part of the result, even when terminated. threading.main_thread() Return the main \"Thread\" object. In normal conditions, the main thread is the thread from which the Python interpreter was started. Added in version 3.4. threading.settrace(func)",
+          "source_url": "https://docs.python.org/release/3.13.9/library/threading.html",
+          "title": "\"threading\" — Thread-based parallelism",
+          "similarity": 0.5410085366479983
+        }
+      ],
+      "bm25_matches": [
+        {
+          "id": "048c069bdfcab25f0a0e55748829e815e08622b944017dc8a1638312abd94205",
+          "source": "library/threading.txt",
+          "chunk_index": 15,
+          "text": "A thread has a name. The name can be passed to the constructor, and read or changed through the \"name\" attribute. If the \"run()\" method raises an exception, \"threading.excepthook()\" is called to handle it. By default, \"threading.excepthook()\" ignores silently \"SystemExit\". A thread can be flagged as a “daemon thread”. The significance of this flag is that the entire Python program exits when only daemon threads are left. The initial value is inherited from the creating thread. The flag can be set through the \"daemon\" property or the *daemon* constructor argument. Note: Daemon threads are abruptly stopped at shutdown. Their resources (such as open files, database transactions, etc.) may not be released properly. If you want your threads to stop gracefully, make them non-daemonic and use a suitable signalling mechanism such as an \"Event\". There is a “main thread” object; this corresponds to the initial thread of control in the Python program. It is not a daemon thread.",
+          "source_url": "https://docs.python.org/release/3.13.9/library/threading.html",
+          "title": "\"threading\" — Thread-based parallelism",
+          "score": 9.594221457283059
+        },
+        {
+          "id": "6590de25b93b680377526293c5fe895d0ba04d6e2bbed4088c83a5d505348a38",
+          "source": "library/heapq.txt",
+          "chunk_index": 6,
+          "text": ">>> h = [] >>> heappush(h, (5, 'write code')) >>> heappush(h, (7, 'release product')) >>> heappush(h, (1, 'write spec')) >>> heappush(h, (3, 'create tests')) >>> heappop(h) (1, 'write spec') Priority Queue Implementation Notes =================================== A priority queue is common use for a heap, and it presents several implementation challenges: * Sort stability: how do you get two tasks with equal priorities to be returned in the order they were originally added? * Tuple comparison breaks for (priority, task) pairs if the priorities are equal and the tasks do not have a default comparison order. * If the priority of a task changes, how do you move it to a new position in the heap? * Or if a pending task needs to be deleted, how do you find it and remove it from the queue?",
+          "source_url": "https://docs.python.org/release/3.13.9/library/heapq.html",
+          "title": "\"heapq\" — Heap queue algorithm",
+          "score": 9.431020824836203
+        },
+        {
+          "id": "e4ba65e9168c74c8a72141d2656eb8b7086dc467e8e1be7251d81a7f1e316736",
+          "source": "library/ssl.txt",
+          "chunk_index": 55,
+          "text": "The parameter \"do_handshake_on_connect\" specifies whether to do the SSL handshake automatically after doing a \"socket.connect()\", or whether the application program will call it explicitly, by invoking the \"SSLSocket.do_handshake()\" method. Calling \"SSLSocket.do_handshake()\" explicitly gives the program control over the blocking behavior of the socket I/O involved in the handshake. The parameter \"suppress_ragged_eofs\" specifies how the \"SSLSocket.recv()\" method should signal unexpected EOF from the other end of the connection. If specified as \"True\" (the default), it returns a normal EOF (an empty bytes object) in response to unexpected EOF errors raised from the underlying socket; if \"False\", it will raise the exceptions back to the caller. *session*, see \"session\". To wrap an \"SSLSocket\" in another \"SSLSocket\", use \"SSLContext.wrap_bio()\". Changed in version 3.5: Always allow a server_hostname to be passed, even if OpenSSL does not have SNI. Changed in version 3.6: *session* argument was added. Changed in version 3.7: The method returns an instance of \"SSLContext.sslsocket_class\" instead of hard-coded \"SSLSocket\". SSLContext.sslsocket_class",
+          "source_url": "https://docs.python.org/release/3.13.9/library/ssl.html",
+          "title": "\"ssl\" — TLS/SSL wrapper for socket objects",
+          "score": 9.034196359970993
+        },
+        {
+          "id": "83ca8edee7c25b729fa78eb267f37a0ff912f3627227683d33dc0574710ed38b",
+          "source": "library/argparse.txt",
+          "chunk_index": 6,
+          "text": "By default, the description will be line-wrapped so that it fits within the given space. To change this behavior, see the formatter_class argument. epilog ------ Some programs like to display additional description of the program after the description of the arguments. Such text can be specified using the \"epilog=\" argument to \"ArgumentParser\": >>> parser = argparse.ArgumentParser( ... description='A foo that bars', ... epilog=\"And that's how you'd foo a bar\") >>> parser.print_help() usage: argparse.py [-h] A foo that bars options: -h, --help show this help message and exit And that's how you'd foo a bar As with the description argument, the \"epilog=\" text is by default line-wrapped, but this behavior can be adjusted with the formatter_class argument to \"ArgumentParser\". parents -------",
+          "source_url": "https://docs.python.org/release/3.13.9/library/argparse.html",
+          "title": "\"argparse\" — Parser for command-line options, arguments and subcommands",
+          "score": 8.92535497719397
+        },
+        {
+          "id": "bffd11a86ee4beefc577b70dc2c49635e94d3739475a79c160a167a860e5edb7",
+          "source": "library/threading.txt",
+          "chunk_index": 21,
+          "text": "Added in version 3.8. is_alive() Return whether the thread is alive. This method returns \"True\" just before the \"run()\" method starts until just after the \"run()\" method terminates. The module function \"enumerate()\" returns a list of all alive threads. daemon A boolean value indicating whether this thread is a daemon thread (\"True\") or not (\"False\"). This must be set before \"start()\" is called, otherwise \"RuntimeError\" is raised. Its initial value is inherited from the creating thread; the main thread is not a daemon thread and therefore all threads created in the main thread default to \"daemon\" = \"False\". The entire Python program exits when no alive non-daemon threads are left. isDaemon() setDaemon() Deprecated getter/setter API for \"daemon\"; use it directly as a property instead. Deprecated since version 3.10. Lock objects ------------",
+          "source_url": "https://docs.python.org/release/3.13.9/library/threading.html",
+          "title": "\"threading\" — Thread-based parallelism",
+          "score": 8.847071561890866
+        }
+      ]
+    },
+    {
+      "id": "python-faq-04",
+      "text": "How do I parcel out work among a bunch of worker threads?",
+      "expected_sources": [
+        "library/concurrent.futures.txt",
+        "library/queue.txt"
+      ],
+      "question_source": "https://docs.python.org/release/3.13.9/faq/library.html",
+      "semantic": {
+        "hit_at_1": false,
+        "hit_at_k": true,
+        "reciprocal_rank_at_k": 0.5
+      },
+      "bm25": {
+        "hit_at_1": true,
+        "hit_at_k": true,
+        "reciprocal_rank_at_k": 1.0
+      },
+      "semantic_matches": [
+        {
+          "id": "de121b414b86e7e9a8659864f91dde1c921f6c36062406654a98681dbdf88aff",
+          "source": "library/multiprocessing.txt",
+          "chunk_index": 78,
+          "text": "Worker processes within a \"Pool\" typically live for the complete duration of the Pool’s work queue. A frequent pattern found in other systems (such as Apache, mod_wsgi, etc) to free resources held by workers is to allow a worker within a pool to complete only a set amount of work before being exiting, being cleaned up and a new process spawned to replace the old one. The *maxtasksperchild* argument to the \"Pool\" exposes this ability to the end user. apply(func[, args[, kwds]]) Call *func* with arguments *args* and keyword arguments *kwds*. It blocks until the result is ready. Given this blocks, \"apply_async()\" is better suited for performing work in parallel. Additionally, *func* is only executed in one of the workers of the pool. apply_async(func[, args[, kwds[, callback[, error_callback]]]]) A variant of the \"apply()\" method which returns a \"AsyncResult\" object.",
+          "source_url": "https://docs.python.org/release/3.13.9/library/multiprocessing.html",
+          "title": "\"multiprocessing\" — Process-based parallelism",
+          "similarity": 0.6501354620190848
+        },
+        {
+          "id": "2353feb244ec8718e5cfc65a2e9e2ac4ba28ae94f79192960f39c89b07fe2a55",
+          "source": "library/concurrent.futures.txt",
+          "chunk_index": 4,
+          "text": "def wait_on_a(): time.sleep(5) print(a.result()) # a will never complete because it is waiting on b. return 6 executor = ThreadPoolExecutor(max_workers=2) a = executor.submit(wait_on_b) b = executor.submit(wait_on_a) And: def wait_on_future(): f = executor.submit(pow, 5, 2) # This will never complete because there is only one worker thread and # it is executing this function. print(f.result()) executor = ThreadPoolExecutor(max_workers=1) executor.submit(wait_on_future) class concurrent.futures.ThreadPoolExecutor(max_workers=None, thread_name_prefix='', initializer=None, initargs=()) An \"Executor\" subclass that uses a pool of at most *max_workers* threads to execute calls asynchronously. All threads enqueued to \"ThreadPoolExecutor\" will be joined before the interpreter can exit. Note that the exit handler which does this is executed *before* any exit handlers added using \"atexit\". This means exceptions in the main thread must be caught and handled in order to signal threads to exit gracefully. For this reason, it is recommended that \"ThreadPoolExecutor\" not be used for long- running tasks.",
+          "source_url": "https://docs.python.org/release/3.13.9/library/concurrent.futures.html",
+          "title": "\"concurrent.futures\" — Launching parallel tasks",
+          "similarity": 0.6114905769273509
+        },
+        {
+          "id": "ed55de43a947a88d0400dac70c44af4c1132fc04ecc05c1e1da9d61c4854a18c",
+          "source": "library/concurrent.futures.txt",
+          "chunk_index": 5,
+          "text": "*initializer* is an optional callable that is called at the start of each worker thread; *initargs* is a tuple of arguments passed to the initializer. Should *initializer* raise an exception, all currently pending jobs will raise a \"BrokenThreadPool\", as well as any attempt to submit more jobs to the pool. Changed in version 3.5: If *max_workers* is \"None\" or not given, it will default to the number of processors on the machine, multiplied by \"5\", assuming that \"ThreadPoolExecutor\" is often used to overlap I/O instead of CPU work and the number of workers should be higher than the number of workers for \"ProcessPoolExecutor\". Changed in version 3.6: Added the *thread_name_prefix* parameter to allow users to control the \"threading.Thread\" names for worker threads created by the pool for easier debugging. Changed in version 3.7: Added the *initializer* and *initargs* arguments.",
+          "source_url": "https://docs.python.org/release/3.13.9/library/concurrent.futures.html",
+          "title": "\"concurrent.futures\" — Launching parallel tasks",
+          "similarity": 0.5925433651596639
+        },
+        {
+          "id": "78579d42b00777f812eff395946629793b4afebe26ec60d7df94ee736307b581",
+          "source": "library/threading.txt",
+          "chunk_index": 0,
+          "text": "\"threading\" — Thread-based parallelism ************************************** **Source code:** Lib/threading.py ====================================================================== This module constructs higher-level threading interfaces on top of the lower level \"_thread\" module. Availability: not WASI. This module does not work or is not available on WebAssembly. See WebAssembly platforms for more information. Introduction ============ The \"threading\" module provides a way to run multiple threads (smaller units of a process) concurrently within a single process. It allows for the creation and management of threads, making it possible to execute tasks in parallel, sharing memory space. Threads are particularly useful when tasks are I/O bound, such as file operations or making network requests, where much of the time is spent waiting for external resources. A typical use case for \"threading\" includes managing a pool of worker threads that can process multiple tasks concurrently. Here’s a basic example of creating and starting threads using \"Thread\": import threading import time",
+          "source_url": "https://docs.python.org/release/3.13.9/library/threading.html",
+          "title": "\"threading\" — Thread-based parallelism",
+          "similarity": 0.5917975532905898
+        },
+        {
+          "id": "b6318df78f740b53bbe5ff39b2c07fda3ed0bb3a1dc9dfbee0fddd957c204073",
+          "source": "library/multiprocessing.txt",
+          "chunk_index": 12,
+          "text": "{0.25: None, 1: '1', '2': 2} [9, 8, 7, 6, 5, 4, 3, 2, 1, 0] Server process managers are more flexible than using shared memory objects because they can be made to support arbitrary object types. Also, a single manager can be shared by processes on different computers over a network. They are, however, slower than using shared memory. Using a pool of workers ----------------------- The \"Pool\" class represents a pool of worker processes. It has methods which allows tasks to be offloaded to the worker processes in a few different ways. For example: from multiprocessing import Pool, TimeoutError import time import os def f(x): return x*x if __name__ == '__main__': # start 4 worker processes with Pool(processes=4) as pool: # print \"[0, 1, 4,..., 81]\" print(pool.map(f, range(10))) # print same numbers in arbitrary order for i in pool.imap_unordered(f, range(10)): print(i) # evaluate \"f(20)\" asynchronously res = pool.apply_async(f, (20,)) # runs in *only* one process print(res.get(timeout=1)) # prints \"400\"",
+          "source_url": "https://docs.python.org/release/3.13.9/library/multiprocessing.html",
+          "title": "\"multiprocessing\" — Process-based parallelism",
+          "similarity": 0.5902741639618933
+        }
+      ],
+      "bm25_matches": [
+        {
+          "id": "8a19ea889b0701d85d4160961f4f1636bbb73c14f6f0067fdd8ca8de58eaa099",
+          "source": "library/queue.txt",
+          "chunk_index": 7,
+          "text": "The count of unfinished tasks goes up whenever an item is added to the queue. The count goes down whenever a consumer thread calls \"task_done()\" to indicate that the item was retrieved and all work on it is complete. When the count of unfinished tasks drops to zero, \"join()\" unblocks. Waiting for task completion --------------------------- Example of how to wait for enqueued tasks to be completed: import threading import queue q = queue.Queue() def worker(): while True: item = q.get() print(f'Working on {item}') print(f'Finished {item}') q.task_done() # Turn-on the worker thread. threading.Thread(target=worker, daemon=True).start() # Send thirty task requests to the worker. for item in range(30): q.put(item) # Block until all tasks are done. q.join() print('All work completed') Terminating queues ------------------ When no longer needed, \"Queue\" objects can be wound down until empty or terminated immediately with a hard shutdown. Queue.shutdown(immediate=False) Put a \"Queue\" instance into a shutdown mode.",
+          "source_url": "https://docs.python.org/release/3.13.9/library/queue.html",
+          "title": "\"queue\" — A synchronized queue class",
+          "score": 15.459348889440415
+        },
+        {
+          "id": "65b0ecd382f293aee9ca7ecc4068304c10c4220f5cb7373f043f2bceb49dba5e",
+          "source": "library/multiprocessing.txt",
+          "chunk_index": 95,
+          "text": "In particular, the \"Pool\" function provided by \"multiprocessing.dummy\" returns an instance of \"ThreadPool\", which is a subclass of \"Pool\" that supports all the same method calls but uses a pool of worker threads rather than worker processes. class multiprocessing.pool.ThreadPool([processes[, initializer[, initargs]]]) A thread pool object which controls a pool of worker threads to which jobs can be submitted. \"ThreadPool\" instances are fully interface compatible with \"Pool\" instances, and their resources must also be properly managed, either by using the pool as a context manager or by calling \"close()\" and \"terminate()\" manually. *processes* is the number of worker threads to use. If *processes* is \"None\" then the number returned by \"os.process_cpu_count()\" is used. If *initializer* is not \"None\" then each worker process will call \"initializer(*initargs)\" when it starts. Unlike \"Pool\", *maxtasksperchild* and *context* cannot be provided. Note:",
+          "source_url": "https://docs.python.org/release/3.13.9/library/multiprocessing.html",
+          "title": "\"multiprocessing\" — Process-based parallelism",
+          "score": 14.56772523593398
+        },
+        {
+          "id": "78579d42b00777f812eff395946629793b4afebe26ec60d7df94ee736307b581",
+          "source": "library/threading.txt",
+          "chunk_index": 0,
+          "text": "\"threading\" — Thread-based parallelism ************************************** **Source code:** Lib/threading.py ====================================================================== This module constructs higher-level threading interfaces on top of the lower level \"_thread\" module. Availability: not WASI. This module does not work or is not available on WebAssembly. See WebAssembly platforms for more information. Introduction ============ The \"threading\" module provides a way to run multiple threads (smaller units of a process) concurrently within a single process. It allows for the creation and management of threads, making it possible to execute tasks in parallel, sharing memory space. Threads are particularly useful when tasks are I/O bound, such as file operations or making network requests, where much of the time is spent waiting for external resources. A typical use case for \"threading\" includes managing a pool of worker threads that can process multiple tasks concurrently. Here’s a basic example of creating and starting threads using \"Thread\": import threading import time",
+          "source_url": "https://docs.python.org/release/3.13.9/library/threading.html",
+          "title": "\"threading\" — Thread-based parallelism",
+          "score": 14.302895252080459
+        },
+        {
+          "id": "1473476175540b845a8955c81ea362839727637b18d39a0908efe6509ae0c70c",
+          "source": "library/os.txt",
+          "chunk_index": 137,
+          "text": "Changed in version 3.12: If Python is able to detect that your process has multiple threads, \"os.fork()\" now raises a \"DeprecationWarning\".We chose to surface this as a warning, when detectable, to better inform developers of a design problem that the POSIX platform specifically notes as not supported. Even in code that *appears* to work, it has never been safe to mix threading with \"os.fork()\" on POSIX platforms. The CPython runtime itself has always made API calls that are not safe for use in the child process when threads existed in the parent (such as \"malloc\" and \"free\").Users of macOS or users of libc or malloc implementations other than those typically found in glibc to date are among those already more likely to experience deadlocks running such code.See this discussion on fork being incompatible with threads for technical details of why we’re surfacing this longstanding platform compatibility problem to developers. Availability: POSIX, not WASI, not Android, not iOS. os.forkpty()",
+          "source_url": "https://docs.python.org/release/3.13.9/library/os.html",
+          "title": "\"os\" — Miscellaneous operating system interfaces",
+          "score": 13.81373995194047
+        },
+        {
+          "id": "ed55de43a947a88d0400dac70c44af4c1132fc04ecc05c1e1da9d61c4854a18c",
+          "source": "library/concurrent.futures.txt",
+          "chunk_index": 5,
+          "text": "*initializer* is an optional callable that is called at the start of each worker thread; *initargs* is a tuple of arguments passed to the initializer. Should *initializer* raise an exception, all currently pending jobs will raise a \"BrokenThreadPool\", as well as any attempt to submit more jobs to the pool. Changed in version 3.5: If *max_workers* is \"None\" or not given, it will default to the number of processors on the machine, multiplied by \"5\", assuming that \"ThreadPoolExecutor\" is often used to overlap I/O instead of CPU work and the number of workers should be higher than the number of workers for \"ProcessPoolExecutor\". Changed in version 3.6: Added the *thread_name_prefix* parameter to allow users to control the \"threading.Thread\" names for worker threads created by the pool for easier debugging. Changed in version 3.7: Added the *initializer* and *initargs* arguments.",
+          "source_url": "https://docs.python.org/release/3.13.9/library/concurrent.futures.html",
+          "title": "\"concurrent.futures\" — Launching parallel tasks",
+          "score": 13.481536759963845
+        }
+      ]
+    },
+    {
+      "id": "python-faq-05",
+      "text": "How do I copy a file?",
+      "expected_sources": [
+        "library/shutil.txt"
+      ],
+      "question_source": "https://docs.python.org/release/3.13.9/faq/library.html",
+      "semantic": {
+        "hit_at_1": true,
+        "hit_at_k": true,
+        "reciprocal_rank_at_k": 1.0
+      },
+      "bm25": {
+        "hit_at_1": false,
+        "hit_at_k": true,
+        "reciprocal_rank_at_k": 0.25
+      },
+      "semantic_matches": [
+        {
+          "id": "388efcb655085ca061fcf6549d1bb0d31e8df14b8201a6410ea530e5d0c36901",
+          "source": "library/shutil.txt",
+          "chunk_index": 1,
+          "text": "Copy the contents of the *file-like object* *fsrc* to the file-like object *fdst*. The integer *length*, if given, is the buffer size. In particular, a negative *length* value means to copy the data without looping over the source data in chunks; by default the data is read in chunks to avoid uncontrolled memory consumption. Note that if the current file position of the *fsrc* object is not 0, only the contents from the current file position to the end of the file will be copied. shutil.copyfile(src, dst, *, follow_symlinks=True) Copy the contents (no metadata) of the file named *src* to a file named *dst* and return *dst* in the most efficient way possible. *src* and *dst* are *path-like objects* or path names given as strings. *dst* must be the complete target file name; look at \"copy()\" for a copy that accepts a target directory path. If *src* and *dst* specify the same file, \"SameFileError\" is raised.",
+          "source_url": "https://docs.python.org/release/3.13.9/library/shutil.html",
+          "title": "\"shutil\" — High-level file operations",
+          "similarity": 0.6381378625956514
+        },
+        {
+          "id": "6236d9897b8ff9faa5511a740edcf4e0f1138614c93fed36bf1ff021f9efd97e",
+          "source": "library/shutil.txt",
+          "chunk_index": 21,
+          "text": "On macOS fcopyfile is used to copy the file content (not metadata). On Linux \"os.sendfile()\" is used. On Windows \"shutil.copyfile()\" uses a bigger default buffer size (1 MiB instead of 64 KiB) and a \"memoryview()\"-based variant of \"shutil.copyfileobj()\" is used. If the fast-copy operation fails and no data was written in the destination file then shutil will silently fallback on using less efficient \"copyfileobj()\" function internally. Changed in version 3.8. copytree example ---------------- An example that uses the \"ignore_patterns()\" helper: from shutil import copytree, ignore_patterns copytree(source, destination, ignore=ignore_patterns('*.pyc', 'tmp*')) This will copy everything except \".pyc\" files and files or directories whose name starts with \"tmp\". Another example that uses the *ignore* argument to add a logging call: from shutil import copytree import logging def _logpath(path, names): logging.info('Working in %s', path) return [] # nothing will be ignored copytree(source, destination, ignore=_logpath) rmtree example --------------",
+          "source_url": "https://docs.python.org/release/3.13.9/library/shutil.html",
+          "title": "\"shutil\" — High-level file operations",
+          "similarity": 0.6346840448577074
+        },
+        {
+          "id": "3bb2d2a52ca2ff473c1bb4d22d7c4f2c60cf99dc33b9a938bcac308223a2f53f",
+          "source": "library/shutil.txt",
+          "chunk_index": 3,
+          "text": "This exception is raised if source and destination in \"copyfile()\" are the same file. Added in version 3.4. shutil.copymode(src, dst, *, follow_symlinks=True) Copy the permission bits from *src* to *dst*. The file contents, owner, and group are unaffected. *src* and *dst* are *path-like objects* or path names given as strings. If *follow_symlinks* is false, and both *src* and *dst* are symbolic links, \"copymode()\" will attempt to modify the mode of *dst* itself (rather than the file it points to). This functionality is not available on every platform; please see \"copystat()\" for more information. If \"copymode()\" cannot modify symbolic links on the local platform, and it is asked to do so, it will do nothing and return. Raises an auditing event \"shutil.copymode\" with arguments \"src\", \"dst\". Changed in version 3.3: Added *follow_symlinks* argument. shutil.copystat(src, dst, *, follow_symlinks=True)",
+          "source_url": "https://docs.python.org/release/3.13.9/library/shutil.html",
+          "title": "\"shutil\" — High-level file operations",
+          "similarity": 0.5763249313988306
+        },
+        {
+          "id": "266969bf9105c25dc4064eaae5602b3abe81443f91cb0047e854ea25447a4bd4",
+          "source": "library/shutil.txt",
+          "chunk_index": 5,
+          "text": "* If \"os.chflags in os.supports_follow_symlinks\" is \"True\", \"copystat()\" can modify the flags of a symbolic link. (\"os.chflags\" is not available on all platforms.) On platforms where some or all of this functionality is unavailable, when asked to modify a symbolic link, \"copystat()\" will copy everything it can. \"copystat()\" never returns failure.Please see \"os.supports_follow_symlinks\" for more information. Raises an auditing event \"shutil.copystat\" with arguments \"src\", \"dst\". Changed in version 3.3: Added *follow_symlinks* argument and support for Linux extended attributes. shutil.copy(src, dst, *, follow_symlinks=True) Copies the file *src* to the file or directory *dst*. *src* and *dst* should be *path-like objects* or strings. If *dst* specifies a directory, the file will be copied into *dst* using the base filename from *src*. If *dst* specifies a file that already exists, it will be replaced. Returns the path to the newly created file.",
+          "source_url": "https://docs.python.org/release/3.13.9/library/shutil.html",
+          "title": "\"shutil\" — High-level file operations",
+          "similarity": 0.5757431437714894
+        },
+        {
+          "id": "c71a0a548ed2f7f13eea1bd508a407a9fdab2cdb2a83f7204078dc9aad300f1b",
+          "source": "library/shutil.txt",
+          "chunk_index": 6,
+          "text": "If *follow_symlinks* is false, and *src* is a symbolic link, *dst* will be created as a symbolic link. If *follow_symlinks* is true and *src* is a symbolic link, *dst* will be a copy of the file *src* refers to. \"copy()\" copies the file data and the file’s permission mode (see \"os.chmod()\"). Other metadata, like the file’s creation and modification times, is not preserved. To preserve all file metadata from the original, use \"copy2()\" instead. Raises an auditing event \"shutil.copyfile\" with arguments \"src\", \"dst\". Raises an auditing event \"shutil.copymode\" with arguments \"src\", \"dst\". Changed in version 3.3: Added *follow_symlinks* argument. Now returns path to the newly created file. Changed in version 3.8: Platform-specific fast-copy syscalls may be used internally in order to copy the file more efficiently. See Platform-dependent efficient copy operations section. shutil.copy2(src, dst, *, follow_symlinks=True) Identical to \"copy()\" except that \"copy2()\" also attempts to preserve file metadata.",
+          "source_url": "https://docs.python.org/release/3.13.9/library/shutil.html",
+          "title": "\"shutil\" — High-level file operations",
+          "similarity": 0.5742810317497219
+        }
+      ],
+      "bm25_matches": [
+        {
+          "id": "15f8d0ebcf6eb9614776712110581fffe742778a8a37039e0903694103fcd6e0",
+          "source": "library/pickle.txt",
+          "chunk_index": 37,
+          "text": "class TextReader: \"\"\"Print and number lines in a text file.\"\"\" def __init__(self, filename): self.filename = filename self.file = open(filename) self.lineno = 0 def readline(self): self.lineno += 1 line = self.file.readline() if not line: return None if line.endswith('\\n'): line = line[:-1] return \"%i: %s\" % (self.lineno, line) def __getstate__(self): # Copy the object's state from self.__dict__ which contains # all our instance attributes. Always use the dict.copy() # method to avoid modifying the original state. state = self.__dict__.copy() # Remove the unpicklable entries. del state['file'] return state def __setstate__(self, state): # Restore instance attributes (i.e., filename and lineno). self.__dict__.update(state) # Restore the previously opened file's state. To do so, we need to # reopen it and read from it until the line count is restored. file = open(self.filename) for _ in range(self.lineno): file.readline() # Finally, save the file. self.file = file A sample usage might be something like this:",
+          "source_url": "https://docs.python.org/release/3.13.9/library/pickle.html",
+          "title": "\"pickle\" — Python object serialization",
+          "score": 10.762341498040184
+        },
+        {
+          "id": "b1644b9772e4b914d1f54a9133467ce6d0b7370e698e7452c0254d35a2f7d27b",
+          "source": "library/copy.txt",
+          "chunk_index": 0,
+          "text": "\"copy\" — Shallow and deep copy operations ***************************************** **Source code:** Lib/copy.py ====================================================================== Assignment statements in Python do not copy objects, they create bindings between a target and an object. For collections that are mutable or contain mutable items, a copy is sometimes needed so one can change one copy without changing the other. This module provides generic shallow and deep copy operations (explained below). Interface summary: copy.copy(obj) Return a shallow copy of *obj*. copy.deepcopy(obj[, memo]) Return a deep copy of *obj*. copy.replace(obj, /, **changes) Creates a new object of the same type as *obj*, replacing fields with values from *changes*. Added in version 3.13. exception copy.Error Raised for module specific errors. The difference between shallow and deep copying is only relevant for compound objects (objects that contain other objects, like lists or class instances): * A *shallow copy* constructs a new compound object and then (to the extent possible) inserts *references* into it to the objects found in the original.",
+          "source_url": "https://docs.python.org/release/3.13.9/library/copy.html",
+          "title": "\"copy\" — Shallow and deep copy operations",
+          "score": 9.660740077040318
+        },
+        {
+          "id": "6590de25b93b680377526293c5fe895d0ba04d6e2bbed4088c83a5d505348a38",
+          "source": "library/heapq.txt",
+          "chunk_index": 6,
+          "text": ">>> h = [] >>> heappush(h, (5, 'write code')) >>> heappush(h, (7, 'release product')) >>> heappush(h, (1, 'write spec')) >>> heappush(h, (3, 'create tests')) >>> heappop(h) (1, 'write spec') Priority Queue Implementation Notes =================================== A priority queue is common use for a heap, and it presents several implementation challenges: * Sort stability: how do you get two tasks with equal priorities to be returned in the order they were originally added? * Tuple comparison breaks for (priority, task) pairs if the priorities are equal and the tasks do not have a default comparison order. * If the priority of a task changes, how do you move it to a new position in the heap? * Or if a pending task needs to be deleted, how do you find it and remove it from the queue?",
+          "source_url": "https://docs.python.org/release/3.13.9/library/heapq.html",
+          "title": "\"heapq\" — Heap queue algorithm",
+          "score": 9.431020824836203
+        },
+        {
+          "id": "c71a0a548ed2f7f13eea1bd508a407a9fdab2cdb2a83f7204078dc9aad300f1b",
+          "source": "library/shutil.txt",
+          "chunk_index": 6,
+          "text": "If *follow_symlinks* is false, and *src* is a symbolic link, *dst* will be created as a symbolic link. If *follow_symlinks* is true and *src* is a symbolic link, *dst* will be a copy of the file *src* refers to. \"copy()\" copies the file data and the file’s permission mode (see \"os.chmod()\"). Other metadata, like the file’s creation and modification times, is not preserved. To preserve all file metadata from the original, use \"copy2()\" instead. Raises an auditing event \"shutil.copyfile\" with arguments \"src\", \"dst\". Raises an auditing event \"shutil.copymode\" with arguments \"src\", \"dst\". Changed in version 3.3: Added *follow_symlinks* argument. Now returns path to the newly created file. Changed in version 3.8: Platform-specific fast-copy syscalls may be used internally in order to copy the file more efficiently. See Platform-dependent efficient copy operations section. shutil.copy2(src, dst, *, follow_symlinks=True) Identical to \"copy()\" except that \"copy2()\" also attempts to preserve file metadata.",
+          "source_url": "https://docs.python.org/release/3.13.9/library/shutil.html",
+          "title": "\"shutil\" — High-level file operations",
+          "score": 9.379031852964912
+        },
+        {
+          "id": "388efcb655085ca061fcf6549d1bb0d31e8df14b8201a6410ea530e5d0c36901",
+          "source": "library/shutil.txt",
+          "chunk_index": 1,
+          "text": "Copy the contents of the *file-like object* *fsrc* to the file-like object *fdst*. The integer *length*, if given, is the buffer size. In particular, a negative *length* value means to copy the data without looping over the source data in chunks; by default the data is read in chunks to avoid uncontrolled memory consumption. Note that if the current file position of the *fsrc* object is not 0, only the contents from the current file position to the end of the file will be copied. shutil.copyfile(src, dst, *, follow_symlinks=True) Copy the contents (no metadata) of the file named *src* to a file named *dst* and return *dst* in the most efficient way possible. *src* and *dst* are *path-like objects* or path names given as strings. *dst* must be the complete target file name; look at \"copy()\" for a copy that accepts a target directory path. If *src* and *dst* specify the same file, \"SameFileError\" is raised.",
+          "source_url": "https://docs.python.org/release/3.13.9/library/shutil.html",
+          "title": "\"shutil\" — High-level file operations",
+          "score": 9.113779823516598
+        }
+      ]
+    },
+    {
+      "id": "python-faq-06",
+      "text": "How do I read (or write) binary data?",
+      "expected_sources": [
+        "library/struct.txt",
+        "library/array.txt"
+      ],
+      "question_source": "https://docs.python.org/release/3.13.9/faq/library.html",
+      "semantic": {
+        "hit_at_1": false,
+        "hit_at_k": false,
+        "reciprocal_rank_at_k": 0.0
+      },
+      "bm25": {
+        "hit_at_1": false,
+        "hit_at_k": false,
+        "reciprocal_rank_at_k": 0.0
+      },
+      "semantic_matches": [
+        {
+          "id": "16ab6b6660e7c12c121ad5803e36d11f6ae15b09e6710b25f9b540e2d2ca9516",
+          "source": "library/io.txt",
+          "chunk_index": 2,
+          "text": "The text stream API is described in detail in the documentation of \"TextIOBase\". Binary I/O ---------- Binary I/O (also called *buffered I/O*) expects *bytes-like objects* and produces \"bytes\" objects. No encoding, decoding, or newline translation is performed. This category of streams can be used for all kinds of non-text data, and also when manual control over the handling of text data is desired. The easiest way to create a binary stream is with \"open()\" with \"'b'\" in the mode string: f = open(\"myfile.jpg\", \"rb\") In-memory binary streams are also available as \"BytesIO\" objects: f = io.BytesIO(b\"some initial binary data: \\x00\\x01\") The binary stream API is described in detail in the docs of \"BufferedIOBase\". Other library modules may provide additional ways to create text or binary streams. See \"socket.socket.makefile()\" for example. Raw I/O -------",
+          "source_url": "https://docs.python.org/release/3.13.9/library/io.html",
+          "title": "\"io\" — Core tools for working with streams",
+          "similarity": 0.6223460568547372
+        },
+        {
+          "id": "a201d2fc715dce793dc8c5dd42f90b8618842d4587881d2f0ead60d20861d179",
+          "source": "library/base64.txt",
+          "chunk_index": 9,
+          "text": "Legacy Interface ================ base64.decode(input, output) Decode the contents of the binary *input* file and write the resulting binary data to the *output* file. *input* and *output* must be *file objects*. *input* will be read until \"input.readline()\" returns an empty bytes object. base64.decodebytes(s) Decode the *bytes-like object* *s*, which must contain one or more lines of base64 encoded data, and return the decoded \"bytes\". Added in version 3.1. base64.encode(input, output) Encode the contents of the binary *input* file and write the resulting base64 encoded data to the *output* file. *input* and *output* must be *file objects*. *input* will be read until \"input.read()\" returns an empty bytes object. \"encode()\" inserts a newline character (\"b'\\n'\") after every 76 bytes of the output, as well as ensuring that the output always ends with a newline, as per **RFC 2045** (MIME). base64.encodebytes(s)",
+          "source_url": "https://docs.python.org/release/3.13.9/library/base64.html",
+          "title": "\"base64\" — Base16, Base32, Base64, Base85 Data Encodings",
+          "similarity": 0.5522671706439544
+        },
+        {
+          "id": "d2eb6b82dd9f2b5b6ee41b085dc9d58d53dc8394a5ca5296d6de59dc666d7a1a",
+          "source": "library/sqlite3.txt",
+          "chunk_index": 46,
+          "text": "con = sqlite3.connect(\":memory:\") con.execute(\"CREATE TABLE test(blob_col blob)\") con.execute(\"INSERT INTO test(blob_col) VALUES(zeroblob(13))\") # Write to our blob, using two write operations: with con.blobopen(\"test\", \"blob_col\", 1) as blob: blob.write(b\"hello, \") blob.write(b\"world.\") # Modify the first and last bytes of our blob blob[0] = ord(\"H\") blob[-1] = ord(\"!\") # Read the contents of our blob with con.blobopen(\"test\", \"blob_col\", 1) as blob: greeting = blob.read() print(greeting) # outputs \"b'Hello, world!'\" con.close() close() Close the blob. The blob will be unusable from this point onward. An \"Error\" (or subclass) exception will be raised if any further operation is attempted with the blob. read(length=-1, /) Read *length* bytes of data from the blob at the current offset position. If the end of the blob is reached, the data up to EOF (End of File) will be returned. When *length* is not specified, or is negative, \"read()\" will read until the end of the blob. write(data, /)",
+          "source_url": "https://docs.python.org/release/3.13.9/library/sqlite3.html",
+          "title": "\"sqlite3\" — DB-API 2.0 interface for SQLite databases",
+          "similarity": 0.5465392477831876
+        },
+        {
+          "id": "846fb07c0611db5f936e2cb121d84f3c8db2d7b3ee726583797e18bcc64a550b",
+          "source": "library/io.txt",
+          "chunk_index": 31,
+          "text": "The underlying binary buffer (a \"BufferedIOBase\" or \"RawIOBase\" instance) that \"TextIOBase\" deals with. This is not part of the \"TextIOBase\" API and may not exist in some implementations. detach() Separate the underlying binary buffer from the \"TextIOBase\" and return it. After the underlying buffer has been detached, the \"TextIOBase\" is in an unusable state. Some \"TextIOBase\" implementations, like \"StringIO\", may not have the concept of an underlying buffer and calling this method will raise \"UnsupportedOperation\". Added in version 3.1. read(size=-1, /) Read and return at most *size* characters from the stream as a single \"str\". If *size* is negative or \"None\", reads until EOF. readline(size=-1, /) Read until newline or EOF and return a single \"str\". If the stream is already at EOF, an empty string is returned. If *size* is specified, at most *size* characters will be read. seek(offset, whence=SEEK_SET, /)",
+          "source_url": "https://docs.python.org/release/3.13.9/library/io.html",
+          "title": "\"io\" — Core tools for working with streams",
+          "similarity": 0.5376832262833079
+        },
+        {
+          "id": "70c3f95d2457185de426ebb4f2246eec32fe5ed81018002768c1e3a3f4084fe2",
+          "source": "library/pathlib.txt",
+          "chunk_index": 26,
+          "text": "Return the decoded contents of the pointed-to file as a string: >>> p = Path('my_text_file') >>> p.write_text('Text file contents') 18 >>> p.read_text() 'Text file contents' The file is opened and then closed. The optional parameters have the same meaning as in \"open()\". Added in version 3.5. Changed in version 3.13: The *newline* parameter was added. Path.read_bytes() Return the binary contents of the pointed-to file as a bytes object: >>> p = Path('my_binary_file') >>> p.write_bytes(b'Binary file contents') 20 >>> p.read_bytes() b'Binary file contents' Added in version 3.5. Path.write_text(data, encoding=None, errors=None, newline=None) Open the file pointed to in text mode, write *data* to it, and close the file: >>> p = Path('my_text_file') >>> p.write_text('Text file contents') 18 >>> p.read_text() 'Text file contents' An existing file of the same name is overwritten. The optional parameters have the same meaning as in \"open()\". Added in version 3.5. Changed in version 3.10: The *newline* parameter was added. Path.write_bytes(data)",
+          "source_url": "https://docs.python.org/release/3.13.9/library/pathlib.html",
+          "title": "\"pathlib\" — Object-oriented filesystem paths",
+          "similarity": 0.5290033889687463
+        }
+      ],
+      "bm25_matches": [
+        {
+          "id": "4119c920c1ff0c9f0ccba77b366180596b38595ae41b0d8e2eaf7a8245f8f38b",
+          "source": "library/io.txt",
+          "chunk_index": 11,
+          "text": "This class provides empty abstract implementations for many methods that derived classes can override selectively; the default implementations represent a file that cannot be read, written or seeked. Even though \"IOBase\" does not declare \"read()\" or \"write()\" because their signatures will vary, implementations and clients should consider those methods part of the interface. Also, implementations may raise a \"ValueError\" (or \"UnsupportedOperation\") when operations they do not support are called. The basic type used for binary data read from or written to a file is \"bytes\". Other *bytes-like objects* are accepted as method arguments too. Text I/O classes work with \"str\" data. Note that calling any method (even inquiries) on a closed stream is undefined. Implementations may raise \"ValueError\" in this case.",
+          "source_url": "https://docs.python.org/release/3.13.9/library/io.html",
+          "title": "\"io\" — Core tools for working with streams",
+          "score": 16.363683871350002
+        },
+        {
+          "id": "a201d2fc715dce793dc8c5dd42f90b8618842d4587881d2f0ead60d20861d179",
+          "source": "library/base64.txt",
+          "chunk_index": 9,
+          "text": "Legacy Interface ================ base64.decode(input, output) Decode the contents of the binary *input* file and write the resulting binary data to the *output* file. *input* and *output* must be *file objects*. *input* will be read until \"input.readline()\" returns an empty bytes object. base64.decodebytes(s) Decode the *bytes-like object* *s*, which must contain one or more lines of base64 encoded data, and return the decoded \"bytes\". Added in version 3.1. base64.encode(input, output) Encode the contents of the binary *input* file and write the resulting base64 encoded data to the *output* file. *input* and *output* must be *file objects*. *input* will be read until \"input.read()\" returns an empty bytes object. \"encode()\" inserts a newline character (\"b'\\n'\") after every 76 bytes of the output, as well as ensuring that the output always ends with a newline, as per **RFC 2045** (MIME). base64.encodebytes(s)",
+          "source_url": "https://docs.python.org/release/3.13.9/library/base64.html",
+          "title": "\"base64\" — Base16, Base32, Base64, Base85 Data Encodings",
+          "score": 16.22469605614532
+        },
+        {
+          "id": "8572d2ccfdf44110212e996c0a6998313ebb0a519fce575d646acf168433e3ea",
+          "source": "library/gzip.txt",
+          "chunk_index": 8,
+          "text": "Decompress the *data*, returning a \"bytes\" object containing the uncompressed data. This function is capable of decompressing multi- member gzip data (multiple gzip blocks concatenated together). When the data is certain to contain only one member the \"zlib.decompress()\" function with *wbits* set to 31 is faster. Added in version 3.2. Changed in version 3.11: Speed is improved by decompressing members at once in memory instead of in a streamed fashion. Examples of usage ================= Example of how to read a compressed file: import gzip with gzip.open('/home/joe/file.txt.gz', 'rb') as f: file_content = f.read() Example of how to create a compressed GZIP file: import gzip content = b\"Lots of content here\" with gzip.open('/home/joe/file.txt.gz', 'wb') as f: f.write(content) Example of how to GZIP compress an existing file: import gzip import shutil with open('/home/joe/file.txt', 'rb') as f_in: with gzip.open('/home/joe/file.txt.gz', 'wb') as f_out: shutil.copyfileobj(f_in, f_out) Example of how to GZIP compress a binary string: import gzip s_in = b\"Lots of content here\" s_out = gzip.compress(s_in)",
+          "source_url": "https://docs.python.org/release/3.13.9/library/gzip.html",
+          "title": "\"gzip\" — Support for **gzip** files",
+          "score": 15.776146433415938
+        },
+        {
+          "id": "6590de25b93b680377526293c5fe895d0ba04d6e2bbed4088c83a5d505348a38",
+          "source": "library/heapq.txt",
+          "chunk_index": 6,
+          "text": ">>> h = [] >>> heappush(h, (5, 'write code')) >>> heappush(h, (7, 'release product')) >>> heappush(h, (1, 'write spec')) >>> heappush(h, (3, 'create tests')) >>> heappop(h) (1, 'write spec') Priority Queue Implementation Notes =================================== A priority queue is common use for a heap, and it presents several implementation challenges: * Sort stability: how do you get two tasks with equal priorities to be returned in the order they were originally added? * Tuple comparison breaks for (priority, task) pairs if the priorities are equal and the tasks do not have a default comparison order. * If the priority of a task changes, how do you move it to a new position in the heap? * Or if a pending task needs to be deleted, how do you find it and remove it from the queue?",
+          "source_url": "https://docs.python.org/release/3.13.9/library/heapq.html",
+          "title": "\"heapq\" — Heap queue algorithm",
+          "score": 14.68104564908406
+        },
+        {
+          "id": "1f0fe52ac7c889e13d04fe24723dc2b49e95ade2af3ef08d972ee3e37f00221b",
+          "source": "library/tempfile.txt",
+          "chunk_index": 16,
+          "text": "Beware that if you set \"tempdir\" to a bytes value, there is a nasty side effect: The global default return type of \"mkstemp()\" and \"mkdtemp()\" changes to bytes when no explicit \"prefix\", \"suffix\", or \"dir\" arguments of type str are supplied. Please do not write code expecting or depending on this. This awkward behavior is maintained for compatibility with the historical implementation. Examples ======== Here are some examples of typical usage of the \"tempfile\" module: >>> import tempfile # create a temporary file and write some data to it >>> fp = tempfile.TemporaryFile() >>> fp.write(b'Hello world!') # read data from file >>> fp.seek(0) >>> fp.read() b'Hello world!' # close the file, it will be removed >>> fp.close() # create a temporary file using a context manager >>> with tempfile.TemporaryFile() as fp: ... fp.write(b'Hello world!') ... fp.seek(0) ... fp.read() b'Hello world!' >>> # file is now closed and removed",
+          "source_url": "https://docs.python.org/release/3.13.9/library/tempfile.html",
+          "title": "\"tempfile\" — Generate temporary files and directories",
+          "score": 14.296144325934039
+        }
+      ]
+    },
+    {
+      "id": "python-faq-07",
+      "text": "How do I run a subprocess with pipes connected to both input and output?",
+      "expected_sources": [
+        "library/subprocess.txt"
+      ],
+      "question_source": "https://docs.python.org/release/3.13.9/faq/library.html",
+      "semantic": {
+        "hit_at_1": false,
+        "hit_at_k": true,
+        "reciprocal_rank_at_k": 0.5
+      },
+      "bm25": {
+        "hit_at_1": true,
+        "hit_at_k": true,
+        "reciprocal_rank_at_k": 1.0
+      },
+      "semantic_matches": [
+        {
+          "id": "cb0754a93472644847cc5e2f0571a64c36dcf46ad47f6c60e972eec30ff1fff8",
+          "source": "library/asyncio-subprocess.txt",
+          "chunk_index": 2,
+          "text": "Subprocesses are available for Windows if a \"ProactorEventLoop\" is used. See Subprocess Support on Windows for details. See also: asyncio also has the following *low-level* APIs to work with subprocesses: \"loop.subprocess_exec()\", \"loop.subprocess_shell()\", \"loop.connect_read_pipe()\", \"loop.connect_write_pipe()\", as well as the Subprocess Transports and Subprocess Protocols. Constants ========= asyncio.subprocess.PIPE Can be passed to the *stdin*, *stdout* or *stderr* parameters. If *PIPE* is passed to *stdin* argument, the \"Process.stdin\" attribute will point to a \"StreamWriter\" instance. If *PIPE* is passed to *stdout* or *stderr* arguments, the \"Process.stdout\" and \"Process.stderr\" attributes will point to \"StreamReader\" instances. asyncio.subprocess.STDOUT Special value that can be used as the *stderr* argument and indicates that standard error should be redirected into standard output. asyncio.subprocess.DEVNULL Special value that can be used as the *stdin*, *stdout* or *stderr* argument to process creation functions. It indicates that the special file \"os.devnull\" will be used for the corresponding subprocess stream. Interacting with Subprocesses =============================",
+          "source_url": "https://docs.python.org/release/3.13.9/library/asyncio-subprocess.html",
+          "title": "Subprocesses",
+          "similarity": 0.716567347141683
+        },
+        {
+          "id": "fc3e41333ea07bc62fb06cc4b53425f69fe9b39e3702c62b37cc8776f28cefb9",
+          "source": "library/subprocess.txt",
+          "chunk_index": 31,
+          "text": "This will deadlock when using \"stdout=PIPE\" or \"stderr=PIPE\" and the child process generates enough output to a pipe such that it blocks waiting for the OS pipe buffer to accept more data. Use \"Popen.communicate()\" when using pipes to avoid that. Note: When the \"timeout\" parameter is not \"None\", then (on POSIX) the function is implemented using a busy loop (non-blocking call and short sleeps). Use the \"asyncio\" module for an asynchronous wait: see \"asyncio.create_subprocess_exec\". Changed in version 3.3: *timeout* was added. Popen.communicate(input=None, timeout=None) Interact with process: Send data to stdin. Read data from stdout and stderr, until end-of-file is reached. Wait for process to terminate and set the \"returncode\" attribute. The optional *input* argument should be data to be sent to the child process, or \"None\", if no data should be sent to the child. If streams were opened in text mode, *input* must be a string. Otherwise, it must be bytes.",
+          "source_url": "https://docs.python.org/release/3.13.9/library/subprocess.html",
+          "title": "\"subprocess\" — Subprocess management",
+          "similarity": 0.7055135865744677
+        },
+        {
+          "id": "91ac6e5563497200d958d7e874805808a348d95d875dd2a6accf5927ef41c0db",
+          "source": "library/subprocess.txt",
+          "chunk_index": 0,
+          "text": "\"subprocess\" — Subprocess management ************************************ **Source code:** Lib/subprocess.py ====================================================================== The \"subprocess\" module allows you to spawn new processes, connect to their input/output/error pipes, and obtain their return codes. This module intends to replace several older modules and functions: os.system os.spawn* Information about how the \"subprocess\" module can be used to replace these modules and functions can be found in the following sections. See also: **PEP 324** – PEP proposing the subprocess module Availability: not Android, not iOS, not WASI. This module is not supported on mobile platforms or WebAssembly platforms. Using the \"subprocess\" Module ============================= The recommended approach to invoking subprocesses is to use the \"run()\" function for all use cases it can handle. For more advanced use cases, the underlying \"Popen\" interface can be used directly. subprocess.run(args, *, stdin=None, input=None, stdout=None, stderr=None, capture_output=False, shell=False, cwd=None, timeout=None, check=False, encoding=None, errors=None, text=None, env=None, universal_newlines=None, **other_popen_kwargs) Run the command described by *args*. Wait for command to complete, then return a \"CompletedProcess\" instance.",
+          "source_url": "https://docs.python.org/release/3.13.9/library/subprocess.html",
+          "title": "\"subprocess\" — Subprocess management",
+          "similarity": 0.6960794992177124
+        },
+        {
+          "id": "7098357b6e827da86c5a28cb8555439e4b4949c4524df983b8d15676907287ac",
+          "source": "library/subprocess.txt",
+          "chunk_index": 6,
+          "text": "Special value that can be used as the *stdin*, *stdout* or *stderr* argument to \"Popen\" and indicates that a pipe to the standard stream should be opened. Most useful with \"Popen.communicate()\". subprocess.STDOUT Special value that can be used as the *stderr* argument to \"Popen\" and indicates that standard error should go into the same handle as standard output. exception subprocess.SubprocessError Base class for all other exceptions from this module. Added in version 3.3. exception subprocess.TimeoutExpired Subclass of \"SubprocessError\", raised when a timeout expires while waiting for a child process. cmd Command that was used to spawn the child process. timeout Timeout in seconds. output Output of the child process if it was captured by \"run()\" or \"check_output()\". Otherwise, \"None\". This is always \"bytes\" when any output was captured regardless of the \"text=True\" setting. It may remain \"None\" instead of \"b''\" when no output was observed. stdout Alias for output, for symmetry with \"stderr\". stderr",
+          "source_url": "https://docs.python.org/release/3.13.9/library/subprocess.html",
+          "title": "\"subprocess\" — Subprocess management",
+          "similarity": 0.6857184166185543
+        },
+        {
+          "id": "8ebbe414888243778ad06a18d344255981913975d7332ec868e62a8ceaa37ca3",
+          "source": "library/asyncio-subprocess.txt",
+          "chunk_index": 4,
+          "text": "This method can deadlock when using \"stdout=PIPE\" or \"stderr=PIPE\" and the child process generates so much output that it blocks waiting for the OS pipe buffer to accept more data. Use the \"communicate()\" method when using pipes to avoid this condition. async communicate(input=None) Interact with process: 1. send data to *stdin* (if *input* is not \"None\"); 2. closes *stdin*; 3. read data from *stdout* and *stderr*, until EOF is reached; 4. wait for process to terminate. The optional *input* argument is the data (\"bytes\" object) that will be sent to the child process. Return a tuple \"(stdout_data, stderr_data)\". If either \"BrokenPipeError\" or \"ConnectionResetError\" exception is raised when writing *input* into *stdin*, the exception is ignored. This condition occurs when the process exits before all data are written into *stdin*.",
+          "source_url": "https://docs.python.org/release/3.13.9/library/asyncio-subprocess.html",
+          "title": "Subprocesses",
+          "similarity": 0.6720158653252868
+        }
+      ],
+      "bm25_matches": [
+        {
+          "id": "91ac6e5563497200d958d7e874805808a348d95d875dd2a6accf5927ef41c0db",
+          "source": "library/subprocess.txt",
+          "chunk_index": 0,
+          "text": "\"subprocess\" — Subprocess management ************************************ **Source code:** Lib/subprocess.py ====================================================================== The \"subprocess\" module allows you to spawn new processes, connect to their input/output/error pipes, and obtain their return codes. This module intends to replace several older modules and functions: os.system os.spawn* Information about how the \"subprocess\" module can be used to replace these modules and functions can be found in the following sections. See also: **PEP 324** – PEP proposing the subprocess module Availability: not Android, not iOS, not WASI. This module is not supported on mobile platforms or WebAssembly platforms. Using the \"subprocess\" Module ============================= The recommended approach to invoking subprocesses is to use the \"run()\" function for all use cases it can handle. For more advanced use cases, the underlying \"Popen\" interface can be used directly. subprocess.run(args, *, stdin=None, input=None, stdout=None, stderr=None, capture_output=False, shell=False, cwd=None, timeout=None, check=False, encoding=None, errors=None, text=None, env=None, universal_newlines=None, **other_popen_kwargs) Run the command described by *args*. Wait for command to complete, then return a \"CompletedProcess\" instance.",
+          "source_url": "https://docs.python.org/release/3.13.9/library/subprocess.html",
+          "title": "\"subprocess\" — Subprocess management",
+          "score": 24.754139076018408
+        },
+        {
+          "id": "27f413cf7483fba08407b3ca85ffc88d0a85116661b5e7bf37a0c5edb49a8941",
+          "source": "library/subprocess.txt",
+          "chunk_index": 15,
+          "text": "Popen([\"/usr/bin/git\", \"commit\", \"-m\", \"Fixes a bug.\"]) On POSIX, if *args* is a string, the string is interpreted as the name or path of the program to execute. However, this can only be done if not passing arguments to the program. Note: It may not be obvious how to break a shell command into a sequence of arguments, especially in complex cases. \"shlex.split()\" can illustrate how to determine the correct tokenization for *args*: >>> import shlex, subprocess >>> command_line = input() /bin/vikings -input eggs.txt -output \"spam spam.txt\" -cmd \"echo '$MONEY'\" >>> args = shlex.split(command_line) >>> print(args) ['/bin/vikings', '-input', 'eggs.txt', '-output', 'spam spam.txt', '-cmd', \"echo '$MONEY'\"] >>> p = subprocess.Popen(args) # Success!",
+          "source_url": "https://docs.python.org/release/3.13.9/library/subprocess.html",
+          "title": "\"subprocess\" — Subprocess management",
+          "score": 18.94517758828961
+        },
+        {
+          "id": "9076b108720949c68dba5acde6a596795b3acf8d2a730351f331063d71221140",
+          "source": "library/subprocess.txt",
+          "chunk_index": 44,
+          "text": "Changed in version 3.12: Changed Windows shell search order for \"shell=True\". The current directory and \"%PATH%\" are replaced with \"%COMSPEC%\" and \"%SystemRoot%\\System32\\cmd.exe\". As a result, dropping a malicious program named \"cmd.exe\" into a current directory no longer works. subprocess.check_output(args, *, stdin=None, stderr=None, shell=False, cwd=None, encoding=None, errors=None, universal_newlines=None, timeout=None, text=None, **other_popen_kwargs) Run command with arguments and return its output. If the return code was non-zero it raises a \"CalledProcessError\". The \"CalledProcessError\" object will have the return code in the \"returncode\" attribute and any output in the \"output\" attribute. This is equivalent to: run(..., check=True, stdout=PIPE).stdout The arguments shown above are merely some common ones. The full function signature is largely the same as that of \"run()\" - most arguments are passed directly through to that interface. One API deviation from \"run()\" behavior exists: passing \"input=None\" will behave the same as \"input=b''\" (or \"input=''\", depending on other arguments) rather than using the parent’s standard input file handle.",
+          "source_url": "https://docs.python.org/release/3.13.9/library/subprocess.html",
+          "title": "\"subprocess\" — Subprocess management",
+          "score": 17.993340207586918
+        },
+        {
+          "id": "3e706ae3f5c6775e3465f3caa3b50d83d0aa6457ae625995496943601d5cc035",
+          "source": "library/subprocess.txt",
+          "chunk_index": 42,
+          "text": "Code needing to capture stdout or stderr should use \"run()\" instead: run(...).returncode To suppress stdout or stderr, supply a value of \"DEVNULL\". The arguments shown above are merely some common ones. The full function signature is the same as that of the \"Popen\" constructor - this function passes all supplied arguments other than *timeout* directly through to that interface. Note: Do not use \"stdout=PIPE\" or \"stderr=PIPE\" with this function. The child process will block if it generates enough output to a pipe to fill up the OS pipe buffer as the pipes are not being read from. Changed in version 3.3: *timeout* was added. Changed in version 3.12: Changed Windows shell search order for \"shell=True\". The current directory and \"%PATH%\" are replaced with \"%COMSPEC%\" and \"%SystemRoot%\\System32\\cmd.exe\". As a result, dropping a malicious program named \"cmd.exe\" into a current directory no longer works. subprocess.check_call(args, *, stdin=None, stdout=None, stderr=None, shell=False, cwd=None, timeout=None, **other_popen_kwargs)",
+          "source_url": "https://docs.python.org/release/3.13.9/library/subprocess.html",
+          "title": "\"subprocess\" — Subprocess management",
+          "score": 17.22570739814355
+        },
+        {
+          "id": "5737a5d0bfccc475f05873e8cbb242f06a5e1b4a2ab6595bc399ee557a5ff3b2",
+          "source": "library/os.txt",
+          "chunk_index": 24,
+          "text": "Return an open file object connected to the file descriptor *fd*. This is an alias of the \"open()\" built-in function and accepts the same arguments. The only difference is that the first argument of \"fdopen()\" must always be an integer. File Descriptor Operations ========================== These functions operate on I/O streams referenced using file descriptors. File descriptors are small integers corresponding to a file that has been opened by the current process. For example, standard input is usually file descriptor 0, standard output is 1, and standard error is 2. Further files opened by a process will then be assigned 3, 4, 5, and so forth. The name “file descriptor” is slightly deceptive; on Unix platforms, sockets and pipes are also referenced by file descriptors.",
+          "source_url": "https://docs.python.org/release/3.13.9/library/os.html",
+          "title": "\"os\" — Miscellaneous operating system interfaces",
+          "score": 16.125372035797106
+        }
+      ]
+    },
+    {
+      "id": "python-faq-08",
+      "text": "How do I send mail from a Python script?",
+      "expected_sources": [
+        "library/smtplib.txt",
+        "library/email.txt"
+      ],
+      "question_source": "https://docs.python.org/release/3.13.9/faq/library.html",
+      "semantic": {
+        "hit_at_1": true,
+        "hit_at_k": true,
+        "reciprocal_rank_at_k": 1.0
+      },
+      "bm25": {
+        "hit_at_1": true,
+        "hit_at_k": true,
+        "reciprocal_rank_at_k": 1.0
+      },
+      "semantic_matches": [
+        {
+          "id": "91ffc0f3e84a2d62ec5e6ec71e18bbed31e53a6b752ff775f977308dc457b635",
+          "source": "library/smtplib.txt",
+          "chunk_index": 21,
+          "text": "SMTP Example ============ This example prompts the user for addresses needed in the message envelope (‘To’ and ‘From’ addresses), and the message to be delivered. Note that the headers to be included with the message must be included in the message as entered; this example doesn’t do any processing of the **RFC 822** headers. In particular, the ‘To’ and ‘From’ addresses must be included in the message headers explicitly: import smtplib def prompt(title): return input(title).strip() from_addr = prompt(\"From: \") to_addrs = prompt(\"To: \").split() print(\"Enter message, end with ^D (Unix) or ^Z (Windows):\") # Add the From: and To: headers at the start! lines = [f\"From: {from_addr}\", f\"To: {', '.join(to_addrs)}\", \"\"] while True: try: line = input() except EOFError: break else: lines.append(line) msg = \"\\r\\n\".join(lines) print(\"Message length is\", len(msg)) server = smtplib.SMTP(\"localhost\") server.set_debuglevel(1) server.sendmail(from_addr, to_addrs, msg) server.quit() Note:",
+          "source_url": "https://docs.python.org/release/3.13.9/library/smtplib.html",
+          "title": "\"smtplib\" — SMTP protocol client",
+          "similarity": 0.6898824286675165
+        },
+        {
+          "id": "5164aa934c6898d8689a4adce46c4613e48d1c7cc6a103a6bccf3b4fecefbec7",
+          "source": "library/smtplib.txt",
+          "chunk_index": 22,
+          "text": "In general, you will want to use the \"email\" package’s features to construct an email message, which you can then send via \"send_message()\"; see email: Examples.",
+          "source_url": "https://docs.python.org/release/3.13.9/library/smtplib.html",
+          "title": "\"smtplib\" — SMTP protocol client",
+          "similarity": 0.6705057264802101
+        },
+        {
+          "id": "0344a616e541ec3d2503404bda0861d1b7a914f12f663ae420a5b5819b961756",
+          "source": "library/email.txt",
+          "chunk_index": 7,
+          "text": "* \"email.message.Message\": Representing an email message using the \"compat32\" API * \"email.mime\": Creating email and MIME objects from scratch * \"email.header\": Internationalized headers * \"email.charset\": Representing character sets * \"email.encoders\": Encoders * \"email.utils\": Miscellaneous utilities * \"email.iterators\": Iterators See also: Module \"smtplib\" SMTP (Simple Mail Transport Protocol) client Module \"poplib\" POP (Post Office Protocol) client Module \"imaplib\" IMAP (Internet Message Access Protocol) client Module \"mailbox\" Tools for creating, reading, and managing collections of messages on disk using a variety standard formats.",
+          "source_url": "https://docs.python.org/release/3.13.9/library/email.html",
+          "title": "\"email\" — An email and MIME handling package",
+          "similarity": 0.6650623843845628
+        },
+        {
+          "id": "65bad3a6b33f8d21afbdf9a1dd4ba4aca133cd1ed568104bbe2a61c182088672",
+          "source": "library/smtplib.txt",
+          "chunk_index": 15,
+          "text": "Send mail. The required arguments are an **RFC 822** from-address string, a list of **RFC 822** to-address strings (a bare string will be treated as a list with 1 address), and a message string. The caller may pass a list of ESMTP options (such as \"8bitmime\") to be used in \"MAIL FROM\" commands as *mail_options*. ESMTP options (such as \"DSN\" commands) that should be used with all \"RCPT\" commands can be passed as *rcpt_options*. (If you need to use different ESMTP options to different recipients you have to use the low-level methods such as \"mail()\", \"rcpt()\" and \"data()\" to send the message.) Note: The *from_addr* and *to_addrs* parameters are used to construct the message envelope used by the transport agents. \"sendmail\" does not modify the message headers in any way.",
+          "source_url": "https://docs.python.org/release/3.13.9/library/smtplib.html",
+          "title": "\"smtplib\" — SMTP protocol client",
+          "similarity": 0.66071838580255
+        },
+        {
+          "id": "332655722abd911300dc14d2b6bbf09bdf95edb709a9c5cdbb84b0883763d2ee",
+          "source": "library/smtplib.txt",
+          "chunk_index": 14,
+          "text": "If there has been no previous \"EHLO\" or \"HELO\" command this session, this method tries ESMTP \"EHLO\" first. Changed in version 3.12: The deprecated *keyfile* and *certfile* parameters have been removed. \"SMTPHeloError\" The server didn’t reply properly to the \"HELO\" greeting. \"SMTPNotSupportedError\" The server does not support the STARTTLS extension. \"RuntimeError\" SSL/TLS support is not available to your Python interpreter. Changed in version 3.3: *context* was added. Changed in version 3.4: The method now supports hostname check with \"SSLContext.check_hostname\" and *Server Name Indicator* (see \"HAS_SNI\"). Changed in version 3.5: The error raised for lack of STARTTLS support is now the \"SMTPNotSupportedError\" subclass instead of the base \"SMTPException\". SMTP.sendmail(from_addr, to_addrs, msg, mail_options=(), rcpt_options=())",
+          "source_url": "https://docs.python.org/release/3.13.9/library/smtplib.html",
+          "title": "\"smtplib\" — SMTP protocol client",
+          "similarity": 0.6596395988092466
+        }
+      ],
+      "bm25_matches": [
+        {
+          "id": "65bad3a6b33f8d21afbdf9a1dd4ba4aca133cd1ed568104bbe2a61c182088672",
+          "source": "library/smtplib.txt",
+          "chunk_index": 15,
+          "text": "Send mail. The required arguments are an **RFC 822** from-address string, a list of **RFC 822** to-address strings (a bare string will be treated as a list with 1 address), and a message string. The caller may pass a list of ESMTP options (such as \"8bitmime\") to be used in \"MAIL FROM\" commands as *mail_options*. ESMTP options (such as \"DSN\" commands) that should be used with all \"RCPT\" commands can be passed as *rcpt_options*. (If you need to use different ESMTP options to different recipients you have to use the low-level methods such as \"mail()\", \"rcpt()\" and \"data()\" to send the message.) Note: The *from_addr* and *to_addrs* parameters are used to construct the message envelope used by the transport agents. \"sendmail\" does not modify the message headers in any way.",
+          "source_url": "https://docs.python.org/release/3.13.9/library/smtplib.html",
+          "title": "\"smtplib\" — SMTP protocol client",
+          "score": 15.101939458679581
+        },
+        {
+          "id": "c05510024b4e26928df6b92e8bc827475cc729113a578c5e798c369a766e2ff3",
+          "source": "library/smtplib.txt",
+          "chunk_index": 0,
+          "text": "\"smtplib\" — SMTP protocol client ******************************** **Source code:** Lib/smtplib.py ====================================================================== The \"smtplib\" module defines an SMTP client session object that can be used to send mail to any internet machine with an SMTP or ESMTP listener daemon. For details of SMTP and ESMTP operation, consult **RFC 821** (Simple Mail Transfer Protocol) and **RFC 1869** (SMTP Service Extensions). Availability: not WASI. This module does not work or is not available on WebAssembly. See WebAssembly platforms for more information. class smtplib.SMTP(host='', port=0, local_hostname=None, [timeout, ]source_address=None)",
+          "source_url": "https://docs.python.org/release/3.13.9/library/smtplib.html",
+          "title": "\"smtplib\" — SMTP protocol client",
+          "score": 12.521070233996639
+        },
+        {
+          "id": "b2f9f5feef8c712ca2c14a12390a8f9d13339899ce62798c87c541b0f624734d",
+          "source": "library/doctest.txt",
+          "chunk_index": 61,
+          "text": "Debug the doctests for an object. The *module* and *name* arguments are the same as for function \"testsource()\" above. The synthesized Python script for the named object’s docstring is written to a temporary file, and then that file is run under the control of the Python debugger, \"pdb\". A shallow copy of \"module.__dict__\" is used for both local and global execution context. Optional argument *pm* controls whether post-mortem debugging is used. If *pm* has a true value, the script file is run directly, and the debugger gets involved only if the script terminates via raising an unhandled exception. If it does, then post-mortem debugging is invoked, via \"pdb.post_mortem()\", passing the traceback object from the unhandled exception. If *pm* is not specified, or is false, the script is run under the debugger from the start, via passing an appropriate \"exec()\" call to \"pdb.run()\". doctest.debug_src(src, pm=False, globs=None) Debug the doctests in a string.",
+          "source_url": "https://docs.python.org/release/3.13.9/library/doctest.html",
+          "title": "\"doctest\" — Test interactive Python examples",
+          "score": 12.126811130471697
+        },
+        {
+          "id": "c3fa778d4eb6b6a1639057b6156c7779680f3f3c374a0379e26200eca64acac6",
+          "source": "library/doctest.txt",
+          "chunk_index": 6,
+          "text": "The \"doctest\" module can be invoked as a script from the command line: python -m doctest [-v] [-o OPTION] [-f] file [file ...] -v, --verbose Detailed report of all examples tried is printed to standard output, along with assorted summaries at the end: python -m doctest -v example.py This will import \"example.py\" as a standalone module and run \"testmod()\" on it. Note that this may not work correctly if the file is part of a package and imports other submodules from that package. If the file name does not end with \".py\", \"doctest\" infers that it must be run with \"testfile()\" instead: python -m doctest -v example.txt -o, --option <option> Option flags control various aspects of doctest’s behavior, see section Option Flags. Added in version 3.4. -f, --fail-fast This is shorthand for \"-o FAIL_FAST\". Added in version 3.4. How It Works ============",
+          "source_url": "https://docs.python.org/release/3.13.9/library/doctest.html",
+          "title": "\"doctest\" — Test interactive Python examples",
+          "score": 12.035391452047175
+        },
+        {
+          "id": "6b92340a6b6da772153346d9e799cbf77be72285cf86fd1a3beef398fa9879dd",
+          "source": "library/doctest.txt",
+          "chunk_index": 60,
+          "text": "# Set x and y to 1 and 2. x, y = 1, 2 # # Print their sum: print(x+y) # Expected: ## 3 This function is used internally by other functions (see below), but can also be useful when you want to transform an interactive Python session into a Python script. doctest.testsource(module, name) Convert the doctest for an object to a script. Argument *module* is a module object, or dotted name of a module, containing the object whose doctests are of interest. Argument *name* is the name (within the module) of the object with the doctests of interest. The result is a string, containing the object’s docstring converted to a Python script, as described for \"script_from_examples()\" above. For example, if module \"a.py\" contains a top-level function \"f()\", then import a, doctest print(doctest.testsource(a, \"a.f\")) prints a script version of function \"f()\"’s docstring, with doctests converted to code, and the rest placed in comments. doctest.debug(module, name, pm=False)",
+          "source_url": "https://docs.python.org/release/3.13.9/library/doctest.html",
+          "title": "\"doctest\" — Test interactive Python examples",
+          "score": 11.68350289643753
+        }
+      ]
+    },
+    {
+      "id": "python-faq-09",
+      "text": "How do I avoid blocking in the connect() method of a socket?",
+      "expected_sources": [
+        "library/socket.txt"
+      ],
+      "question_source": "https://docs.python.org/release/3.13.9/faq/library.html",
+      "semantic": {
+        "hit_at_1": true,
+        "hit_at_k": true,
+        "reciprocal_rank_at_k": 1.0
+      },
+      "bm25": {
+        "hit_at_1": true,
+        "hit_at_k": true,
+        "reciprocal_rank_at_k": 1.0
+      },
+      "semantic_matches": [
+        {
+          "id": "213bedf0934e5608a71631607922293034e634a7b01a30ff562ecb8a1d3bb521",
+          "source": "library/socket.txt",
+          "chunk_index": 66,
+          "text": "Set blocking or non-blocking mode of the socket: if *flag* is false, the socket is set to non-blocking, else to blocking mode. This method is a shorthand for certain \"settimeout()\" calls: * \"sock.setblocking(True)\" is equivalent to \"sock.settimeout(None)\" * \"sock.setblocking(False)\" is equivalent to \"sock.settimeout(0.0)\" Changed in version 3.7: The method no longer applies \"SOCK_NONBLOCK\" flag on \"socket.type\". socket.settimeout(value) Set a timeout on blocking socket operations. The *value* argument can be a nonnegative floating-point number expressing seconds, or \"None\". If a non-zero value is given, subsequent socket operations will raise a \"timeout\" exception if the timeout period *value* has elapsed before the operation has completed. If zero is given, the socket is put in non-blocking mode. If \"None\" is given, the socket is put in blocking mode. For further information, please consult the notes on socket timeouts. Changed in version 3.7: The method no longer toggles \"SOCK_NONBLOCK\" flag on \"socket.type\". socket.setsockopt(level, optname, value: int) socket.setsockopt(level, optname, value: buffer)",
+          "source_url": "https://docs.python.org/release/3.13.9/library/socket.html",
+          "title": "\"socket\" — Low-level networking interface",
+          "similarity": 0.5875269018396141
+        },
+        {
+          "id": "a0036e5de6cae667a8c7feba2751d881f22cc311a16002ac667a605fc704a0fd",
+          "source": "library/socket.txt",
+          "chunk_index": 45,
+          "text": "Raises an auditing event \"socket.bind\" with arguments \"self\", \"address\". Availability: not WASI. socket.close() Mark the socket closed. The underlying system resource (e.g. a file descriptor) is also closed when all file objects from \"makefile()\" are closed. Once that happens, all future operations on the socket object will fail. The remote end will receive no more data (after queued data is flushed). Sockets are automatically closed when they are garbage-collected, but it is recommended to \"close()\" them explicitly, or to use a \"with\" statement around them. Changed in version 3.6: \"OSError\" is now raised if an error occurs when the underlying \"close()\" call is made. Note: \"close()\" releases the resource associated with a connection but does not necessarily close the connection immediately. If you want to close the connection in a timely fashion, call \"shutdown()\" before \"close()\". socket.connect(address) Connect to a remote socket at *address*. (The format of *address* depends on the address family — see above.)",
+          "source_url": "https://docs.python.org/release/3.13.9/library/socket.html",
+          "title": "\"socket\" — Low-level networking interface",
+          "similarity": 0.5834385964467175
+        },
+        {
+          "id": "7360ceacb9cc12c745232559199d1cb0d4e990da0fd923bc0c8cfdc1a6582a94",
+          "source": "library/socket.txt",
+          "chunk_index": 69,
+          "text": "A socket object can be in one of three modes: blocking, non-blocking, or timeout. Sockets are by default always created in blocking mode, but this can be changed by calling \"setdefaulttimeout()\". * In *blocking mode*, operations block until complete or the system returns an error (such as connection timed out). * In *non-blocking mode*, operations fail (with an error that is unfortunately system-dependent) if they cannot be completed immediately: functions from the \"select\" module can be used to know when and whether a socket is available for reading or writing. * In *timeout mode*, operations fail if they cannot be completed within the timeout specified for the socket (they raise a \"timeout\" exception) or if the system returns an error. Note:",
+          "source_url": "https://docs.python.org/release/3.13.9/library/socket.html",
+          "title": "\"socket\" — Low-level networking interface",
+          "similarity": 0.5773848129579444
+        },
+        {
+          "id": "0ee038e1540c7a0f0dc925d5e42eb60a8133d2894669761d86a358f4fac1a642",
+          "source": "library/socket.txt",
+          "chunk_index": 50,
+          "text": "The \"ioctl()\" method is a limited interface to the WSAIoctl system interface. Please refer to the Win32 documentation for more information. On other platforms, the generic \"fcntl.fcntl()\" and \"fcntl.ioctl()\" functions may be used; they accept a socket object as their first argument. Currently only the following control codes are supported: \"SIO_RCVALL\", \"SIO_KEEPALIVE_VALS\", and \"SIO_LOOPBACK_FAST_PATH\". Changed in version 3.6: \"SIO_LOOPBACK_FAST_PATH\" was added. socket.listen([backlog]) Enable a server to accept connections. If *backlog* is specified, it must be at least 0 (if it is lower, it is set to 0); it specifies the number of unaccepted connections that the system will allow before refusing new connections. If not specified, a default reasonable value is chosen. Availability: not WASI. Changed in version 3.5: The *backlog* parameter is now optional. socket.makefile(mode='r', buffering=None, *, encoding=None, errors=None, newline=None)",
+          "source_url": "https://docs.python.org/release/3.13.9/library/socket.html",
+          "title": "\"socket\" — Low-level networking interface",
+          "similarity": 0.5765476867219064
+        },
+        {
+          "id": "6fae49794d3e544870c52ffa2e87d5c790e5d88522ede2f6ae2d7eabe00dbeeb",
+          "source": "library/socket.txt",
+          "chunk_index": 47,
+          "text": "Like \"connect(address)\", but return an error indicator instead of raising an exception for errors returned by the C-level \"connect()\" call (other problems, such as “host not found,” can still raise exceptions). The error indicator is \"0\" if the operation succeeded, otherwise the value of the \"errno\" variable. This is useful to support, for example, asynchronous connects. Raises an auditing event \"socket.connect\" with arguments \"self\", \"address\". Availability: not WASI. socket.detach() Put the socket object into closed state without actually closing the underlying file descriptor. The file descriptor is returned, and can be reused for other purposes. Added in version 3.2. socket.dup() Duplicate the socket. The newly created socket is non-inheritable. Changed in version 3.4: The socket is now non-inheritable. Availability: not WASI. socket.fileno() Return the socket’s file descriptor (a small integer), or -1 on failure. This is useful with \"select.select()\".",
+          "source_url": "https://docs.python.org/release/3.13.9/library/socket.html",
+          "title": "\"socket\" — Low-level networking interface",
+          "similarity": 0.5716907394752413
+        }
+      ],
+      "bm25_matches": [
+        {
+          "id": "ebb2620c85e816a3ecbeb410be9f80e6013e18e96ef47589ba5612dcaef75eb8",
+          "source": "library/socket.txt",
+          "chunk_index": 70,
+          "text": "At the operating system level, sockets in *timeout mode* are internally set in non-blocking mode. Also, the blocking and timeout modes are shared between file descriptors and socket objects that refer to the same network endpoint. This implementation detail can have visible consequences if e.g. you decide to use the \"fileno()\" of a socket. Timeouts and the \"connect\" method --------------------------------- The \"connect()\" operation is also subject to the timeout setting, and in general it is recommended to call \"settimeout()\" before calling \"connect()\" or pass a timeout parameter to \"create_connection()\". However, the system network stack may also return a connection timeout error of its own regardless of any Python socket timeout setting. Timeouts and the \"accept\" method -------------------------------- If \"getdefaulttimeout()\" is not \"None\", sockets returned by the \"accept()\" method inherit that timeout. Otherwise, the behaviour depends on settings of the listening socket:",
+          "source_url": "https://docs.python.org/release/3.13.9/library/socket.html",
+          "title": "\"socket\" — Low-level networking interface",
+          "score": 18.525157038682394
+        },
+        {
+          "id": "e4ba65e9168c74c8a72141d2656eb8b7086dc467e8e1be7251d81a7f1e316736",
+          "source": "library/ssl.txt",
+          "chunk_index": 55,
+          "text": "The parameter \"do_handshake_on_connect\" specifies whether to do the SSL handshake automatically after doing a \"socket.connect()\", or whether the application program will call it explicitly, by invoking the \"SSLSocket.do_handshake()\" method. Calling \"SSLSocket.do_handshake()\" explicitly gives the program control over the blocking behavior of the socket I/O involved in the handshake. The parameter \"suppress_ragged_eofs\" specifies how the \"SSLSocket.recv()\" method should signal unexpected EOF from the other end of the connection. If specified as \"True\" (the default), it returns a normal EOF (an empty bytes object) in response to unexpected EOF errors raised from the underlying socket; if \"False\", it will raise the exceptions back to the caller. *session*, see \"session\". To wrap an \"SSLSocket\" in another \"SSLSocket\", use \"SSLContext.wrap_bio()\". Changed in version 3.5: Always allow a server_hostname to be passed, even if OpenSSL does not have SNI. Changed in version 3.6: *session* argument was added. Changed in version 3.7: The method returns an instance of \"SSLContext.sslsocket_class\" instead of hard-coded \"SSLSocket\". SSLContext.sslsocket_class",
+          "source_url": "https://docs.python.org/release/3.13.9/library/ssl.html",
+          "title": "\"ssl\" — TLS/SSL wrapper for socket objects",
+          "score": 18.392848826019538
+        },
+        {
+          "id": "4169efdfc2fc004ef5ff3223196ae6b2f79d0cdcc548128beeb676c5a09b01d5",
+          "source": "library/socket.txt",
+          "chunk_index": 46,
+          "text": "If the connection is interrupted by a signal, the method waits until the connection completes, or raise a \"TimeoutError\" on timeout, if the signal handler doesn’t raise an exception and the socket is blocking or has a timeout. For non-blocking sockets, the method raises an \"InterruptedError\" exception if the connection is interrupted by a signal (or the exception raised by the signal handler). Raises an auditing event \"socket.connect\" with arguments \"self\", \"address\". Changed in version 3.5: The method now waits until the connection completes instead of raising an \"InterruptedError\" exception if the connection is interrupted by a signal, the signal handler doesn’t raise an exception and the socket is blocking or has a timeout (see the **PEP 475** for the rationale). Availability: not WASI. socket.connect_ex(address)",
+          "source_url": "https://docs.python.org/release/3.13.9/library/socket.html",
+          "title": "\"socket\" — Low-level networking interface",
+          "score": 17.35285641992032
+        },
+        {
+          "id": "2940dc74e58a30650aeb15716e0af5959c3db89ed425c75b24aec84ea34ecf7d",
+          "source": "library/socket.txt",
+          "chunk_index": 71,
+          "text": "* if the listening socket is in *blocking mode* or in *timeout mode*, the socket returned by \"accept()\" is in *blocking mode*; * if the listening socket is in *non-blocking mode*, whether the socket returned by \"accept()\" is in blocking or non-blocking mode is operating system-dependent. If you want to ensure cross-platform behaviour, it is recommended you manually override this setting. Example ======= Here are four minimal example programs using the TCP/IP protocol: a server that echoes all data that it receives back (servicing only one client), and a client using it. Note that a server must perform the sequence \"socket()\", \"bind()\", \"listen()\", \"accept()\" (possibly repeating the \"accept()\" to service more than one client), while a client only needs the sequence \"socket()\", \"connect()\". Also note that the server does not \"sendall()\"/\"recv()\" on the socket it is listening on but on the new socket returned by \"accept()\". The first two examples support IPv4 only. # Echo server program import socket",
+          "source_url": "https://docs.python.org/release/3.13.9/library/socket.html",
+          "title": "\"socket\" — Low-level networking interface",
+          "score": 15.787203386549987
+        },
+        {
+          "id": "213bedf0934e5608a71631607922293034e634a7b01a30ff562ecb8a1d3bb521",
+          "source": "library/socket.txt",
+          "chunk_index": 66,
+          "text": "Set blocking or non-blocking mode of the socket: if *flag* is false, the socket is set to non-blocking, else to blocking mode. This method is a shorthand for certain \"settimeout()\" calls: * \"sock.setblocking(True)\" is equivalent to \"sock.settimeout(None)\" * \"sock.setblocking(False)\" is equivalent to \"sock.settimeout(0.0)\" Changed in version 3.7: The method no longer applies \"SOCK_NONBLOCK\" flag on \"socket.type\". socket.settimeout(value) Set a timeout on blocking socket operations. The *value* argument can be a nonnegative floating-point number expressing seconds, or \"None\". If a non-zero value is given, subsequent socket operations will raise a \"timeout\" exception if the timeout period *value* has elapsed before the operation has completed. If zero is given, the socket is put in non-blocking mode. If \"None\" is given, the socket is put in blocking mode. For further information, please consult the notes on socket timeouts. Changed in version 3.7: The method no longer toggles \"SOCK_NONBLOCK\" flag on \"socket.type\". socket.setsockopt(level, optname, value: int) socket.setsockopt(level, optname, value: buffer)",
+          "source_url": "https://docs.python.org/release/3.13.9/library/socket.html",
+          "title": "\"socket\" — Low-level networking interface",
+          "score": 15.467657957044844
+        }
+      ]
+    },
+    {
+      "id": "python-faq-10",
+      "text": "Are there any interfaces to database packages in Python?",
+      "expected_sources": [
+        "library/sqlite3.txt"
+      ],
+      "question_source": "https://docs.python.org/release/3.13.9/faq/library.html",
+      "semantic": {
+        "hit_at_1": true,
+        "hit_at_k": true,
+        "reciprocal_rank_at_k": 1.0
+      },
+      "bm25": {
+        "hit_at_1": false,
+        "hit_at_k": true,
+        "reciprocal_rank_at_k": 0.5
+      },
+      "semantic_matches": [
+        {
+          "id": "822b69555073185b7994e5b750fe6a01be074a06f0fc5a4495f16e7a035eeda1",
+          "source": "library/sqlite3.txt",
+          "chunk_index": 0,
+          "text": "\"sqlite3\" — DB-API 2.0 interface for SQLite databases ***************************************************** **Source code:** Lib/sqlite3/ SQLite is a C library that provides a lightweight disk-based database that doesn’t require a separate server process and allows accessing the database using a nonstandard variant of the SQL query language. Some applications can use SQLite for internal data storage. It’s also possible to prototype an application using SQLite and then port the code to a larger database such as PostgreSQL or Oracle. The \"sqlite3\" module was written by Gerhard Häring. It provides an SQL interface compliant with the DB-API 2.0 specification described by **PEP 249**, and requires SQLite 3.15.2 or newer. This document includes four main sections: * Tutorial teaches how to use the \"sqlite3\" module. * Reference describes the classes and functions this module defines. * How-to guides details how to handle specific tasks. * Explanation provides in-depth background on transaction control. See also:",
+          "source_url": "https://docs.python.org/release/3.13.9/library/sqlite3.html",
+          "title": "\"sqlite3\" — DB-API 2.0 interface for SQLite databases",
+          "similarity": 0.6617405224183806
+        },
+        {
+          "id": "c31503c44c4bc91ce2480647c781fc018b5d7bc6db47dcce565dced245d8b90d",
+          "source": "library/sqlite3.txt",
+          "chunk_index": 1,
+          "text": "https://www.sqlite.org The SQLite web page; the documentation describes the syntax and the available data types for the supported SQL dialect. https://www.w3schools.com/sql/ Tutorial, reference and examples for learning SQL syntax. **PEP 249** - Database API Specification 2.0 PEP written by Marc-André Lemburg. Tutorial ======== In this tutorial, you will create a database of Monty Python movies using basic \"sqlite3\" functionality. It assumes a fundamental understanding of database concepts, including cursors and transactions. First, we need to create a new database and open a database connection to allow \"sqlite3\" to work with it. Call \"sqlite3.connect()\" to create a connection to the database \"tutorial.db\" in the current working directory, implicitly creating it if it does not exist: import sqlite3 con = sqlite3.connect(\"tutorial.db\") The returned \"Connection\" object \"con\" represents the connection to the on-disk database. In order to execute SQL statements and fetch results from SQL queries, we will need to use a database cursor. Call \"con.cursor()\" to create the \"Cursor\": cur = con.cursor()",
+          "source_url": "https://docs.python.org/release/3.13.9/library/sqlite3.html",
+          "title": "\"sqlite3\" — DB-API 2.0 interface for SQLite databases",
+          "similarity": 0.6061168165522263
+        },
+        {
+          "id": "ddff45a01cf427c92d17e742eeb5678ce3496f113a862e47b59f5bbb57afb0c1",
+          "source": "library/sqlite3.txt",
+          "chunk_index": 19,
+          "text": "Roll back to the start of any pending transaction. If \"autocommit\" is \"True\", or there is no open transaction, this method does nothing. If \"autocommit\" is \"False\", a new transaction is implicitly opened if a pending transaction was rolled back by this method. close() Close the database connection. If \"autocommit\" is \"False\", any pending transaction is implicitly rolled back. If \"autocommit\" is \"True\" or \"LEGACY_TRANSACTION_CONTROL\", no implicit transaction control is executed. Make sure to \"commit()\" before closing to avoid losing pending changes. execute(sql, parameters=(), /) Create a new \"Cursor\" object and call \"execute()\" on it with the given *sql* and *parameters*. Return the new cursor object. executemany(sql, parameters, /) Create a new \"Cursor\" object and call \"executemany()\" on it with the given *sql* and *parameters*. Return the new cursor object. executescript(sql_script, /) Create a new \"Cursor\" object and call \"executescript()\" on it with the given *sql_script*. Return the new cursor object. create_function(name, narg, func, *, deterministic=False)",
+          "source_url": "https://docs.python.org/release/3.13.9/library/sqlite3.html",
+          "title": "\"sqlite3\" — DB-API 2.0 interface for SQLite databases",
+          "similarity": 0.601913823046766
+        },
+        {
+          "id": "502b75ca7e14bf9a3178019e813bb3d05a986afc13be6f951fbd539c31b207b5",
+          "source": "library/sqlite3.txt",
+          "chunk_index": 40,
+          "text": "Deprecated since version 3.12, will be removed in version 3.14: \"DeprecationWarning\" is emitted if named placeholders are used and the items in *parameters* are sequences instead of \"dict\"s. Starting with Python 3.14, \"ProgrammingError\" will be raised instead. executescript(sql_script, /) Execute the SQL statements in *sql_script*. If the \"autocommit\" is \"LEGACY_TRANSACTION_CONTROL\" and there is a pending transaction, an implicit \"COMMIT\" statement is executed first. No other implicit transaction control is performed; any transaction control must be added to *sql_script*. *sql_script* must be a \"string\". Example: # cur is an sqlite3.Cursor object cur.executescript(\"\"\" BEGIN; CREATE TABLE person(firstname, lastname, age); CREATE TABLE book(title, author, published); CREATE TABLE publisher(name, address); COMMIT; \"\"\") fetchone() If \"row_factory\" is \"None\", return the next row query result set as a \"tuple\". Else, pass it to the row factory and return its result. Return \"None\" if no more data is available. fetchmany(size=cursor.arraysize)",
+          "source_url": "https://docs.python.org/release/3.13.9/library/sqlite3.html",
+          "title": "\"sqlite3\" — DB-API 2.0 interface for SQLite databases",
+          "similarity": 0.5969010801628716
+        },
+        {
+          "id": "ce85792f2623d6630d7b110594a7434e28e3a4bf951def855040be1ea14bbd3a",
+          "source": "library/sqlite3.txt",
+          "chunk_index": 6,
+          "text": "You’ve now created an SQLite database using the \"sqlite3\" module, inserted data and retrieved values from it in multiple ways. See also: * How-to guides for further reading: * How to use placeholders to bind values in SQL queries * How to adapt custom Python types to SQLite values * How to convert SQLite values to custom Python types * How to use the connection context manager * How to create and use row factories * Explanation for in-depth background on transaction control. Reference ========= Module functions ---------------- sqlite3.connect(database, timeout=5.0, detect_types=0, isolation_level='DEFERRED', check_same_thread=True, factory=sqlite3.Connection, cached_statements=128, uri=False, *, autocommit=sqlite3.LEGACY_TRANSACTION_CONTROL) Open a connection to an SQLite database. Parameters: * **database** (*path-like object*) – The path to the database file to be opened. You can pass \"\":memory:\"\" to create an SQLite database existing only in memory, and open a connection to it.",
+          "source_url": "https://docs.python.org/release/3.13.9/library/sqlite3.html",
+          "title": "\"sqlite3\" — DB-API 2.0 interface for SQLite databases",
+          "similarity": 0.5928191375822621
+        }
+      ],
+      "bm25_matches": [
+        {
+          "id": "70fd436b52f6a85f1c176b13cccec2000fcd326de63ca92acf7e9711ca33e419",
+          "source": "library/unittest.txt",
+          "chunk_index": 61,
+          "text": "The pattern is deliberately not stored as a loader attribute so that packages can continue discovery themselves. *top_level_dir* is stored internally, and used as a default to any nested calls to \"discover()\". That is, if a package’s \"load_tests\" calls \"loader.discover()\", it does not need to pass this argument. *start_dir* can be a dotted module name as well as a directory. Added in version 3.2. Changed in version 3.4: Modules that raise \"SkipTest\" on import are recorded as skips, not errors. Changed in version 3.4: *start_dir* can be a *namespace packages*. Changed in version 3.4: Paths are sorted before being imported so that execution order is the same even if the underlying file system’s ordering is not dependent on file name. Changed in version 3.5: Found packages are now checked for \"load_tests\" regardless of whether their path matches *pattern*, because it is impossible for a package name to match the default pattern.",
+          "source_url": "https://docs.python.org/release/3.13.9/library/unittest.html",
+          "title": "\"unittest\" — Unit testing framework",
+          "score": 12.157553522494808
+        },
+        {
+          "id": "ce85792f2623d6630d7b110594a7434e28e3a4bf951def855040be1ea14bbd3a",
+          "source": "library/sqlite3.txt",
+          "chunk_index": 6,
+          "text": "You’ve now created an SQLite database using the \"sqlite3\" module, inserted data and retrieved values from it in multiple ways. See also: * How-to guides for further reading: * How to use placeholders to bind values in SQL queries * How to adapt custom Python types to SQLite values * How to convert SQLite values to custom Python types * How to use the connection context manager * How to create and use row factories * Explanation for in-depth background on transaction control. Reference ========= Module functions ---------------- sqlite3.connect(database, timeout=5.0, detect_types=0, isolation_level='DEFERRED', check_same_thread=True, factory=sqlite3.Connection, cached_statements=128, uri=False, *, autocommit=sqlite3.LEGACY_TRANSACTION_CONTROL) Open a connection to an SQLite database. Parameters: * **database** (*path-like object*) – The path to the database file to be opened. You can pass \"\":memory:\"\" to create an SQLite database existing only in memory, and open a connection to it.",
+          "source_url": "https://docs.python.org/release/3.13.9/library/sqlite3.html",
+          "title": "\"sqlite3\" — DB-API 2.0 interface for SQLite databases",
+          "score": 10.420070733831807
+        },
+        {
+          "id": "c200d936b508799abd5bb1b98049dbf6d85be226b5c02fa4c7d1cb4eaccf1bfb",
+          "source": "library/unittest.txt",
+          "chunk_index": 11,
+          "text": "Changed in version 3.11: \"unittest\" dropped the *namespace packages* support in Python 3.11. It has been broken since Python 3.7. Start directory and subdirectories containing tests must be regular package that have \"__init__.py\" file.Directories containing start directory still can be a namespace package. In this case, you need to specify start directory as dotted package name, and target directory explicitly. For example: # proj/ <-- current directory # namespace/ # mypkg/ # __init__.py # test_mypkg.py python -m unittest discover -s namespace.mypkg -t . Organizing test code ==================== The basic building blocks of unit testing are *test cases* — single scenarios that must be set up and checked for correctness. In \"unittest\", test cases are represented by \"unittest.TestCase\" instances. To make your own test cases you must write subclasses of \"TestCase\" or use \"FunctionTestCase\".",
+          "source_url": "https://docs.python.org/release/3.13.9/library/unittest.html",
+          "title": "\"unittest\" — Unit testing framework",
+          "score": 10.133757996921027
+        },
+        {
+          "id": "29d88824b23cf1486c3a64481c0209afec1234abe02ac366ed33bf895dd790b7",
+          "source": "library/sqlite3.txt",
+          "chunk_index": 57,
+          "text": "How to convert SQLite values to custom Python types --------------------------------------------------- Writing an adapter lets you convert *from* custom Python types *to* SQLite values. To be able to convert *from* SQLite values *to* custom Python types, we use *converters*. Let’s go back to the \"Point\" class. We stored the x and y coordinates separated via semicolons as strings in SQLite. First, we’ll define a converter function that accepts the string as a parameter and constructs a \"Point\" object from it. Note: Converter functions are **always** passed a \"bytes\" object, no matter the underlying SQLite data type. def convert_point(s): x, y = map(float, s.split(b\";\")) return Point(x, y) We now need to tell \"sqlite3\" when it should convert a given SQLite value. This is done when connecting to a database, using the *detect_types* parameter of \"connect()\". There are three options: * Implicit: set *detect_types* to \"PARSE_DECLTYPES\" * Explicit: set *detect_types* to \"PARSE_COLNAMES\"",
+          "source_url": "https://docs.python.org/release/3.13.9/library/sqlite3.html",
+          "title": "\"sqlite3\" — DB-API 2.0 interface for SQLite databases",
+          "score": 10.11047595178742
+        },
+        {
+          "id": "4a816a2481543c94ee07b950c173c36b7c8ad8ac3c773138a854017dc66067b5",
+          "source": "library/sqlite3.txt",
+          "chunk_index": 18,
+          "text": "* **rowid** (*int*) – The row id where the blob is located. * **readonly** (*bool*) – Set to \"True\" if the blob should be opened without write permissions. Defaults to \"False\". * **name** (*str*) – The name of the database where the blob is located. Defaults to \"\"main\"\". Raises: **OperationalError** – When trying to open a blob in a \"WITHOUT ROWID\" table. Return type: Blob Note: The blob size cannot be changed using the \"Blob\" class. Use the SQL function \"zeroblob\" to create a blob with a fixed size. Added in version 3.11. commit() Commit any pending transaction to the database. If \"autocommit\" is \"True\", or there is no open transaction, this method does nothing. If \"autocommit\" is \"False\", a new transaction is implicitly opened if a pending transaction was committed by this method. rollback()",
+          "source_url": "https://docs.python.org/release/3.13.9/library/sqlite3.html",
+          "title": "\"sqlite3\" — DB-API 2.0 interface for SQLite databases",
+          "score": 9.851681694019174
+        }
+      ]
+    },
+    {
+      "id": "python-faq-11",
+      "text": "How do you implement persistent objects in Python?",
+      "expected_sources": [
+        "library/pickle.txt",
+        "library/shelve.txt"
+      ],
+      "question_source": "https://docs.python.org/release/3.13.9/faq/library.html",
+      "semantic": {
+        "hit_at_1": true,
+        "hit_at_k": true,
+        "reciprocal_rank_at_k": 1.0
+      },
+      "bm25": {
+        "hit_at_1": true,
+        "hit_at_k": true,
+        "reciprocal_rank_at_k": 1.0
+      },
+      "semantic_matches": [
+        {
+          "id": "01d9aea052f07a12f4ad892571f81ab7a977366cfacef5c2d40d110fd3949381",
+          "source": "library/pickle.txt",
+          "chunk_index": 33,
+          "text": "def persistent_id(self, obj): # Instead of pickling MemoRecord as a regular class instance, we emit a # persistent ID. if isinstance(obj, MemoRecord): # Here, our persistent ID is simply a tuple, containing a tag and a # key, which refers to a specific record in the database. return (\"MemoRecord\", obj.key) else: # If obj does not have a persistent ID, return None. This means obj # needs to be pickled as usual. return None class DBUnpickler(pickle.Unpickler): def __init__(self, file, connection): super().__init__(file) self.connection = connection",
+          "source_url": "https://docs.python.org/release/3.13.9/library/pickle.html",
+          "title": "\"pickle\" — Python object serialization",
+          "similarity": 0.6753481075906566
+        },
+        {
+          "id": "82eb6d2cf30245d87f3211219bf44f7d342ec6c7843769881f2e2db2b3240d1a",
+          "source": "library/pickle.txt",
+          "chunk_index": 34,
+          "text": "def persistent_load(self, pid): # This method is invoked whenever a persistent ID is encountered. # Here, pid is the tuple returned by DBPickler. cursor = self.connection.cursor() type_tag, key_id = pid if type_tag == \"MemoRecord\": # Fetch the referenced record from the database and return it. cursor.execute(\"SELECT * FROM memos WHERE key=?\", (str(key_id),)) key, task = cursor.fetchone() return MemoRecord(key, task) else: # Always raises an error if you cannot return the correct object. # Otherwise, the unpickler will think None is the object referenced # by the persistent ID. raise pickle.UnpicklingError(\"unsupported persistent object\") def main(): import io import pprint # Initialize and populate our database. conn = sqlite3.connect(\":memory:\") cursor = conn.cursor() cursor.execute(\"CREATE TABLE memos(key INTEGER PRIMARY KEY, task TEXT)\") tasks = ( 'give food to fish', 'prepare group meeting', 'fight with a zebra', ) for task in tasks: cursor.execute(\"INSERT INTO memos VALUES(NULL, ?)\", (task,))",
+          "source_url": "https://docs.python.org/release/3.13.9/library/pickle.html",
+          "title": "\"pickle\" — Python object serialization",
+          "similarity": 0.6556722600969608
+        },
+        {
+          "id": "d0df6eb6868c75c29058248f581ce6901bc0b4d0ad611965bd5f07c2565455e1",
+          "source": "library/shelve.txt",
+          "chunk_index": 0,
+          "text": "\"shelve\" — Python object persistence ************************************ **Source code:** Lib/shelve.py ====================================================================== A “shelf” is a persistent, dictionary-like object. The difference with “dbm” databases is that the values (not the keys!) in a shelf can be essentially arbitrary Python objects — anything that the \"pickle\" module can handle. This includes most class instances, recursive data types, and objects containing lots of shared sub-objects. The keys are ordinary strings. shelve.open(filename, flag='c', protocol=None, writeback=False) Open a persistent dictionary. The filename specified is the base filename for the underlying database. As a side-effect, an extension may be added to the filename and more than one file may be created. By default, the underlying database file is opened for reading and writing. The optional *flag* parameter has the same interpretation as the *flag* parameter of \"dbm.open()\". By default, pickles created with \"pickle.DEFAULT_PROTOCOL\" are used to serialize values. The version of the pickle protocol can be specified with the *protocol* parameter.",
+          "source_url": "https://docs.python.org/release/3.13.9/library/shelve.html",
+          "title": "\"shelve\" — Python object persistence",
+          "similarity": 0.6437838474926487
+        },
+        {
+          "id": "2d610a9bf491d4feb0b72dd662b0933ce999191f8618a942bb50df1c6dcce415",
+          "source": "library/pickle.txt",
+          "chunk_index": 7,
+          "text": "Serialization is a more primitive notion than persistence; although \"pickle\" reads and writes file objects, it does not handle the issue of naming persistent objects, nor the (even more complicated) issue of concurrent access to persistent objects. The \"pickle\" module can transform a complex object into a byte stream and it can transform the byte stream into an object with the same internal structure. Perhaps the most obvious thing to do with these byte streams is to write them onto a file, but it is also conceivable to send them across a network or store them in a database. The \"shelve\" module provides a simple interface to pickle and unpickle objects on DBM- style database files. Module Interface ================",
+          "source_url": "https://docs.python.org/release/3.13.9/library/pickle.html",
+          "title": "\"pickle\" — Python object serialization",
+          "similarity": 0.630094364482489
+        },
+        {
+          "id": "99919260133eced855fcb1aeb3258dc718d911f90e704ae0a181cce5eb9d2d5c",
+          "source": "library/pickle.txt",
+          "chunk_index": 31,
+          "text": "Persistence of External Objects ------------------------------- For the benefit of object persistence, the \"pickle\" module supports the notion of a reference to an object outside the pickled data stream. Such objects are referenced by a persistent ID, which should be either a string of alphanumeric characters (for protocol 0) [5] or just an arbitrary object (for any newer protocol). The resolution of such persistent IDs is not defined by the \"pickle\" module; it will delegate this resolution to the user-defined methods on the pickler and unpickler, \"persistent_id()\" and \"persistent_load()\" respectively.",
+          "source_url": "https://docs.python.org/release/3.13.9/library/pickle.html",
+          "title": "\"pickle\" — Python object serialization",
+          "similarity": 0.6297393552467232
+        }
+      ],
+      "bm25_matches": [
+        {
+          "id": "42120d39d46eb4dd6b347d7f5827c121b77003b19a47930f9c4ad066eee6c7cd",
+          "source": "library/pickle.txt",
+          "chunk_index": 32,
+          "text": "To pickle objects that have an external persistent ID, the pickler must have a custom \"persistent_id()\" method that takes an object as an argument and returns either \"None\" or the persistent ID for that object. When \"None\" is returned, the pickler simply pickles the object as normal. When a persistent ID string is returned, the pickler will pickle that object, along with a marker so that the unpickler will recognize it as a persistent ID. To unpickle external objects, the unpickler must have a custom \"persistent_load()\" method that takes a persistent ID object and returns the referenced object. Here is a comprehensive example presenting how persistent ID can be used to pickle external objects by reference. # Simple example presenting how persistent ID can be used to pickle # external objects by reference. import pickle import sqlite3 from collections import namedtuple # Simple class representing a record in our database. MemoRecord = namedtuple(\"MemoRecord\", \"key, task\") class DBPickler(pickle.Pickler):",
+          "source_url": "https://docs.python.org/release/3.13.9/library/pickle.html",
+          "title": "\"pickle\" — Python object serialization",
+          "score": 17.02181804887759
+        },
+        {
+          "id": "2d610a9bf491d4feb0b72dd662b0933ce999191f8618a942bb50df1c6dcce415",
+          "source": "library/pickle.txt",
+          "chunk_index": 7,
+          "text": "Serialization is a more primitive notion than persistence; although \"pickle\" reads and writes file objects, it does not handle the issue of naming persistent objects, nor the (even more complicated) issue of concurrent access to persistent objects. The \"pickle\" module can transform a complex object into a byte stream and it can transform the byte stream into an object with the same internal structure. Perhaps the most obvious thing to do with these byte streams is to write them onto a file, but it is also conceivable to send them across a network or store them in a database. The \"shelve\" module provides a simple interface to pickle and unpickle objects on DBM- style database files. Module Interface ================",
+          "source_url": "https://docs.python.org/release/3.13.9/library/pickle.html",
+          "title": "\"pickle\" — Python object serialization",
+          "score": 13.628631653060598
+        },
+        {
+          "id": "c4cdd342fa61e35352a5cd32fd58b56de19d06799594282a5639f30b6b84e0cc",
+          "source": "library/shelve.txt",
+          "chunk_index": 2,
+          "text": "Do not rely on the shelf being closed automatically; always call \"close()\" explicitly when you don’t need it any more, or use \"shelve.open()\" as a context manager: with shelve.open('spam') as db: db['eggs'] = 'eggs' Warning: Because the \"shelve\" module is backed by \"pickle\", it is insecure to load a shelf from an untrusted source. Like with pickle, loading a shelf can execute arbitrary code. Shelf objects support most of methods and operations supported by dictionaries (except copying, constructors and operators \"|\" and \"|=\"). This eases the transition from dictionary based scripts to those requiring persistent storage. Two additional methods are supported: Shelf.sync() Write back all entries in the cache if the shelf was opened with *writeback* set to \"True\". Also empty the cache and synchronize the persistent dictionary on disk, if feasible. This is called automatically when the shelf is closed with \"close()\". Shelf.close()",
+          "source_url": "https://docs.python.org/release/3.13.9/library/shelve.html",
+          "title": "\"shelve\" — Python object persistence",
+          "score": 12.894094829693646
+        },
+        {
+          "id": "6590de25b93b680377526293c5fe895d0ba04d6e2bbed4088c83a5d505348a38",
+          "source": "library/heapq.txt",
+          "chunk_index": 6,
+          "text": ">>> h = [] >>> heappush(h, (5, 'write code')) >>> heappush(h, (7, 'release product')) >>> heappush(h, (1, 'write spec')) >>> heappush(h, (3, 'create tests')) >>> heappop(h) (1, 'write spec') Priority Queue Implementation Notes =================================== A priority queue is common use for a heap, and it presents several implementation challenges: * Sort stability: how do you get two tasks with equal priorities to be returned in the order they were originally added? * Tuple comparison breaks for (priority, task) pairs if the priorities are equal and the tasks do not have a default comparison order. * If the priority of a task changes, how do you move it to a new position in the heap? * Or if a pending task needs to be deleted, how do you find it and remove it from the queue?",
+          "source_url": "https://docs.python.org/release/3.13.9/library/heapq.html",
+          "title": "\"heapq\" — Heap queue algorithm",
+          "score": 12.71306611816574
+        },
+        {
+          "id": "c132dba82f2faa3e214f1612b8afff2008e031c70560b7d32987e5107ea5609a",
+          "source": "library/http.server.txt",
+          "chunk_index": 6,
+          "text": "Calls \"handle_one_request()\" once (or, if persistent connections are enabled, multiple times) to handle incoming HTTP requests. You should never need to override it; instead, implement appropriate \"do_*()\" methods. handle_one_request() This method will parse and dispatch the request to the appropriate \"do_*()\" method. You should never need to override it. handle_expect_100() When an HTTP/1.1 conformant server receives an \"Expect: 100-continue\" request header it responds back with a \"100 Continue\" followed by \"200 OK\" headers. This method can be overridden to raise an error if the server does not want the client to continue. For e.g. server can choose to send \"417 Expectation Failed\" as a response header and \"return False\". Added in version 3.2. send_error(code, message=None, explain=None)",
+          "source_url": "https://docs.python.org/release/3.13.9/library/http.server.html",
+          "title": "\"http.server\" — HTTP servers",
+          "score": 12.224327163282059
+        }
+      ]
+    },
+    {
+      "id": "python-faq-12",
+      "text": "How do I generate random numbers in Python?",
+      "expected_sources": [
+        "library/random.txt"
+      ],
+      "question_source": "https://docs.python.org/release/3.13.9/faq/library.html",
+      "semantic": {
+        "hit_at_1": true,
+        "hit_at_k": true,
+        "reciprocal_rank_at_k": 1.0
+      },
+      "bm25": {
+        "hit_at_1": true,
+        "hit_at_k": true,
+        "reciprocal_rank_at_k": 1.0
+      },
+      "semantic_matches": [
+        {
+          "id": "a8d881162f8b032fca2b9f996a389a77a1c110defaab441ef80095462a79eef2",
+          "source": "library/random.txt",
+          "chunk_index": 24,
+          "text": "$ python -m random --integer 6 5 $ python -m random --float 6 3.1942323316565915",
+          "source_url": "https://docs.python.org/release/3.13.9/library/random.html",
+          "title": "\"random\" — Generate pseudo-random numbers",
+          "similarity": 0.8070251635252941
+        },
+        {
+          "id": "ab5b9eb88a5dfa40d5f480cc97263e1a2f28fc668ac472a75af42f5ba4b6fc34",
+          "source": "library/random.txt",
+          "chunk_index": 23,
+          "text": "Print a random integer between 1 and N inclusive, using \"randint()\". -f <N> --float <N> Print a random floating-point number between 0 and N inclusive, using \"uniform()\". If no options are given, the output depends on the input: * String or multiple: same as \"--choice\". * Integer: same as \"--integer\". * Float: same as \"--float\". Command-line example ==================== Here are some examples of the \"random\" command-line interface: $ # Choose one at random $ python -m random egg bacon sausage spam \"Lobster Thermidor aux crevettes with a Mornay sauce\" Lobster Thermidor aux crevettes with a Mornay sauce $ # Random integer $ python -m random 6 6 $ # Random floating-point number $ python -m random 1.8 1.7080016272295635 $ # With explicit arguments $ python -m random --choice egg bacon sausage spam \"Lobster Thermidor aux crevettes with a Mornay sauce\" egg $ python -m random --integer 6 3 $ python -m random --float 1.8 1.5666339105010318",
+          "source_url": "https://docs.python.org/release/3.13.9/library/random.html",
+          "title": "\"random\" — Generate pseudo-random numbers",
+          "similarity": 0.7603091644675085
+        },
+        {
+          "id": "84252a1e2afc9f3435496c35ec5ca9d4455ac0bea56af6ac16e758316b9c52e4",
+          "source": "library/random.txt",
+          "chunk_index": 0,
+          "text": "\"random\" — Generate pseudo-random numbers ***************************************** **Source code:** Lib/random.py ====================================================================== This module implements pseudo-random number generators for various distributions. For integers, there is uniform selection from a range. For sequences, there is uniform selection of a random element, a function to generate a random permutation of a list in-place, and a function for random sampling without replacement. On the real line, there are functions to compute uniform, normal (Gaussian), lognormal, negative exponential, gamma, and beta distributions. For generating distributions of angles, the von Mises distribution is available.",
+          "source_url": "https://docs.python.org/release/3.13.9/library/random.html",
+          "title": "\"random\" — Generate pseudo-random numbers",
+          "similarity": 0.7292780563235968
+        },
+        {
+          "id": "f3645ec2503bd4b28c56265593415f22bc19512fdeaf45d34e9ae0d9d95f837b",
+          "source": "library/random.txt",
+          "chunk_index": 5,
+          "text": "Changed in version 3.12: Automatic conversion of non-integer types is no longer supported. Calls such as \"randrange(10.0)\" and \"randrange(Fraction(10, 1))\" now raise a \"TypeError\". random.randint(a, b) Return a random integer *N* such that \"a <= N <= b\". Alias for \"randrange(a, b+1)\". random.getrandbits(k) Returns a non-negative Python integer with *k* random bits. This method is supplied with the Mersenne Twister generator and some other generators may also provide it as an optional part of the API. When available, \"getrandbits()\" enables \"randrange()\" to handle arbitrarily large ranges. Changed in version 3.9: This method now accepts zero for *k*. Functions for sequences ======================= random.choice(seq) Return a random element from the non-empty sequence *seq*. If *seq* is empty, raises \"IndexError\". random.choices(population, weights=None, *, cum_weights=None, k=1) Return a *k* sized list of elements chosen from the *population* with replacement. If the *population* is empty, raises \"IndexError\".",
+          "source_url": "https://docs.python.org/release/3.13.9/library/random.html",
+          "title": "\"random\" — Generate pseudo-random numbers",
+          "similarity": 0.7167158439126663
+        },
+        {
+          "id": "ab12f46ffa01b76e75fd8482608712fac4d4976d3e9604813c6143dffed0fb66",
+          "source": "library/random.txt",
+          "chunk_index": 22,
+          "text": ">>> fr = FullRandom() >>> fr.random() 0.05954861408025609 >>> fr.expovariate(0.25) 8.87925541791544 The recipe is conceptually equivalent to an algorithm that chooses from all the multiples of 2⁻¹⁰⁷⁴ in the range *0.0 ≤ x < 1.0*. All such numbers are evenly spaced, but most have to be rounded down to the nearest representable Python float. (The value 2⁻¹⁰⁷⁴ is the smallest positive unnormalized float and is equal to \"math.ulp(0.0)\".) See also: Generating Pseudo-random Floating-Point Values a paper by Allen B. Downey describing ways to generate more fine-grained floats than normally generated by \"random()\". Command-line usage ================== Added in version 3.13. The \"random\" module can be executed from the command line. python -m random [-h] [-c CHOICE [CHOICE ...] | -i N | -f N] [input ...] The following options are accepted: -h, --help Show the help message and exit. -c CHOICE [CHOICE ...] --choice CHOICE [CHOICE ...] Print a random choice, using \"choice()\". -i <N> --integer <N>",
+          "source_url": "https://docs.python.org/release/3.13.9/library/random.html",
+          "title": "\"random\" — Generate pseudo-random numbers",
+          "similarity": 0.7158320532218693
+        }
+      ],
+      "bm25_matches": [
+        {
+          "id": "84252a1e2afc9f3435496c35ec5ca9d4455ac0bea56af6ac16e758316b9c52e4",
+          "source": "library/random.txt",
+          "chunk_index": 0,
+          "text": "\"random\" — Generate pseudo-random numbers ***************************************** **Source code:** Lib/random.py ====================================================================== This module implements pseudo-random number generators for various distributions. For integers, there is uniform selection from a range. For sequences, there is uniform selection of a random element, a function to generate a random permutation of a list in-place, and a function for random sampling without replacement. On the real line, there are functions to compute uniform, normal (Gaussian), lognormal, negative exponential, gamma, and beta distributions. For generating distributions of angles, the von Mises distribution is available.",
+          "source_url": "https://docs.python.org/release/3.13.9/library/random.html",
+          "title": "\"random\" — Generate pseudo-random numbers",
+          "score": 19.74395960670192
+        },
+        {
+          "id": "ab12f46ffa01b76e75fd8482608712fac4d4976d3e9604813c6143dffed0fb66",
+          "source": "library/random.txt",
+          "chunk_index": 22,
+          "text": ">>> fr = FullRandom() >>> fr.random() 0.05954861408025609 >>> fr.expovariate(0.25) 8.87925541791544 The recipe is conceptually equivalent to an algorithm that chooses from all the multiples of 2⁻¹⁰⁷⁴ in the range *0.0 ≤ x < 1.0*. All such numbers are evenly spaced, but most have to be rounded down to the nearest representable Python float. (The value 2⁻¹⁰⁷⁴ is the smallest positive unnormalized float and is equal to \"math.ulp(0.0)\".) See also: Generating Pseudo-random Floating-Point Values a paper by Allen B. Downey describing ways to generate more fine-grained floats than normally generated by \"random()\". Command-line usage ================== Added in version 3.13. The \"random\" module can be executed from the command line. python -m random [-h] [-c CHOICE [CHOICE ...] | -i N | -f N] [input ...] The following options are accepted: -h, --help Show the help message and exit. -c CHOICE [CHOICE ...] --choice CHOICE [CHOICE ...] Print a random choice, using \"choice()\". -i <N> --integer <N>",
+          "source_url": "https://docs.python.org/release/3.13.9/library/random.html",
+          "title": "\"random\" — Generate pseudo-random numbers",
+          "score": 18.557259535368054
+        },
+        {
+          "id": "529e1e2f8b3d6f20f2a559ec193cb653458f4bcc5e2fd2856fc182ea115e75f8",
+          "source": "library/random.txt",
+          "chunk_index": 2,
+          "text": "The \"random\" module also provides the \"SystemRandom\" class which uses the system function \"os.urandom()\" to generate random numbers from sources provided by the operating system. Warning: The pseudo-random generators of this module should not be used for security purposes. For security or cryptographic uses, see the \"secrets\" module. See also: M. Matsumoto and T. Nishimura, “Mersenne Twister: A 623-dimensionally equidistributed uniform pseudorandom number generator”, ACM Transactions on Modeling and Computer Simulation Vol. 8, No. 1, January pp.3–30 1998. Complementary-Multiply-with-Carry recipe for a compatible alternative random number generator with a long period and comparatively simple update operations. Note: The global random number generator and instances of \"Random\" are thread-safe. However, in the free-threaded build, concurrent calls to the global generator or to the same instance of \"Random\" may encounter contention and poor performance. Consider using separate instances of \"Random\" per thread instead. Bookkeeping functions ===================== random.seed(a=None, version=2) Initialize the random number generator.",
+          "source_url": "https://docs.python.org/release/3.13.9/library/random.html",
+          "title": "\"random\" — Generate pseudo-random numbers",
+          "score": 15.689827701781118
+        },
+        {
+          "id": "7ce801595d0f6fcdbdf5e09b381a57f5fe23a314eaecaabc9f6ca6f97d04eb75",
+          "source": "library/uuid.txt",
+          "chunk_index": 8,
+          "text": ">>> # make a UUID using an MD5 hash of a namespace UUID and a name >>> uuid.uuid3(uuid.NAMESPACE_DNS, 'python.org') UUID('6fa459ea-ee8a-3ca4-894e-db77e160355e') >>> # make a random UUID >>> uuid.uuid4() UUID('16fd2706-8baf-433b-82eb-8c7fada847da') >>> # make a UUID using a SHA-1 hash of a namespace UUID and a name >>> uuid.uuid5(uuid.NAMESPACE_DNS, 'python.org') UUID('886313e1-3b8a-5372-9b90-0c9aee199e5d') >>> # make a UUID from a string of hex digits (braces and hyphens ignored) >>> x = uuid.UUID('{00010203-0405-0607-0809-0a0b0c0d0e0f}') >>> # convert a UUID to a string of hex digits in standard form >>> str(x) '00010203-0405-0607-0809-0a0b0c0d0e0f' >>> # get the raw 16 bytes of the UUID >>> x.bytes b'\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b\\x0c\\r\\x0e\\x0f' >>> # make a UUID from a 16-byte string >>> uuid.UUID(bytes=x.bytes) UUID('00010203-0405-0607-0809-0a0b0c0d0e0f') Command-Line Example ==================== Here are some examples of typical usage of the \"uuid\" command line interface: # generate a random uuid - by default uuid4() is used $ python -m uuid # generate a uuid using uuid1() $ python -m uuid -u uuid1",
+          "source_url": "https://docs.python.org/release/3.13.9/library/uuid.html",
+          "title": "\"uuid\" — UUID objects according to **RFC 4122**",
+          "score": 14.644790281320763
+        },
+        {
+          "id": "447c204c0475e2eaa52d35defd35ca763240045b3a0e49f87df9186ec7c8a1cc",
+          "source": "library/random.txt",
+          "chunk_index": 20,
+          "text": "A Concrete Introduction to Probability (using Python) a tutorial by Peter Norvig covering the basics of probability theory, how to write simulations, and how to perform data analysis using Python. Recipes ======= These recipes show how to efficiently make random selections from the combinatoric iterators in the \"itertools\" module: def random_product(*args, repeat=1): \"Random selection from itertools.product(*args, **kwds)\" pools = [tuple(pool) for pool in args] * repeat return tuple(map(random.choice, pools)) def random_permutation(iterable, r=None): \"Random selection from itertools.permutations(iterable, r)\" pool = tuple(iterable) r = len(pool) if r is None else r return tuple(random.sample(pool, r)) def random_combination(iterable, r): \"Random selection from itertools.combinations(iterable, r)\" pool = tuple(iterable) n = len(pool) indices = sorted(random.sample(range(n), r)) return tuple(pool[i] for i in indices) def random_combination_with_replacement(iterable, r): \"Choose r elements with replacement. Order the result to match the iterable.\" # Result will be in set(itertools.combinations_with_replacement(iterable, r)). pool = tuple(iterable) n = len(pool) indices = sorted(random.choices(range(n), k=r)) return tuple(pool[i] for i in indices)",
+          "source_url": "https://docs.python.org/release/3.13.9/library/random.html",
+          "title": "\"random\" — Generate pseudo-random numbers",
+          "score": 14.594593421804184
+        }
+      ]
+    }
+  ],
+  "note": "Source-level checks on these documented questions; not a blind retrieval benchmark or answer-quality score."
+}

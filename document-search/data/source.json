@@ -1,0 +1,524 @@
+{
+  "schema": 1,
+  "dataset": "Python standard library documentation",
+  "publisher": "Python Software Foundation and contributors",
+  "version": "3.13.9",
+  "source_commit": "8183fa5e3f78ca6ab862de7fb8b14f3d929421e0",
+  "archive": {
+    "url": "https://docs.python.org/ftp/python/doc/3.13.9/python-3.13.9-docs-text.zip",
+    "sha256": "2522c3aee3c6617e99f7db5e43356471108739e35fe8a97b5d10da33832ff141",
+    "bytes": 4240194,
+    "type": "zip",
+    "format": "text"
+  },
+  "license": {
+    "name": "PSF-2.0; documentation code examples also 0BSD",
+    "member": "python-3.13.9-docs-text/license.txt",
+    "sha256": "03d8a99f5db6aa9f4e000b26bf98f88a1046688b14cfbfd9358a9c89984bc863",
+    "url": "https://docs.python.org/release/3.13.9/license.html"
+  },
+  "queries_source": {
+    "member": "python-3.13.9-docs-text/faq/library.txt",
+    "sha256": "0e18c4ab6de2a68a7293f7c20617a1aed458d58c128bf985dd2ebd9c4a599080",
+    "url": "https://docs.python.org/release/3.13.9/faq/library.html",
+    "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/faq/library.rst",
+    "source_sha256": "fe417617fd50a4942e6e55316677f99ed570a1cd03edddcf816ce57d8bee41f0"
+  },
+  "documents": [
+    {
+      "path": "library/argparse.txt",
+      "member": "python-3.13.9-docs-text/library/argparse.txt",
+      "sha256": "2dfd1ce71ea2d1de50421fae3a8d98731dbe06a4739c496db06ef1f3b4ab098b",
+      "bytes": 80296,
+      "title": "\"argparse\" \u2014 Parser for command-line options, arguments and subcommands",
+      "url": "https://docs.python.org/release/3.13.9/library/argparse.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/argparse.rst"
+    },
+    {
+      "path": "library/asyncio-task.txt",
+      "member": "python-3.13.9-docs-text/library/asyncio-task.txt",
+      "sha256": "311b82da21112a851115d056a8c02dd504334c9113cfeb2a5d1eae90a1c472f7",
+      "bytes": 47380,
+      "title": "Coroutines and Tasks",
+      "url": "https://docs.python.org/release/3.13.9/library/asyncio-task.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/asyncio-task.rst"
+    },
+    {
+      "path": "library/asyncio-subprocess.txt",
+      "member": "python-3.13.9-docs-text/library/asyncio-subprocess.txt",
+      "sha256": "56eaefe78aac75fe9a4e45884725fce433d0d173c06beaad9e01c0e6d591d154",
+      "bytes": 10106,
+      "title": "Subprocesses",
+      "url": "https://docs.python.org/release/3.13.9/library/asyncio-subprocess.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/asyncio-subprocess.rst"
+    },
+    {
+      "path": "library/asyncio-sync.txt",
+      "member": "python-3.13.9-docs-text/library/asyncio-sync.txt",
+      "sha256": "9278fa73e2e4591b1076c680349330b016a812fa0dc4a0c607fa5ea4dff6ca83",
+      "bytes": 11970,
+      "title": "Synchronization Primitives",
+      "url": "https://docs.python.org/release/3.13.9/library/asyncio-sync.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/asyncio-sync.rst"
+    },
+    {
+      "path": "library/base64.txt",
+      "member": "python-3.13.9-docs-text/library/base64.txt",
+      "sha256": "d49360a11fef1cb30a0fce49ac8bed23ea4bbc25acb2021514401ebb9a316b35",
+      "bytes": 11413,
+      "title": "\"base64\" \u2014 Base16, Base32, Base64, Base85 Data Encodings",
+      "url": "https://docs.python.org/release/3.13.9/library/base64.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/base64.rst"
+    },
+    {
+      "path": "library/bz2.txt",
+      "member": "python-3.13.9-docs-text/library/bz2.txt",
+      "sha256": "f60f846e41d1c1bfc6f3a5cab1e34a23ceda7fc1632ea00b107e7a32a95a128d",
+      "bytes": 11729,
+      "title": "\"bz2\" \u2014 Support for **bzip2** compression",
+      "url": "https://docs.python.org/release/3.13.9/library/bz2.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/bz2.rst"
+    },
+    {
+      "path": "library/collections.txt",
+      "member": "python-3.13.9-docs-text/library/collections.txt",
+      "sha256": "fcb9d077b2fd100f5709c087e3ef331c7a89ac240a7f52842412d2ee12f8809b",
+      "bytes": 49219,
+      "title": "\"collections\" \u2014 Container datatypes",
+      "url": "https://docs.python.org/release/3.13.9/library/collections.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/collections.rst"
+    },
+    {
+      "path": "library/concurrent.futures.txt",
+      "member": "python-3.13.9-docs-text/library/concurrent.futures.txt",
+      "sha256": "9d25b812fbc1f1694d134fc30dbb8eebf5c10998ca4cc9a6d98fbaee37140206",
+      "bytes": 22491,
+      "title": "\"concurrent.futures\" \u2014 Launching parallel tasks",
+      "url": "https://docs.python.org/release/3.13.9/library/concurrent.futures.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/concurrent.futures.rst"
+    },
+    {
+      "path": "library/configparser.txt",
+      "member": "python-3.13.9-docs-text/library/configparser.txt",
+      "sha256": "c280be4b00152fdacd2bcffae97b626a2ac2da8a3bb6e5d0663bdb69acb0aeb7",
+      "bytes": 50888,
+      "title": "\"configparser\" \u2014 Configuration file parser",
+      "url": "https://docs.python.org/release/3.13.9/library/configparser.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/configparser.rst"
+    },
+    {
+      "path": "library/contextlib.txt",
+      "member": "python-3.13.9-docs-text/library/contextlib.txt",
+      "sha256": "a8bd89bc21ea6d5535a8d11a8d9d013bb1b4a4b4d2263d29f2bd917b96863fc2",
+      "bytes": 35533,
+      "title": "\"contextlib\" \u2014 Utilities for \"with\"-statement contexts",
+      "url": "https://docs.python.org/release/3.13.9/library/contextlib.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/contextlib.rst"
+    },
+    {
+      "path": "library/copy.txt",
+      "member": "python-3.13.9-docs-text/library/copy.txt",
+      "sha256": "d2f0dd9548f445dd66e8779c56b111594bafbf988e2ed4ade9b02c101ba19c70",
+      "bytes": 3820,
+      "title": "\"copy\" \u2014 Shallow and deep copy operations",
+      "url": "https://docs.python.org/release/3.13.9/library/copy.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/copy.rst"
+    },
+    {
+      "path": "library/csv.txt",
+      "member": "python-3.13.9-docs-text/library/csv.txt",
+      "sha256": "06e5cc2b737a8b0f4de7f7e6d2d6a0296b8b9cb88b8b64f29b1014c28a66e0f2",
+      "bytes": 22040,
+      "title": "\"csv\" \u2014 CSV File Reading and Writing",
+      "url": "https://docs.python.org/release/3.13.9/library/csv.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/csv.rst"
+    },
+    {
+      "path": "library/datetime.txt",
+      "member": "python-3.13.9-docs-text/library/datetime.txt",
+      "sha256": "e654027624137412d6679456089810dd9cfe2cb8ffe0e0e56b8f129988db500d",
+      "bytes": 109088,
+      "title": "\"datetime\" \u2014 Basic date and time types",
+      "url": "https://docs.python.org/release/3.13.9/library/datetime.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/datetime.rst"
+    },
+    {
+      "path": "library/decimal.txt",
+      "member": "python-3.13.9-docs-text/library/decimal.txt",
+      "sha256": "6efed7716ff169e9f64c446cbdd59d8a09c7f3970b2a471808c6c2f55b59498b",
+      "bytes": 76536,
+      "title": "\"decimal\" \u2014 Decimal fixed-point and floating-point arithmetic",
+      "url": "https://docs.python.org/release/3.13.9/library/decimal.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/decimal.rst"
+    },
+    {
+      "path": "library/email.txt",
+      "member": "python-3.13.9-docs-text/library/email.txt",
+      "sha256": "d972458ce44c4211d88bbad22bde25cf6958614c2d972bf1fba8ab8dcfac67e8",
+      "bytes": 6258,
+      "title": "\"email\" \u2014 An email and MIME handling package",
+      "url": "https://docs.python.org/release/3.13.9/library/email.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/email.rst"
+    },
+    {
+      "path": "library/functools.txt",
+      "member": "python-3.13.9-docs-text/library/functools.txt",
+      "sha256": "d8ae894006437b23d1d5dbb053247d354422180e002852b2986d33fb1a8da1b3",
+      "bytes": 28344,
+      "title": "\"functools\" \u2014 Higher-order functions and operations on callable objects",
+      "url": "https://docs.python.org/release/3.13.9/library/functools.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/functools.rst"
+    },
+    {
+      "path": "library/gzip.txt",
+      "member": "python-3.13.9-docs-text/library/gzip.txt",
+      "sha256": "99cdbfa706457e4de8da98198a3a9593a6909a20d278a9c75a6da6ef7b57b8fb",
+      "bytes": 10044,
+      "title": "\"gzip\" \u2014 Support for **gzip** files",
+      "url": "https://docs.python.org/release/3.13.9/library/gzip.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/gzip.rst"
+    },
+    {
+      "path": "library/hashlib.txt",
+      "member": "python-3.13.9-docs-text/library/hashlib.txt",
+      "sha256": "03170ede1f87da5b67a55946e52d2e14fac2728cab86e013f198f6ef328945bc",
+      "bytes": 28105,
+      "title": "\"hashlib\" \u2014 Secure hashes and message digests",
+      "url": "https://docs.python.org/release/3.13.9/library/hashlib.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/hashlib.rst"
+    },
+    {
+      "path": "library/heapq.txt",
+      "member": "python-3.13.9-docs-text/library/heapq.txt",
+      "sha256": "98419ad8e4d1ef67924a6048ef1aa158df0766f6af54673199b2b194a3ecae48",
+      "bytes": 13520,
+      "title": "\"heapq\" \u2014 Heap queue algorithm",
+      "url": "https://docs.python.org/release/3.13.9/library/heapq.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/heapq.rst"
+    },
+    {
+      "path": "library/hmac.txt",
+      "member": "python-3.13.9-docs-text/library/hmac.txt",
+      "sha256": "a866072933fe5aeea97806ad45e9b058418d4b8a1443975628da6730491c21d1",
+      "bytes": 4630,
+      "title": "\"hmac\" \u2014 Keyed-Hashing for Message Authentication",
+      "url": "https://docs.python.org/release/3.13.9/library/hmac.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/hmac.rst"
+    },
+    {
+      "path": "library/http.client.txt",
+      "member": "python-3.13.9-docs-text/library/http.client.txt",
+      "sha256": "7c4a35f3d059e0b377bc548eb078a89ee6f6bfb5492508fd1fa5c1866e004215",
+      "bytes": 21272,
+      "title": "\"http.client\" \u2014 HTTP protocol client",
+      "url": "https://docs.python.org/release/3.13.9/library/http.client.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/http.client.rst"
+    },
+    {
+      "path": "library/http.server.txt",
+      "member": "python-3.13.9-docs-text/library/http.server.txt",
+      "sha256": "2a95dda6efc98b22972f82239fc21dcf3531f8b8e2496ee106ba80f5d3cc6308",
+      "bytes": 20246,
+      "title": "\"http.server\" \u2014 HTTP servers",
+      "url": "https://docs.python.org/release/3.13.9/library/http.server.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/http.server.rst"
+    },
+    {
+      "path": "library/io.txt",
+      "member": "python-3.13.9-docs-text/library/io.txt",
+      "sha256": "dd0b203b215ddedb9db66f9135259e5fc3f2ec14843cde87cfeb4550abef5df0",
+      "bytes": 43400,
+      "title": "\"io\" \u2014 Core tools for working with streams",
+      "url": "https://docs.python.org/release/3.13.9/library/io.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/io.rst"
+    },
+    {
+      "path": "library/itertools.txt",
+      "member": "python-3.13.9-docs-text/library/itertools.txt",
+      "sha256": "fb72d4ea4116795dfdc2a7040b1a0c005b1f599d7be48b41bcd45aded96531b4",
+      "bytes": 47830,
+      "title": "\"itertools\" \u2014 Functions creating iterators for efficient looping",
+      "url": "https://docs.python.org/release/3.13.9/library/itertools.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/itertools.rst"
+    },
+    {
+      "path": "library/json.txt",
+      "member": "python-3.13.9-docs-text/library/json.txt",
+      "sha256": "be4c0545ac7f8af84c52f4ebac3b2b9e3a2fffb4f81bdc856ba71693f76abd15",
+      "bytes": 28232,
+      "title": "\"json\" \u2014 JSON encoder and decoder",
+      "url": "https://docs.python.org/release/3.13.9/library/json.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/json.rst"
+    },
+    {
+      "path": "library/logging.txt",
+      "member": "python-3.13.9-docs-text/library/logging.txt",
+      "sha256": "16d1037548e6464e0078886fcd14559c80e352c42223b417977b5202508d6c16",
+      "bytes": 70109,
+      "title": "\"logging\" \u2014 Logging facility for Python",
+      "url": "https://docs.python.org/release/3.13.9/library/logging.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/logging.rst"
+    },
+    {
+      "path": "library/multiprocessing.txt",
+      "member": "python-3.13.9-docs-text/library/multiprocessing.txt",
+      "sha256": "92f724569c81f7f24e0490cacb438ac02725bd38d670cd5c19f2f0a7324f82bb",
+      "bytes": 118001,
+      "title": "\"multiprocessing\" \u2014 Process-based parallelism",
+      "url": "https://docs.python.org/release/3.13.9/library/multiprocessing.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/multiprocessing.rst"
+    },
+    {
+      "path": "library/os.txt",
+      "member": "python-3.13.9-docs-text/library/os.txt",
+      "sha256": "26b702275aa83f3499a7c20753821bc007c321c3ebca53325202c0e5ed9821f0",
+      "bytes": 185247,
+      "title": "\"os\" \u2014 Miscellaneous operating system interfaces",
+      "url": "https://docs.python.org/release/3.13.9/library/os.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/os.rst"
+    },
+    {
+      "path": "library/os.path.txt",
+      "member": "python-3.13.9-docs-text/library/os.path.txt",
+      "sha256": "868e2a61b1f8a3923c96247b517b8930022c18b9d76d180c1c28cd35681a0b0d",
+      "bytes": 20576,
+      "title": "\"os.path\" \u2014 Common pathname manipulations",
+      "url": "https://docs.python.org/release/3.13.9/library/os.path.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/os.path.rst"
+    },
+    {
+      "path": "library/pathlib.txt",
+      "member": "python-3.13.9-docs-text/library/pathlib.txt",
+      "sha256": "8a184a29d78b02ad9f3f6dbe29a962a2fdad6982cef706ad2c743992f407d536",
+      "bytes": 62559,
+      "title": "\"pathlib\" \u2014 Object-oriented filesystem paths",
+      "url": "https://docs.python.org/release/3.13.9/library/pathlib.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/pathlib.rst"
+    },
+    {
+      "path": "library/pickle.txt",
+      "member": "python-3.13.9-docs-text/library/pickle.txt",
+      "sha256": "1e8d2f82f1c05ca4290009ec15097039be70bab8055639bf96b084d13ae2f6cf",
+      "bytes": 48671,
+      "title": "\"pickle\" \u2014 Python object serialization",
+      "url": "https://docs.python.org/release/3.13.9/library/pickle.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/pickle.rst"
+    },
+    {
+      "path": "library/queue.txt",
+      "member": "python-3.13.9-docs-text/library/queue.txt",
+      "sha256": "816b43ce171985231a93b19d049b936551c8a6cb4f73a99b843b5e3e2195fc8d",
+      "bytes": 11396,
+      "title": "\"queue\" \u2014 A synchronized queue class",
+      "url": "https://docs.python.org/release/3.13.9/library/queue.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/queue.rst"
+    },
+    {
+      "path": "library/random.txt",
+      "member": "python-3.13.9-docs-text/library/random.txt",
+      "sha256": "af5b238919e1c2021c14c299911bcbd2687a748deb260bcfca4a73e642d556f1",
+      "bytes": 26209,
+      "title": "\"random\" \u2014 Generate pseudo-random numbers",
+      "url": "https://docs.python.org/release/3.13.9/library/random.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/random.rst"
+    },
+    {
+      "path": "library/re.txt",
+      "member": "python-3.13.9-docs-text/library/re.txt",
+      "sha256": "05ddc76710f79206999bb76eef78d748bcc9ef63008540d72a0b1ba3ffbbfe63",
+      "bytes": 71011,
+      "title": "\"re\" \u2014 Regular expression operations",
+      "url": "https://docs.python.org/release/3.13.9/library/re.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/re.rst"
+    },
+    {
+      "path": "library/shlex.txt",
+      "member": "python-3.13.9-docs-text/library/shlex.txt",
+      "sha256": "7e9ed8bfb06cac90b122f54972a9d7733e637996b518a29a18f329a4a9938ddd",
+      "bytes": 16297,
+      "title": "\"shlex\" \u2014 Simple lexical analysis",
+      "url": "https://docs.python.org/release/3.13.9/library/shlex.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/shlex.rst"
+    },
+    {
+      "path": "library/shutil.txt",
+      "member": "python-3.13.9-docs-text/library/shutil.txt",
+      "sha256": "98c534addddcdbbc32cf6c905ff602805840976e3374f7062789db83d028a3bd",
+      "bytes": 33256,
+      "title": "\"shutil\" \u2014 High-level file operations",
+      "url": "https://docs.python.org/release/3.13.9/library/shutil.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/shutil.rst"
+    },
+    {
+      "path": "library/smtplib.txt",
+      "member": "python-3.13.9-docs-text/library/smtplib.txt",
+      "sha256": "441b5610aac5a7f7d405183b281a5b12f83ee13ae1cce667101903ebcbcb4b1f",
+      "bytes": 22381,
+      "title": "\"smtplib\" \u2014 SMTP protocol client",
+      "url": "https://docs.python.org/release/3.13.9/library/smtplib.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/smtplib.rst"
+    },
+    {
+      "path": "library/socket.txt",
+      "member": "python-3.13.9-docs-text/library/socket.txt",
+      "sha256": "ccf9a7407dcafd6127f2c08ac3065f454e35e86ba48738dfe0416de4c9fb7820",
+      "bytes": 81148,
+      "title": "\"socket\" \u2014 Low-level networking interface",
+      "url": "https://docs.python.org/release/3.13.9/library/socket.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/socket.rst"
+    },
+    {
+      "path": "library/sqlite3.txt",
+      "member": "python-3.13.9-docs-text/library/sqlite3.txt",
+      "sha256": "646417e9159f44f4e7ad5feba8403d6b148a10b6213cfbad81cd45f18b2b1251",
+      "bytes": 82991,
+      "title": "\"sqlite3\" \u2014 DB-API 2.0 interface for SQLite databases",
+      "url": "https://docs.python.org/release/3.13.9/library/sqlite3.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/sqlite3.rst"
+    },
+    {
+      "path": "library/ssl.txt",
+      "member": "python-3.13.9-docs-text/library/ssl.txt",
+      "sha256": "fea16cce1439eea07773fba0b94e5e49f40a7c8cb8ecf93d309c0e0f78d22abe",
+      "bytes": 101382,
+      "title": "\"ssl\" \u2014 TLS/SSL wrapper for socket objects",
+      "url": "https://docs.python.org/release/3.13.9/library/ssl.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/ssl.rst"
+    },
+    {
+      "path": "library/subprocess.txt",
+      "member": "python-3.13.9-docs-text/library/subprocess.txt",
+      "sha256": "a6e5ac00a865e780fc89584c6084523cddaea408a87f33c1af2f380ccd80243f",
+      "bytes": 58848,
+      "title": "\"subprocess\" \u2014 Subprocess management",
+      "url": "https://docs.python.org/release/3.13.9/library/subprocess.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/subprocess.rst"
+    },
+    {
+      "path": "library/tarfile.txt",
+      "member": "python-3.13.9-docs-text/library/tarfile.txt",
+      "sha256": "2575c6165caacc550a4258eda9a47d56e9a960aa013aa30881f23b76c11ec8ca",
+      "bytes": 46922,
+      "title": "\"tarfile\" \u2014 Read and write tar archive files",
+      "url": "https://docs.python.org/release/3.13.9/library/tarfile.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/tarfile.rst"
+    },
+    {
+      "path": "library/tempfile.txt",
+      "member": "python-3.13.9-docs-text/library/tempfile.txt",
+      "sha256": "bf876d86b3f30d0c6a732071360835d67f18170822a42bac74a5d38e6acb0922",
+      "bytes": 18824,
+      "title": "\"tempfile\" \u2014 Generate temporary files and directories",
+      "url": "https://docs.python.org/release/3.13.9/library/tempfile.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/tempfile.rst"
+    },
+    {
+      "path": "library/threading.txt",
+      "member": "python-3.13.9-docs-text/library/threading.txt",
+      "sha256": "1453cb82069a8613b777893e06d1774cc64c30fdcb0f01af6bfb7ec49bf9d985",
+      "bytes": 47378,
+      "title": "\"threading\" \u2014 Thread-based parallelism",
+      "url": "https://docs.python.org/release/3.13.9/library/threading.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/threading.rst"
+    },
+    {
+      "path": "library/time.txt",
+      "member": "python-3.13.9-docs-text/library/time.txt",
+      "sha256": "99b6b5549f3af72bd65c8c59d77ab8bfb4b09745c3b5f4c21b36e28fae082be5",
+      "bytes": 39092,
+      "title": "\"time\" \u2014 Time access and conversions",
+      "url": "https://docs.python.org/release/3.13.9/library/time.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/time.rst"
+    },
+    {
+      "path": "library/unittest.txt",
+      "member": "python-3.13.9-docs-text/library/unittest.txt",
+      "sha256": "f8801b00754f5a7f073ce41883a4349998dc7ea9e9285d0978f12e98e2bfa16c",
+      "bytes": 95526,
+      "title": "\"unittest\" \u2014 Unit testing framework",
+      "url": "https://docs.python.org/release/3.13.9/library/unittest.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/unittest.rst"
+    },
+    {
+      "path": "library/urllib.parse.txt",
+      "member": "python-3.13.9-docs-text/library/urllib.parse.txt",
+      "sha256": "38bb96c6074d3ca73097ab834eede4d37f4392fd90027eff20ebe89d5b831b90",
+      "bytes": 33634,
+      "title": "\"urllib.parse\" \u2014 Parse URLs into components",
+      "url": "https://docs.python.org/release/3.13.9/library/urllib.parse.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/urllib.parse.rst"
+    },
+    {
+      "path": "library/urllib.request.txt",
+      "member": "python-3.13.9-docs-text/library/urllib.request.txt",
+      "sha256": "0e796622852991fa6b9b9ad58ad9faa11935394328bf8bf51ee74a9cc7b2fc75",
+      "bytes": 57679,
+      "title": "\"urllib.request\" \u2014 Extensible library for opening URLs",
+      "url": "https://docs.python.org/release/3.13.9/library/urllib.request.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/urllib.request.rst"
+    },
+    {
+      "path": "library/uuid.txt",
+      "member": "python-3.13.9-docs-text/library/uuid.txt",
+      "sha256": "c254029cf3f4d0817a9aa7bd72de69669625985d4db3ac371de8e0827991ae35",
+      "bytes": 11431,
+      "title": "\"uuid\" \u2014 UUID objects according to **RFC 4122**",
+      "url": "https://docs.python.org/release/3.13.9/library/uuid.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/uuid.rst"
+    },
+    {
+      "path": "library/zipfile.txt",
+      "member": "python-3.13.9-docs-text/library/zipfile.txt",
+      "sha256": "570a24132f7d29b06d2d45209214042d59f7eb2338fd086b8a77bf5fb8b32eee",
+      "bytes": 32139,
+      "title": "\"zipfile\" \u2014 Work with ZIP archives",
+      "url": "https://docs.python.org/release/3.13.9/library/zipfile.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/zipfile.rst"
+    },
+    {
+      "path": "library/atexit.txt",
+      "member": "python-3.13.9-docs-text/library/atexit.txt",
+      "sha256": "8232008861de7cd9fad39f72b908694117b0c17a9b4a03c764884c4284079fa7",
+      "bytes": 4258,
+      "title": "\"atexit\" \u2014 Exit handlers",
+      "url": "https://docs.python.org/release/3.13.9/library/atexit.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/atexit.rst"
+    },
+    {
+      "path": "library/doctest.txt",
+      "member": "python-3.13.9-docs-text/library/doctest.txt",
+      "sha256": "c15cec6320b6019c92b5091520d27b6258d2e3daf289076c96bed133c99bb54d",
+      "bytes": 70227,
+      "title": "\"doctest\" \u2014 Test interactive Python examples",
+      "url": "https://docs.python.org/release/3.13.9/library/doctest.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/doctest.rst"
+    },
+    {
+      "path": "library/struct.txt",
+      "member": "python-3.13.9-docs-text/library/struct.txt",
+      "sha256": "d68e0ca853b8de639886044fb00774be7fd787bf3bdad1e8aa60e84f0e4c9cd4",
+      "bytes": 23918,
+      "title": "\"struct\" \u2014 Interpret bytes as packed binary data",
+      "url": "https://docs.python.org/release/3.13.9/library/struct.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/struct.rst"
+    },
+    {
+      "path": "library/array.txt",
+      "member": "python-3.13.9-docs-text/library/array.txt",
+      "sha256": "7404413371158b091ad19bbf420b1f9fedc3416755e4664e636b99b8a9e52685",
+      "bytes": 10939,
+      "title": "\"array\" \u2014 Efficient arrays of numeric values",
+      "url": "https://docs.python.org/release/3.13.9/library/array.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/array.rst"
+    },
+    {
+      "path": "library/shelve.txt",
+      "member": "python-3.13.9-docs-text/library/shelve.txt",
+      "sha256": "67af5cc30dce163bf9b431582efd57d4e0bc52694afaf6885d31ca6323e9ce55",
+      "bytes": 8430,
+      "title": "\"shelve\" \u2014 Python object persistence",
+      "url": "https://docs.python.org/release/3.13.9/library/shelve.html",
+      "source_url": "https://github.com/python/cpython/blob/8183fa5e3f78ca6ab862de7fb8b14f3d929421e0/Doc/library/shelve.rst"
+    }
+  ]
+}
