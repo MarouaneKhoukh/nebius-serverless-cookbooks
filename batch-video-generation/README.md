@@ -155,7 +155,15 @@ The second process reuses the two completed downloads and generates six more. Ea
 
 ## 5. Inspect and reuse the output
 
-Open **`results-vbench/index.html`**. Check **8 of 8 clips saved**, play the clips and inspect how well each follows its original prompt. Every card links to the exact VBench source line.
+From the same `batch-video-generation` folder, open the gallery in your browser. On macOS:
+
+```bash
+open results-vbench/index.html
+```
+
+On Ubuntu with a desktop, use `xdg-open results-vbench/index.html`, or open the HTML file from your file manager.
+
+On a fresh run, the first generation command gives you **2 clips** to preview. After the full batch finishes, check **8 of 8 clips saved**, play the clips and inspect how well each follows its original prompt. Every card links to the exact VBench source line. The MP4 files are saved inside `results-vbench`.
 
 - **`clips.csv`** joins prompt IDs, categories, seeds, source links, clip filenames and hashes.
 - **`summary.json`** records settings and completion; each clip also has its own JSON record.
