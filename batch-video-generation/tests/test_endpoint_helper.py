@@ -50,6 +50,71 @@ class EndpointHelperTests(unittest.TestCase):
                       spot_pricing_policy_id=None, dry_run=False, yes=True)
         return argparse.Namespace(**{**values, **changes})
 
+    def test_create_rejects_invalid_project_id_before_version_or_cli_calls(self):
+        invalid = ("", " ", "YOUR_PROJECT_ID", "<PROJECT_ID>", "project-YOUR_PROJECT_ID",
+                   "project-", "project-placeholder", "vpcsubnet-test", "tenant-test",
+                   " project-test", "project-test ")
+        for value in invalid:
+            with self.subTest(project_id=value), \
+                 patch("sys.argv", ["endpoint.py", "create", "--project-id", value,
+                                    "--name", "recipe-spot", "--dry-run"]), \
+                 patch.object(endpoint, "version_check") as version, \
+                 patch.object(endpoint, "cli") as cli, \
+                 patch("subprocess.run") as process, \
+                 contextlib.redirect_stderr(io.StringIO()) as error, \
+                 self.assertRaises(SystemExit) as result:
+                endpoint.main()
+            self.assertEqual(result.exception.code, 2)
+            self.assertIn("--project-id", error.getvalue())
+            self.assertIn("project-", error.getvalue())
+            version.assert_not_called()
+            cli.assert_not_called()
+            process.assert_not_called()
+
+    def test_create_rejects_explicit_invalid_subnet_before_version_or_cli_calls(self):
+        invalid = ("", " ", "YOUR_SUBNET_ID", "<SUBNET_ID>", "vpcsubnet-YOUR_SUBNET_ID",
+                   "vpcsubnet-", "vpcsubnet-placeholder", "project-test", "subnet-test",
+                   " vpcsubnet-test", "vpcsubnet-test ")
+        for value in invalid:
+            with self.subTest(subnet_id=value), \
+                 patch("sys.argv", ["endpoint.py", "create", "--project-id", "project-test",
+                                    "--subnet-id", value, "--name", "recipe-spot", "--dry-run"]), \
+                 patch.object(endpoint, "version_check") as version, \
+                 patch.object(endpoint, "cli") as cli, \
+                 patch("subprocess.run") as process, \
+                 contextlib.redirect_stderr(io.StringIO()) as error, \
+                 self.assertRaises(SystemExit) as result:
+                endpoint.main()
+            self.assertEqual(result.exception.code, 2)
+            self.assertIn("--subnet-id", error.getvalue())
+            self.assertIn("vpcsubnet-", error.getvalue())
+            version.assert_not_called()
+            cli.assert_not_called()
+            process.assert_not_called()
+
+    def test_create_accepts_valid_ids_and_an_omitted_optional_subnet(self):
+        project_id = "project-e00abcdefghijklmnopqrst"
+        for subnet_id in (None, "vpcsubnet-e00abcdefghijklmnopqrst"):
+            argv = ["endpoint.py", "create", "--project-id", project_id,
+                    "--name", "recipe-spot", "--dry-run"]
+            if subnet_id is not None:
+                argv += ["--subnet-id", subnet_id]
+            with self.subTest(subnet_id=subnet_id), patch("sys.argv", argv), \
+                 patch.object(endpoint, "version_check") as version, \
+                 patch.object(endpoint, "cli", return_value={}) as cli, \
+                 patch("subprocess.run") as process, \
+                 contextlib.redirect_stdout(io.StringIO()):
+                endpoint.main()
+            version.assert_called_once_with()
+            cli.assert_called_once()
+            command = cli.call_args.args[0]
+            self.assertEqual(command[command.index("--parent-id") + 1], project_id)
+            if subnet_id is None:
+                self.assertNotIn("--subnet-id", command)
+            else:
+                self.assertEqual(command[command.index("--subnet-id") + 1], subnet_id)
+            process.assert_not_called()
+
     def test_create_never_prints_or_persists_generated_credential(self):
         output = io.StringIO()
         with patch.object(endpoint, "version_check"), \

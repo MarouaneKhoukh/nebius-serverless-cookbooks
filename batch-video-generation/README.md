@@ -33,8 +33,9 @@ These are public benchmark prompts, not production footage. This small batch doe
 ## 1. Get the files
 
 ```bash
-git clone https://github.com/MarouaneKhoukh/nebius-serverless-cookbooks.git
-cd nebius-serverless-cookbooks/batch-video-generation
+git clone https://github.com/MarouaneKhoukh/nebius-serverless-cookbooks.git &&
+cd nebius-serverless-cookbooks/batch-video-generation &&
+pwd
 ```
 
 Run all commands from this directory. Install FFmpeg with `brew install ffmpeg` on macOS with [Homebrew](https://brew.sh/), or on Ubuntu:
@@ -63,20 +64,20 @@ Install the Nebius CLI if needed:
 curl -sSL https://artifacts.nebius.cloud/cli/install.sh | bash
 ```
 
-Open a new terminal and return to this directory. Use CLI **0.12.303+**; run `nebius update` if yours is older. Copy your project ID from the [console](https://console.nebius.com), replace the placeholder and complete browser sign-in:
+If installation requires a new terminal, return with `cd` followed by the full path printed in step 1. Use CLI **0.12.303+**; run `nebius update` if yours is older. Replace `YOUR_PROJECT_ID` below with your project's `project-...` ID from the [console](https://console.nebius.com) before running the block:
 
 ```bash
 export AI_AGENT="${AI_AGENT:-cookbook}"
 nebius version
 export NEBIUS_PROJECT_ID="YOUR_PROJECT_ID"
-nebius profile create cookbook --parent-id "$NEBIUS_PROJECT_ID"
-nebius profile activate cookbook
+nebius profile create cookbook --parent-id "$NEBIUS_PROJECT_ID" &&
+nebius profile activate cookbook &&
 nebius iam whoami
 ```
 
-If already signed in to this project, activate that profile instead of creating `cookbook`.
+If already signed in to this project, activate that profile instead of creating `cookbook`. You still need to export `NEBIUS_PROJECT_ID`; signing in does not set this shell variable.
 
-Choose a **subnet**, the Endpoint's network, with outbound internet access for model downloads. Copy its `metadata.id`:
+Choose a **subnet**, the Endpoint's network, with outbound internet access for model downloads. Replace `YOUR_SUBNET_ID` below with its `vpcsubnet-...` ID from the list:
 
 ```bash
 nebius vpc subnet list --parent-id "$NEBIUS_PROJECT_ID" --format json
@@ -92,6 +93,13 @@ export NEBIUS_SUBNET_ID="$(nebius vpc subnet create --parent-id "$NEBIUS_PROJECT
 
 ## 3. Start Wan
 
+Use the same terminal as step 2. A new terminal does not keep its exported project and subnet settings; repeat step 2 if you opened one. Check both values before continuing:
+
+```bash
+: "${NEBIUS_PROJECT_ID:?Set NEBIUS_PROJECT_ID to your real project ID from step 2}"
+: "${NEBIUS_SUBNET_ID:?Set NEBIUS_SUBNET_ID to your real subnet ID from step 2}"
+```
+
 The [configuration](config/endpoint.json) uses **vLLM-Omni 0.24.0**, one H100 and a **500 GiB temporary disk**. The model is public; no Hugging Face token is required.
 
 Check the rate under **Serverless AI → Endpoints → Create endpoint → Preemptible**. The helper follows the changing spot price without a cap; it can exceed the regular rate. Image/model loading and idle time use paid compute. A pricing policy can set a maximum; create one for `gpu-h100-sxm` under **Billing → Pricing → Pricing policy** and add `--spot-pricing-policy-id "YOUR_POLICY_ID"` to both commands below if needed.
@@ -101,16 +109,16 @@ During this experiment, the H100 and disk were quoted at **about $0.85/hour befo
 ```bash
 python3 scripts/endpoint.py create \
   --project-id "$NEBIUS_PROJECT_ID" --subnet-id "$NEBIUS_SUBNET_ID" \
-  --name cookbook-video-generation --dry-run
+  --name cookbook-video-generation --dry-run &&
 
 python3 scripts/endpoint.py create \
   --project-id "$NEBIUS_PROJECT_ID" --subnet-id "$NEBIUS_SUBNET_ID" \
-  --name cookbook-video-generation --yes
+  --name cookbook-video-generation --yes &&
 
 python3 scripts/endpoint.py wait --timeout 1800
 ```
 
-Wait for the model API readiness message. The helper passes the URL and token privately to client commands. A wait timeout doesn't stop the Endpoint: inspect logs and stop unused compute while diagnosing.
+**Provisioning** prepares the GPU and container; downloading and loading Wan can continue afterward. Proceed when the helper prints **`Model API ready`**. The helper passes the URL and token privately to client commands. A wait timeout does not stop the Endpoint: inspect logs and stop unused compute while diagnosing.
 
 <details>
 <summary>Run with an agent instead</summary>

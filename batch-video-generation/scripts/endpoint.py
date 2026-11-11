@@ -20,6 +20,17 @@ STATE = ROOT / '.state' / 'endpoint.json'
 CLI = os.environ.get('NEBIUS_BIN', 'nebius')
 
 
+def resource_id(prefix):
+    def validate(value):
+        suffix = value.removeprefix(prefix + '-')
+        if (not re.fullmatch(re.escape(prefix) + r'-[a-z0-9]+', value)
+                or suffix in {'id', 'placeholder', 'example', 'yourid', 'changeme'}):
+            raise argparse.ArgumentTypeError(
+                f'Copy a {prefix}-... ID from the Nebius console; empty values and placeholders are not valid.')
+        return value
+    return validate
+
+
 def scrub(text):
     text = re.sub(r'(?i)\bBearer\s+[^\s,;"\']+', 'Bearer [redacted]', text)
     text = re.sub(r'\bhf_[A-Za-z0-9]{12,}\b', '[redacted]', text)
@@ -213,9 +224,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest='action', required=True)
     c = sub.add_parser('create')
-    c.add_argument('--project-id', required=True)
+    c.add_argument('--project-id', required=True, type=resource_id('project'))
     c.add_argument('--name', required=True)
-    c.add_argument('--subnet-id')
+    c.add_argument('--subnet-id', type=resource_id('vpcsubnet'))
     c.add_argument('--spot-pricing-policy-id')
     c.add_argument('--dry-run', action='store_true')
     c.add_argument('--yes', action='store_true')
