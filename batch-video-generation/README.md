@@ -196,7 +196,38 @@ python3 scripts/endpoint.py status
 
 **`--retry-lost` permits another paid request.** Check the old request and Endpoint before using it. Completed downloads are skipped. Keep the input, settings and output directory unchanged; changing them requires a new directory.
 
-## Use a larger batch or your own prompts
+## Use your own prompts
+
+Reuse the same ready Endpoint. If you stopped it, use the `start` and `wait` commands in step 6 first.
+
+In the cookbook folder, create **`data/my-prompts.csv`** with one row per clip. Replace the example descriptions with your own:
+
+```csv
+id,prompt,seed
+coffee,"Steam rising from a cup of coffee in soft morning light",42
+coast,"A slow aerial shot of waves breaking along a rocky coastline",43
+```
+
+Use unique IDs containing letters, numbers, hyphens or underscores, starting with a letter or number. The seed is an integer controlling generation randomness; use a value from 0 to 2147483647. Put descriptions containing commas inside double quotes.
+
+Validate the CSV without calling the Endpoint, then generate into a new output folder:
+
+```bash
+python3 src/generate.py --input data/my-prompts.csv --check-input &&
+python3 scripts/endpoint.py run -- \
+  python3 src/generate.py --input data/my-prompts.csv --output results-custom &&
+python3 scripts/check_results.py results-custom
+```
+
+On macOS, open the gallery with:
+
+```bash
+open results-custom/index.html
+```
+
+Use a new output folder when changing prompts, seeds or settings. Rerunning the same batch reuses completed downloads. Stop the Endpoint as shown in step 6 when finished.
+
+## Run a larger VBench batch
 
 The eight prompt lists contain 800 prompts. To prepare five per category, with recorded source IDs and seeds:
 
@@ -205,8 +236,6 @@ python3 scripts/prepare_data.py --per-category 5 --output data/larger-batch.csv
 ```
 
 This prepares 40 inputs, without launching compute. Keep its `larger-batch.source.json` beside the CSV. Use `--input data/larger-batch.csv --output results-larger` in the generation command. More clips mean more paid inference.
-
-For your own inputs, use a UTF-8 CSV with `id,prompt,seed`; IDs must be unique and filename-safe. The VBench columns are optional for custom inputs. Keep model settings and inputs fixed when comparing runs.
 
 For quota errors, check **Quotas**. For capacity errors, retry when preemptible H100s are available. For API or decode failures, inspect logs and stop unused compute; failed downloads are not marked complete.
 
