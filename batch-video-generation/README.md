@@ -172,7 +172,42 @@ On a fresh run, the first generation command gives you **2 clips** to preview. A
 
 Rerun the generation command once more. Expect **Generated 0; reused 8**, without new generation requests. [Validation and measured output](VALIDATION.md) record which checks were actually performed; this recipe does not run the full VBench evaluation protocol.
 
-## 6. Stop or resume
+## 6. Use your own prompts
+
+Keep the same Endpoint running. Run these commands from your `batch-video-generation` folder.
+
+First, create **`data/my-prompts.csv`**. Replace the two descriptions below with your own before pasting:
+
+```bash
+cat > data/my-prompts.csv <<'CSV'
+id,prompt,seed
+coffee,"Steam rising from a cup of coffee in soft morning light",42
+coast,"A slow aerial shot of waves breaking along a rocky coastline",43
+CSV
+```
+
+Use unique IDs containing letters, numbers, hyphens or underscores, starting with a letter or number. The seed is an integer controlling generation randomness; use a value from 0 to 2147483647. Put descriptions containing commas inside double quotes.
+
+Validate the CSV without calling the Endpoint, then generate into a new output folder:
+
+```bash
+python3 src/generate.py --input data/my-prompts.csv --check-input &&
+python3 scripts/endpoint.py run -- \
+  python3 src/generate.py --input data/my-prompts.csv --output results-custom &&
+python3 scripts/check_results.py results-custom
+```
+
+On macOS, open the gallery with:
+
+```bash
+open results-custom/index.html
+```
+
+On Ubuntu with a desktop, use `xdg-open results-custom/index.html` instead.
+
+Use a new output folder when changing prompts, seeds or settings. Rerunning the same batch reuses completed downloads.
+
+## 7. Stop or resume
 
 Stop when finished and verify **STOPPED**:
 
@@ -195,37 +230,6 @@ python3 scripts/endpoint.py status
 ```
 
 **`--retry-lost` permits another paid request.** Check the old request and Endpoint before using it. Completed downloads are skipped. Keep the input, settings and output directory unchanged; changing them requires a new directory.
-
-## Use your own prompts
-
-Reuse the same ready Endpoint. If you stopped it, use the `start` and `wait` commands in step 6 first.
-
-In the cookbook folder, create **`data/my-prompts.csv`** with one row per clip. Replace the example descriptions with your own:
-
-```csv
-id,prompt,seed
-coffee,"Steam rising from a cup of coffee in soft morning light",42
-coast,"A slow aerial shot of waves breaking along a rocky coastline",43
-```
-
-Use unique IDs containing letters, numbers, hyphens or underscores, starting with a letter or number. The seed is an integer controlling generation randomness; use a value from 0 to 2147483647. Put descriptions containing commas inside double quotes.
-
-Validate the CSV without calling the Endpoint, then generate into a new output folder:
-
-```bash
-python3 src/generate.py --input data/my-prompts.csv --check-input &&
-python3 scripts/endpoint.py run -- \
-  python3 src/generate.py --input data/my-prompts.csv --output results-custom &&
-python3 scripts/check_results.py results-custom
-```
-
-On macOS, open the gallery with:
-
-```bash
-open results-custom/index.html
-```
-
-Use a new output folder when changing prompts, seeds or settings. Rerunning the same batch reuses completed downloads. Stop the Endpoint as shown in step 6 when finished.
 
 ## Run a larger VBench batch
 
