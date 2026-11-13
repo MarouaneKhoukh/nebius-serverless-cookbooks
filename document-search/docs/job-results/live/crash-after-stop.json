@@ -1,0 +1,24 @@
+{
+  "scope": "Readback of the actual Object Storage result objects after the controlled Serverless crash; validated locally with the current worker",
+  "controlled_exit_code": 75,
+  "computed_chunks_at_exit": 17,
+  "checked_at": "2026-11-13T17:08:45.330647+00:00",
+  "stats": {
+    "run_fingerprint": "35a9d94dfc226815b2e318bb505799a5b256e270d9c6c198fc7c41783b188e3c",
+    "documents_total": 1000,
+    "documents_completed": 10,
+    "documents_reused": 10,
+    "documents_new": 0,
+    "documents_remaining": 990,
+    "chunks_total": 1970,
+    "chunks_saved": 15,
+    "chunks_reused": 15,
+    "chunks_new": 0,
+    "chunks_remaining": 1955,
+    "complete": false,
+    "scan_seconds": 0.021363499996368773,
+    "embedding_seconds": 0.0,
+    "save_seconds": 0.0,
+    "wall_seconds": 0.021388542008935474
+  }
+}

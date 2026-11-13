@@ -1,0 +1,110 @@
+{
+  "scope": "Offline recovery on the pinned 1,000 real passages; local files, not Object Storage or a Serverless Job",
+  "encoding": "Deterministic eight-dimensional test fixture, NOT Qwen embeddings or a performance benchmark",
+  "processes": "Each phase ran in a new Python subprocess",
+  "controlled_600": {
+    "stats": {
+      "run_fingerprint": "43ca2829217d123762f8cd68db958d318ad554e56aa0ef9e63c91f6043db974e",
+      "documents_total": 1000,
+      "documents_completed": 600,
+      "documents_reused": 0,
+      "documents_new": 600,
+      "documents_remaining": 400,
+      "chunks_total": 1970,
+      "chunks_saved": 1206,
+      "chunks_reused": 0,
+      "chunks_new": 1206,
+      "chunks_remaining": 764,
+      "complete": false,
+      "scan_seconds": 0.017460125003708526,
+      "embedding_seconds": 0.0032952301407931373,
+      "save_seconds": 0.11981896426004823,
+      "wall_seconds": 0.14154445899475832
+    },
+    "encoded_chunks": 1206
+  },
+  "same_command_resume_400": {
+    "stats": {
+      "run_fingerprint": "43ca2829217d123762f8cd68db958d318ad554e56aa0ef9e63c91f6043db974e",
+      "documents_total": 1000,
+      "documents_completed": 1000,
+      "documents_reused": 600,
+      "documents_new": 400,
+      "documents_remaining": 0,
+      "chunks_total": 1970,
+      "chunks_saved": 1970,
+      "chunks_reused": 1206,
+      "chunks_new": 764,
+      "chunks_remaining": 0,
+      "complete": true,
+      "scan_seconds": 0.044026000003213994,
+      "embedding_seconds": 0.0019478799222270027,
+      "save_seconds": 0.07628003186255228,
+      "wall_seconds": 0.1230627079930855
+    },
+    "encoded_chunks": 764
+  },
+  "crash_mid_document": {
+    "stats": {
+      "run_fingerprint": "43ca2829217d123762f8cd68db958d318ad554e56aa0ef9e63c91f6043db974e",
+      "documents_total": 1000,
+      "documents_completed": 10,
+      "documents_reused": 10,
+      "documents_new": 0,
+      "documents_remaining": 990,
+      "chunks_total": 1970,
+      "chunks_saved": 15,
+      "chunks_reused": 15,
+      "chunks_new": 0,
+      "chunks_remaining": 1955,
+      "complete": false,
+      "scan_seconds": 0.019596958998590708,
+      "embedding_seconds": 0.0,
+      "save_seconds": 0.0,
+      "wall_seconds": 0.019619792001321912
+    },
+    "encoded_chunks": 0
+  },
+  "crash_resume": {
+    "stats": {
+      "run_fingerprint": "43ca2829217d123762f8cd68db958d318ad554e56aa0ef9e63c91f6043db974e",
+      "documents_total": 1000,
+      "documents_completed": 1000,
+      "documents_reused": 10,
+      "documents_new": 990,
+      "documents_remaining": 0,
+      "chunks_total": 1970,
+      "chunks_saved": 1970,
+      "chunks_reused": 15,
+      "chunks_new": 1955,
+      "chunks_remaining": 0,
+      "complete": true,
+      "scan_seconds": 0.020094040999538265,
+      "embedding_seconds": 0.004779992988915183,
+      "save_seconds": 0.18794975262426306,
+      "wall_seconds": 0.21420104100252502
+    },
+    "encoded_chunks": 1955
+  },
+  "complete_rerun": {
+    "stats": {
+      "run_fingerprint": "43ca2829217d123762f8cd68db958d318ad554e56aa0ef9e63c91f6043db974e",
+      "documents_total": 1000,
+      "documents_completed": 1000,
+      "documents_reused": 1000,
+      "documents_new": 0,
+      "documents_remaining": 0,
+      "chunks_total": 1970,
+      "chunks_saved": 1970,
+      "chunks_reused": 1970,
+      "chunks_new": 0,
+      "chunks_remaining": 0,
+      "complete": true,
+      "scan_seconds": 0.06285804101207759,
+      "embedding_seconds": 0.0,
+      "save_seconds": 0.0,
+      "wall_seconds": 0.06309045800298918
+    },
+    "encoded_chunks": 0
+  }
+}
