@@ -75,7 +75,7 @@ There are no credentials to re-enter: Serverless injects them from SecretStash i
 
 The completed Job automatically runs this query:
 
-> What happens in chess when a player has no legal moves but is not in check?
+> What is stalemate in chess?
 
 Read the ranked passages and source links in its **Logs**. In **Object Storage → your bucket → document-index-demo-01 → outputs**, download `search.html` and open it in your browser for a readable report. `search.json` contains the same results; the other JSON files record each attempt's counts and timings. The bucket stays private.
 

@@ -33,7 +33,7 @@ class ControlledExit(BaseException):
     """Stand in for os._exit without terminating the test interpreter."""
 
 
-class VMCLIIntegrationTests(unittest.TestCase):
+class WorkerCLIIntegrationTests(unittest.TestCase):
     def setUp(self):
         self.directory = tempfile.TemporaryDirectory()
         self.addCleanup(self.directory.cleanup)

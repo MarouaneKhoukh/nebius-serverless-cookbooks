@@ -12,7 +12,7 @@ import unittest
 from unittest.mock import Mock
 
 SOURCE = Path(__file__).resolve().parents[1] / "worker/durable.py"
-SPEC = importlib.util.spec_from_file_location("simple_vm_durable", SOURCE)
+SPEC = importlib.util.spec_from_file_location("simple_worker_durable", SOURCE)
 durable = importlib.util.module_from_spec(SPEC)
 sys.modules[SPEC.name] = durable
 SPEC.loader.exec_module(durable)

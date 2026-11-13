@@ -1,0 +1,15 @@
+{
+  "checked_at": "2026-11-13T17:38:30.119305+00:00",
+  "job_id": "aijob-e00q6z2cjnzaes8p9j",
+  "state": "COMPLETED",
+  "remaining_job_instances": 1,
+  "compute_checks": [
+    {
+      "id": "computeinstance-e00es63h16t2f3tzqb",
+      "deleted": true
+    }
+  ],
+  "temporary_secret": "deleted; metadata lookup returned NotFound",
+  "existing_s3_access_key_and_index": "preserved",
+  "query_results_retained": true
+}

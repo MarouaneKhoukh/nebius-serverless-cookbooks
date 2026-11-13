@@ -4,7 +4,7 @@
 
 On **November 13, 2026**, five fresh **preemptible Serverless Jobs** exercised indexing and recovery through Nebius Object Storage. Each used one **NVIDIA L40S** and `pytorch/pytorch:2.7.1-cuda12.6-cudnn9-runtime`; the runtime reported PyTorch **2.7.1+cu126** and CUDA **12.6**.
 
-The executed source was commit [`3e602fb0877de0b0c6ed72ab199201b4d83ece32`](https://github.com/MarouaneKhoukh/nebius-serverless-cookbooks/tree/3e602fb0877de0b0c6ed72ab199201b4d83ece32/document-search), supplied through `RECIPE_REF`. This PR is not merged yet; the README's `main` default is intended for use after merge.
+The executed source was commit [`3e602fb0877de0b0c6ed72ab199201b4d83ece32`](https://github.com/MarouaneKhoukh/nebius-serverless-cookbooks/tree/3e602fb0877de0b0c6ed72ab199201b4d83ece32/document-search), supplied through `RECIPE_REF`. These tests ran before merge with a PR commit override. **The post-merge check is still pending:** follow README steps 1–5 from a clean `main` clone with `RECIPE_REF` unset, then record that run separately.
 
 **Qwen3-Embedding-0.6B** was pinned to revision `97b0c614be4d77ee51c0cef4e5f07c00f9eb65b3`, using float16, last-token pooling, normalized **1,024-dimensional** vectors, batches of **16** and **160-word** chunks. The pinned input contains **1,000 distinct Dolly reference passages**, **219,197 words**, **1,367,367 UTF-8 text bytes** and **1,970 chunks**. These are passages, not full articles. [Corpus record](docs/job-results/corpus.json).
 
@@ -41,7 +41,9 @@ L40S has **flat preemptible pricing**. The required `--follows-spot-price` setti
 
 ## Search result
 
-The completed Job queried: **“What happens in chess when a player has no legal moves but is not in check?”** The stalemate passage was **rank 3**, similarity **0.6506**, and explains that stalemate results in a draw. The first two hits were check/checkmate passages. Source links and the ranked passages are preserved in [search.json](docs/job-results/live/search.json) and the [HTML report](docs/job-results/live/search.html). This is one executed query, not a retrieval benchmark.
+The original recovery Jobs used **“What happens in chess when a player has no legal moves but is not in check?”** The stalemate passage ranked **third**, similarity **0.6506**. Those historical outputs remain in [search.json](docs/job-results/live/search.json) and [search.html](docs/job-results/live/search.html).
+
+A later query-only Serverless Job used the same pinned CUDA encoder and saved 1,970-chunk index, with worker source from commit `d9d30bf`. It checked three natural stalemate questions; the relevant passage ranked **first for all three**. The README and Job now default to **“What is stalemate in chess?”**, which scored **0.8240** for the first result (next result **0.5424**). No documents were re-embedded. [Query checks](docs/job-results/live/showcase-queries.json), [selected results](docs/job-results/live/showcase-search.json), [HTML report](docs/job-results/live/showcase-search.html). This verifies the selected example, not a retrieval benchmark or a post-merge walkthrough.
 
 ## Local checks
 
@@ -58,3 +60,5 @@ The separate input-transfer commands were removed. Each new Job prepares the sam
 ## Cleanup
 
 All five Jobs reached terminal states: **four Completed** and the controlled crash **Failed**, with **zero active instances** and no remaining test compute. The temporary secret was deleted; its metadata lookup returned `NotFound`. The existing S3 access key, bucket and durable results were retained. [Cleanup record](docs/job-results/live/cleanup.json).
+
+The later query-check Job also completed and its managed compute was removed. Its separate temporary secret was deleted; the index and query results were retained. [Query-check cleanup](docs/job-results/live/showcase-cleanup.json).
