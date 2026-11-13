@@ -21,15 +21,18 @@ def encode(texts):
     global calls
     calls+=len(texts)
     return [[(x+1)/256 for x in hashlib.sha256(text.encode()).digest()[:8]] for text in texts]
-saved=0
+embedded=0
 def crash(_record):
-    global saved
-    saved+=1
-    if saved >= (17 if mode=="crash17" else 1):
+    global embedded
+    embedded+=1
+    if embedded==17:
         os._exit(75)
-stats=index_documents(documents,LocalStore(output),encode,config,batch_size=16,
-                      stop_after_documents=600 if mode=="600" else None,
-                      after_chunk_saved=crash if mode in ("crash","crash17") else None)
+if mode=="status":
+    stats=inspect_documents(documents,LocalStore(output),config)["stats"]
+else:
+    stats=index_documents(documents,LocalStore(output),encode,config,batch_size=16,
+                          stop_after_documents=600 if mode=="600" else None,
+                          after_chunk_embedded=crash if mode=="crash17" else None)
 verified=inspect_documents(documents,LocalStore(output),config)["stats"]
 assert verified["documents_completed"]==stats["documents_completed"]
 print(json.dumps({"stats":stats,"encoded_chunks":calls}))
@@ -38,37 +41,32 @@ print(json.dumps({"stats":stats,"encoded_chunks":calls}))
 
 @unittest.skipUnless((DATA / "manifest.json").is_file(), "Prepare the real corpus with scripts/prepare_vm_data.py first")
 class RealCorpusRecoveryTests(unittest.TestCase):
-    def test_success_then_separate_fresh_process_resume_and_unfinished_batch(self):
+    def test_same_command_resume_and_crash_mid_document(self):
         with tempfile.TemporaryDirectory() as temp:
             def run(name, mode="full", exit_code=0):
                 result = subprocess.run([sys.executable, "-c", WORKER, str(DATA), str(Path(temp)/name), mode],
                                         cwd=ROOT, capture_output=True, text=True, timeout=90)
                 self.assertEqual(result.returncode, exit_code, result.stderr)
                 return json.loads(result.stdout) if result.stdout else None
-            success = run("success")
-            self.assertEqual(success["stats"]["documents_completed"],1000)
-            self.assertEqual(success["encoded_chunks"],1970)
             before = run("recovery","600")
             self.assertEqual(before["stats"]["documents_completed"],600)
             self.assertEqual(before["encoded_chunks"],1206)
-            resumed = run("recovery")
+            resumed = run("recovery","600")
             self.assertEqual(resumed["stats"]["documents_reused"],600)
             self.assertEqual(resumed["stats"]["documents_new"],400)
             self.assertEqual(resumed["encoded_chunks"],764)
-            run("unfinished","crash",75)
-            unfinished = run("unfinished")
-            self.assertEqual(unfinished["stats"]["documents_reused"],0)
-            self.assertEqual(unfinished["stats"]["chunks_reused"],1)
-            self.assertEqual(unfinished["encoded_chunks"],1969)
-            run("unfinished-with-completed","crash17",75)
-            partial = run("unfinished-with-completed")
+            run("unfinished","crash17",75)
+            crashed = run("unfinished","status")
+            self.assertEqual(crashed["stats"]["documents_completed"],10)
+            self.assertEqual(crashed["stats"]["chunks_saved"],15)
+            partial = run("unfinished")
             self.assertEqual(partial["stats"]["documents_reused"],10)
             self.assertEqual(partial["stats"]["documents_new"],990)
-            self.assertEqual(partial["stats"]["chunks_reused"],17)
-            self.assertEqual(partial["encoded_chunks"],1953)
-            reused = run("success")
+            self.assertEqual(partial["stats"]["chunks_reused"],15)
+            self.assertEqual(partial["encoded_chunks"],1955)
+            reused = run("recovery","600")
             self.assertEqual(reused["encoded_chunks"],0)
-            for item in [success,resumed,unfinished,partial,reused]:
+            for item in [resumed,partial,reused]:
                 self.assertTrue(item["stats"]["complete"])
                 self.assertEqual(item["stats"]["chunks_saved"],1970)
             report = os.environ.get("VM_SCENARIO_REPORT")
@@ -78,6 +76,6 @@ class RealCorpusRecoveryTests(unittest.TestCase):
                     "scope":"Offline recovery on the pinned 1,000 real passages; local files, not Object Storage or a cloud VM",
                     "encoding":"Deterministic eight-dimensional test fixture, NOT Qwen embeddings or a performance benchmark",
                     "processes":"Each phase ran in a new Python subprocess",
-                    "success":success,"controlled_600":before,"resume_400":resumed,
-                    "unfinished_batch_resume":unfinished,"unfinished_with_completed_resume":partial,
+                    "controlled_600":before,"same_command_resume_400":resumed,
+                    "crash_mid_document":crashed,"crash_resume":partial,
                     "complete_rerun":reused},indent=2)+"\n")

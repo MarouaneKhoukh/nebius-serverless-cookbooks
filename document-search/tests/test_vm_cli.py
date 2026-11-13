@@ -80,25 +80,25 @@ class VMCLIIntegrationTests(unittest.TestCase):
         return status, stdout.getvalue(), stderr.getvalue()
 
     def index(self, *arguments):
-        status, stdout, stderr = self.call("index", *arguments)
+        report = self.root / "last-index.json"
+        status, stdout, stderr = self.call("index", *arguments, "--report", str(report))
         self.assertEqual(status, 0, stderr)
-        return json.loads(stdout)
+        self.last_stdout = stdout
+        return json.loads(report.read_text())
 
-    def test_index_writes_measurements_beside_index_and_verify_still_succeeds(self):
+    def test_index_saves_only_document_results_and_optional_local_report(self):
         result = self.index()
         self.assertTrue(result["complete"])
         self.assertEqual((result["documents_completed"], result["chunks_saved"]), (2, 2))
         keys = LocalStore(self.store).keys()
-        self.assertTrue(all(key == "run.json" or key.startswith(("chunks/", "documents/")) for key in keys))
-        measurement_folder = Path(str(self.store) + "-measurements")
-        measurements = list(measurement_folder.glob("*.json"))
-        self.assertEqual(len(measurements), 1)
-        measurement = json.loads(measurements[0].read_text())
-        self.assertEqual(measurement["run_fingerprint"], result["run_fingerprint"])
-        self.assertEqual(measurement["corpus"]["documents"], 2)
+        self.assertEqual(len(keys), 3)
+        self.assertTrue(all(key == "run.json" or key.startswith("documents/") for key in keys))
+        self.assertFalse(Path(str(self.store) + "-measurements").exists())
+        self.assertIn("0 documents already saved, 2 to go", self.last_stdout)
+        self.assertIn("Finished: 2 new, 0 reused, 0 remaining", self.last_stdout)
         status, stdout, stderr = self.call("verify")
         self.assertEqual(status, 0, stderr)
-        self.assertTrue(json.loads(stdout)["complete"])
+        self.assertIn("All 2 documents verified", stdout)
         self.assertEqual(len(MockEncoder.instances), 1)  # Verify never loads the model.
 
     def test_upload_download_roundtrip_includes_all_four_input_files(self):
@@ -110,11 +110,13 @@ class VMCLIIntegrationTests(unittest.TestCase):
             return self.documents
 
         with patch.object(cli, "load_documents", side_effect=validated) as validate, \
-                contextlib.redirect_stdout(io.StringIO()):
+                contextlib.redirect_stdout(io.StringIO()) as stdout:
             self.assertEqual(cli.main(["upload-inputs", "--data", str(self.data), "--store", str(object_store)]), 0)
             self.assertEqual(cli.main(["download-inputs", "--data", str(downloaded), "--store", str(object_store)]), 0)
+        self.assertIn("Uploaded 2 documents", stdout.getvalue())
+        self.assertIn("Downloaded and verified 2 documents", stdout.getvalue())
         self.assertEqual({p.name for p in downloaded.iterdir()}, set(cli.SOURCE_FILES))
-        self.assertEqual(LocalStore(object_store).keys(), sorted(cli.SOURCE_FILES))
+        self.assertEqual(set(LocalStore(object_store).keys()), set(cli.SOURCE_FILES))
         self.assertEqual({name: (downloaded / name).read_bytes() for name in cli.SOURCE_FILES}, self.files)
         self.assertEqual([item.args[0] for item in validate.call_args_list], [self.data, downloaded])
         self.assertEqual(MockEncoder.instances, [])
@@ -182,7 +184,7 @@ class VMCLIIntegrationTests(unittest.TestCase):
         self.assertEqual(query_text, f"Instruct: {cli.QUERY_INSTRUCTION}\nQuery:Find the first fixture")
 
     def test_incomplete_query_does_not_load_encoder_or_write_report(self):
-        result = self.index("--stop-after-documents", "1")
+        result = self.index("--max-new-documents", "1")
         self.assertFalse(result["complete"])
         MockEncoder.instances = []
         output = self.root / "query-output"
@@ -192,31 +194,56 @@ class VMCLIIntegrationTests(unittest.TestCase):
         self.assertEqual(MockEncoder.instances, [])
         self.assertFalse(output.exists())
 
-    def test_controlled_crash_mocks_hard_exit_and_saved_chunk_is_reusable(self):
+    def test_same_capped_index_command_finishes_remaining_documents_on_rerun(self):
+        first = self.index("--max-new-documents", "1")
+        self.assertEqual((first["documents_new"], first["documents_remaining"]), (1, 1))
+        second = self.index("--max-new-documents", "1")
+        self.assertEqual((second["documents_reused"], second["documents_new"], second["documents_remaining"]), (1, 1, 0))
+        self.assertTrue(second["complete"])
+        self.assertIn("1 document already saved, 1 to go", self.last_stdout)
+
+    def test_progress_is_brief_at_start_every_50_documents_and_finish(self):
+        self.documents[:] = [
+            {"id": f"fixture-{i}", "title": f"Fixture {i}",
+             "source_url": f"https://example.invalid/{i}", "text": f"Distinct passage number {i}."}
+            for i in range(125)]
+        self.index()
+        lines = self.last_stdout.splitlines()
+        self.assertEqual(len(lines), 5)
+        self.assertIn("0 documents already saved, 125 to go", lines[0])
+        self.assertIn("50 of 125 documents saved", lines[1])
+        self.assertIn("100 of 125 documents saved", lines[2])
+        self.assertIn("125 of 125 documents saved", lines[3])
+
+    def test_controlled_crash_keeps_completed_document_and_reruns_unsaved_document(self):
+        # First document has one chunk; the second has three. Stop after receiving
+        # the first chunk of the second document, before that document is saved.
+        self.documents[1]["text"] = " ".join(["second"] * 350)
         with patch.object(cli.os, "_exit", side_effect=ControlledExit) as hard_exit, \
                 contextlib.redirect_stdout(io.StringIO()) as stdout, \
                 contextlib.redirect_stderr(io.StringIO()), self.assertRaises(ControlledExit):
             cli.main(["index", "--data", str(self.data), "--store", str(self.store),
-                      "--crash-after-saved-chunks", "1"])
+                      "--crash-after-chunks", "2"])
         hard_exit.assert_called_once_with(75)
-        message = json.loads(stdout.getvalue())
-        self.assertEqual(message["new_chunks_saved"], 1)
-        self.assertTrue(message["controlled_interruption"])
+        self.assertIn("Controlled test stop after 2 computed chunks", stdout.getvalue())
+        self.assertIn("unfinished document will run again", stdout.getvalue())
         state = cli.inspect_documents(self.documents, LocalStore(self.store), cli.run_config(self.data, self.runtime))
-        self.assertEqual((state["stats"]["chunks_saved"], state["stats"]["documents_completed"]), (1, 0))
-        self.assertFalse(Path(str(self.store) + "-measurements").exists())
+        self.assertEqual((state["stats"]["chunks_saved"], state["stats"]["documents_completed"]), (1, 1))
+        self.assertEqual(len(LocalStore(self.store).keys()), 2)  # run + first result
         resumed = self.index()
         self.assertTrue(resumed["complete"])
-        self.assertEqual((resumed["chunks_reused"], resumed["chunks_new"], resumed["documents_new"]), (1, 1, 2))
-        self.assertEqual(sum(map(len, MockEncoder.instances[-1].calls)), 1)
+        self.assertEqual((resumed["chunks_reused"], resumed["chunks_new"], resumed["documents_new"]), (1, 3, 1))
+        self.assertEqual(sum(map(len, MockEncoder.instances[-1].calls)), 3)
 
-    def test_invalid_crash_limit_never_exits_or_starts_indexing(self):
-        with patch.object(cli.os, "_exit") as hard_exit, patch.object(cli, "index_documents") as index:
-            status, stdout, stderr = self.call("index", "--crash-after-saved-chunks", "0")
-        self.assertEqual(status, 1)
-        self.assertIn("must be positive", stderr)
-        hard_exit.assert_not_called()
-        index.assert_not_called()
+    def test_invalid_limits_never_exit_or_start_indexing(self):
+        for flag in ("--crash-after-chunks", "--max-new-documents"):
+            with self.subTest(flag=flag), patch.object(cli.os, "_exit") as hard_exit, \
+                    patch.object(cli, "index_documents") as index:
+                status, stdout, stderr = self.call("index", flag, "0")
+                self.assertEqual(status, 1)
+                self.assertIn("must be positive", stderr)
+                hard_exit.assert_not_called()
+                index.assert_not_called()
         self.assertEqual(LocalStore(self.store).keys(), [])
 
 

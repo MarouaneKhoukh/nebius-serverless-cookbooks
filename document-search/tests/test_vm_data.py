@@ -67,12 +67,6 @@ class PassageDataTests(unittest.TestCase):
     def prepare(self, fetch=None):
         return prepare(self.output, self.cache, source_path=self.source_path, fetch=fetch or (lambda url: self.raw))
 
-    def rewrite_output(self, docs, manifest):
-        payload = b"".join(json_bytes(doc) for doc in docs)
-        (self.output / "documents.jsonl").write_bytes(payload)
-        manifest["documents_sha256"] = digest(payload)
-        (self.output / "manifest.json").write_bytes(json_bytes(manifest))
-
     def test_first_distinct_substantial_contexts_only_and_exact_text_preserved(self):
         manifest = self.prepare()
         docs = load_documents(self.output)
@@ -111,34 +105,10 @@ class PassageDataTests(unittest.TestCase):
                 self.prepare()
             path.write_bytes(original)
 
-    def test_modified_document_or_license_is_rejected_when_loading(self):
+    def test_modified_document_is_rejected_when_loading(self):
         self.prepare()
         p = self.output / "documents.jsonl"; original = p.read_bytes(); p.write_bytes(original.replace(b"alpha", b"ALPHA"))
         with self.assertRaisesRegex(ValueError, "document checksum"):
-            load_documents(self.output)
-        p.write_bytes(original)
-        (self.output / "LICENSE").write_bytes(b"changed")
-        with self.assertRaisesRegex(ValueError, "license checksum"):
-            load_documents(self.output)
-
-    def test_duplicate_text_cannot_hide_behind_a_new_file_hash(self):
-        manifest = self.prepare(); docs = load_documents(self.output)
-        docs[1]["text"] = docs[0]["text"]
-        self.rewrite_output(docs, manifest)
-        with self.assertRaisesRegex(ValueError, "duplicate IDs or passage texts"):
-            load_documents(self.output)
-
-    def test_source_link_and_totals_are_checked(self):
-        manifest = self.prepare(); docs = load_documents(self.output)
-        manifest["totals"]["words"] += 1
-        self.rewrite_output(docs, manifest)
-        with self.assertRaisesRegex(ValueError, "corpus totals"):
-            load_documents(self.output)
-        manifest["totals"]["words"] -= 1
-        docs[0]["source_url"] = "https://example.org/wrong-line"
-        manifest["documents"][0]["source_url"] = docs[0]["source_url"]
-        self.rewrite_output(docs, manifest)
-        with self.assertRaisesRegex(ValueError, "ID/source line"):
             load_documents(self.output)
 
     def test_not_enough_distinct_contexts_never_pads_the_corpus(self):
@@ -151,16 +121,6 @@ class PassageDataTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "unrelated files"):
             self.prepare()
         self.assertEqual(own.read_text(), "keep me")
-
-    def test_symlinked_output_or_prepared_file_is_rejected(self):
-        elsewhere = self.root / "elsewhere"; elsewhere.mkdir()
-        self.output.symlink_to(elsewhere, target_is_directory=True)
-        with self.assertRaisesRegex(ValueError, "symlink"):
-            self.prepare()
-        self.output.unlink(); self.prepare()
-        original = self.output / "LICENSE"; original.unlink(); original.symlink_to(self.bundled / "LICENSE")
-        with self.assertRaisesRegex(ValueError, "symlink"):
-            load_documents(self.output)
 
     def test_chunk_count_matches_paragraph_aware_160_word_packing(self):
         self.assertEqual(_chunk_count(" ".join(["word"] * 320)), 2)

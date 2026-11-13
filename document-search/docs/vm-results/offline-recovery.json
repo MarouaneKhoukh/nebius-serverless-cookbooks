@@ -2,30 +2,9 @@
   "scope": "Offline recovery on the pinned 1,000 real passages; local files, not Object Storage or a cloud VM",
   "encoding": "Deterministic eight-dimensional test fixture, NOT Qwen embeddings or a performance benchmark",
   "processes": "Each phase ran in a new Python subprocess",
-  "success": {
-    "stats": {
-      "run_fingerprint": "3d9d9f5ce385f4d3608427d2db9cf9e9a41077e77c26357ef8c0774cf4dbe2fb",
-      "documents_total": 1000,
-      "documents_completed": 1000,
-      "documents_reused": 0,
-      "documents_new": 1000,
-      "documents_remaining": 0,
-      "chunks_total": 1970,
-      "chunks_saved": 1970,
-      "chunks_reused": 0,
-      "chunks_new": 1970,
-      "chunks_remaining": 0,
-      "complete": true,
-      "scan_seconds": 0.4765558329963824,
-      "embedding_seconds": 0.007939627030282281,
-      "save_seconds": 2.0597113755502505,
-      "wall_seconds": 2.589979584008688
-    },
-    "encoded_chunks": 1970
-  },
   "controlled_600": {
     "stats": {
-      "run_fingerprint": "3d9d9f5ce385f4d3608427d2db9cf9e9a41077e77c26357ef8c0774cf4dbe2fb",
+      "run_fingerprint": "43ca2829217d123762f8cd68db958d318ad554e56aa0ef9e63c91f6043db974e",
       "documents_total": 1000,
       "documents_completed": 600,
       "documents_reused": 0,
@@ -37,16 +16,16 @@
       "chunks_new": 1206,
       "chunks_remaining": 764,
       "complete": false,
-      "scan_seconds": 0.30545495900150854,
-      "embedding_seconds": 0.004899205989204347,
-      "save_seconds": 1.236665536678629,
-      "wall_seconds": 1.575462000007974
+      "scan_seconds": 0.01747774999239482,
+      "embedding_seconds": 0.0031685771245975047,
+      "save_seconds": 0.11408316089364234,
+      "wall_seconds": 0.1356443330005277
     },
     "encoded_chunks": 1206
   },
-  "resume_400": {
+  "same_command_resume_400": {
     "stats": {
-      "run_fingerprint": "3d9d9f5ce385f4d3608427d2db9cf9e9a41077e77c26357ef8c0774cf4dbe2fb",
+      "run_fingerprint": "43ca2829217d123762f8cd68db958d318ad554e56aa0ef9e63c91f6043db974e",
       "documents_total": 1000,
       "documents_completed": 1000,
       "documents_reused": 600,
@@ -58,37 +37,37 @@
       "chunks_new": 764,
       "chunks_remaining": 0,
       "complete": true,
-      "scan_seconds": 0.820184917000006,
-      "embedding_seconds": 0.003245292988140136,
-      "save_seconds": 0.7969861240708269,
-      "wall_seconds": 1.6391668330034008
+      "scan_seconds": 0.044140875004814006,
+      "embedding_seconds": 0.002180339943151921,
+      "save_seconds": 0.07702237665944267,
+      "wall_seconds": 0.12417366700537968
     },
     "encoded_chunks": 764
   },
-  "unfinished_batch_resume": {
+  "crash_mid_document": {
     "stats": {
-      "run_fingerprint": "3d9d9f5ce385f4d3608427d2db9cf9e9a41077e77c26357ef8c0774cf4dbe2fb",
+      "run_fingerprint": "43ca2829217d123762f8cd68db958d318ad554e56aa0ef9e63c91f6043db974e",
       "documents_total": 1000,
-      "documents_completed": 1000,
-      "documents_reused": 0,
-      "documents_new": 1000,
-      "documents_remaining": 0,
+      "documents_completed": 10,
+      "documents_reused": 10,
+      "documents_new": 0,
+      "documents_remaining": 990,
       "chunks_total": 1970,
-      "chunks_saved": 1970,
-      "chunks_reused": 1,
-      "chunks_new": 1969,
-      "chunks_remaining": 0,
-      "complete": true,
-      "scan_seconds": 0.4788458749972051,
-      "embedding_seconds": 0.007995744032086805,
-      "save_seconds": 2.046379629668081,
-      "wall_seconds": 2.579703791998327
+      "chunks_saved": 15,
+      "chunks_reused": 15,
+      "chunks_new": 0,
+      "chunks_remaining": 1955,
+      "complete": false,
+      "scan_seconds": 0.019232457998441532,
+      "embedding_seconds": 0.0,
+      "save_seconds": 0.0,
+      "wall_seconds": 0.019256917003076524
     },
-    "encoded_chunks": 1969
+    "encoded_chunks": 0
   },
-  "unfinished_with_completed_resume": {
+  "crash_resume": {
     "stats": {
-      "run_fingerprint": "3d9d9f5ce385f4d3608427d2db9cf9e9a41077e77c26357ef8c0774cf4dbe2fb",
+      "run_fingerprint": "43ca2829217d123762f8cd68db958d318ad554e56aa0ef9e63c91f6043db974e",
       "documents_total": 1000,
       "documents_completed": 1000,
       "documents_reused": 10,
@@ -96,20 +75,20 @@
       "documents_remaining": 0,
       "chunks_total": 1970,
       "chunks_saved": 1970,
-      "chunks_reused": 17,
-      "chunks_new": 1953,
+      "chunks_reused": 15,
+      "chunks_new": 1955,
       "chunks_remaining": 0,
       "complete": true,
-      "scan_seconds": 0.48303708402090706,
-      "embedding_seconds": 0.007913914014352486,
-      "save_seconds": 2.01781383776688,
-      "wall_seconds": 2.55423612499726
+      "scan_seconds": 0.01818470799480565,
+      "embedding_seconds": 0.004979191071470268,
+      "save_seconds": 0.18761574309610296,
+      "wall_seconds": 0.2121791670069797
     },
-    "encoded_chunks": 1953
+    "encoded_chunks": 1955
   },
   "complete_rerun": {
     "stats": {
-      "run_fingerprint": "3d9d9f5ce385f4d3608427d2db9cf9e9a41077e77c26357ef8c0774cf4dbe2fb",
+      "run_fingerprint": "43ca2829217d123762f8cd68db958d318ad554e56aa0ef9e63c91f6043db974e",
       "documents_total": 1000,
       "documents_completed": 1000,
       "documents_reused": 1000,
@@ -121,10 +100,10 @@
       "chunks_new": 0,
       "chunks_remaining": 0,
       "complete": true,
-      "scan_seconds": 1.0459002090065042,
+      "scan_seconds": 0.06236170799820684,
       "embedding_seconds": 0.0,
       "save_seconds": 0.0,
-      "wall_seconds": 1.0460489999968559
+      "wall_seconds": 0.06257683300646022
     },
     "encoded_chunks": 0
   }

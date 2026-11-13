@@ -8,3 +8,5 @@ data/documents/
 
 data/vm-documents/
 data/restored-documents/
+
+.env.vm
