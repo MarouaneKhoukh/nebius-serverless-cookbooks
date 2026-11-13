@@ -5,3 +5,6 @@ __pycache__/
 .env
 .venv/
 data/documents/
+
+data/vm-documents/
+data/restored-documents/

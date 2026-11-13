@@ -1,64 +1,38 @@
-# Validation
+# Standalone VM validation
 
-Tested on 9 November 2026 in `eu-north1` using the real Python documentation corpus.
+**Implemented and locally verified; live GPU/VM execution is pending.** No test VM or disk has been created. The video's runtime is not yet measured.
 
-| Component | Recorded configuration |
-| --- | --- |
-| Deployment | Preemptible Serverless AI Endpoint |
-| Model | `Qwen/Qwen3-Embedding-0.6B`, native 1,024-dimensional output |
-| Runtime | `vllm/vllm-openai:v0.19.1`, pooling runner |
-| Compute | One L40S, `gpu-l40s-a` / `1gpu-8vcpu-32gb` |
-| Temporary disk | 500 GiB |
-| Input | 55 Python 3.13.9 reference documents, 2,138 chunks of up to 160 words |
-| API batches | 16 document chunks per request |
+## What ran
 
-The serving configuration names the model without pinning its weights revision. Recorded vectors therefore describe this deployment, rather than promising bit-for-bit equality across future model updates.
-
-## Corpus and query provenance
-
-The official plain-text archive SHA-256 is `2522c3aee3c6617e99f7db5e43356471108739e35fe8a97b5d10da33832ff141`. The selected source documents total 2,304,869 bytes. Preparation verified the archive, individual files and retained PSF license against [the source manifest](data/source.json). A second preparation run downloaded the official archive into an empty cache, verified the same checksum and prepared all 55 documents successfully.
-
-The twelve questions are original text from the Python Library and Extension FAQ. FAQ answers are excluded from the indexed corpus. Expected reference modules were curated from those answers and restricted to this collection. These are source-level diagnostic checks, not independently judged passage relevance or generated-answer scores. Different retrieved reference documents can also be useful.
-
-## Indexing and reuse
-
-The first client process saved **64 chunks**. A fresh process reused those records and embedded the remaining **2,074**, producing **2,138 complete vectors**. All vectors were finite, normalized and 1,024-dimensional, with aligned source metadata.
-
-The offline result checker passed against the actual prepared documents and complete saved index, including every input ID, source-text join, vector/metadata export order, corpus fingerprint, retained license and twelve query-check records.
-
-A third client run reused all **2,138 chunks**, reported zero remaining work and sent no new document-embedding requests.
-
-Index fingerprint: `aaf68ca7adc224b3273334539aa51e161c49adf209fb5f03e69f2e438de7af78`.
-
-This tested continuation across client processes. It did not test recovery from an actual GPU reclaim or GPU stop/start during indexing.
-
-## Retrieval checks
-
-| Method | Expected source first | Expected source within five chunks |
-| --- | --- | --- |
-| Qwen embedding similarity | 9/12 | 11/12 |
-| BM25, CPU | 8/12 | 10/12 |
-
-Both methods searched the same 2,138 chunks. The question “How do I copy a file?” returned `library/shutil.txt` first with Qwen. For “Is there an equivalent to C's onexit() in Python?”, Qwen returned `library/atexit.txt` first.
-
-The binary-data question illustrates the limits of this scoring: the expected reference list names `struct` and `array`, while both methods returned the also-useful `io` reference first. The reported counts are source-check results, not a general accuracy score.
-
-The local BM25 index and twelve checks took about **0.20 seconds on the author's Mac**. This is local CPU time, not a cloud or billing measurement. No cloud embedding-throughput measurement is claimed.
-
-The [recorded reports](docs/sample-results/) include every query's returned passages and provenance. Their table wrapping was adjusted offline after the run; vectors, ranked results and metrics were unchanged. The full vector working directory was retained locally; the public repository contains a lightweight report sample.
-
-## Offline checks
-
-The **31 offline checks pass**. They cover archive/document checksums, retained license, cache reuse, unsafe paths, changed inputs, native vector validation, API response ordering, partial-batch recovery, source-level scoring, export alignment, HTML escaping and offline report rendering without changing saved vectors or results. Fixture vectors are separate from the actual model results above.
+**71 local checks passed** on macOS / Python 3.14.4: 31 existing Endpoint checks, 12 data checks, 18 durable-state checks, nine CLI checks and one real-corpus integration scenario. The latter runs each phase in a new Python subprocess and requires the prepared corpus:
 
 ```bash
+python3 scripts/prepare_vm_data.py
 python3 -m unittest discover -s tests -q
 ```
 
-## Pricing and final resource state
+The pinned input is **1,000 distinct Dolly reference passages / 219,197 words / 1,367,367 UTF-8 bytes / 1,970 chunks**. Document lengths range from 80 to 3,681 words (median 158.5; p95 491). [Corpus record](docs/vm-results/corpus.json).
 
-The calculator quoted **$0.7492/hour** for the preemptible VM and **$1.5484/hour** for its regular counterpart. A 500 GiB network SSD disk added **$0.048611/hour** in either case: approximately **$0.80/hour versus $1.60/hour**, before tax.
+| Offline phase | Complete documents | Reused documents | New chunk embeddings | Saved chunks |
+| --- | ---: | ---: | ---: | ---: |
+| Successful run first | 1,000 | 0 | 1,970 | 1,970 |
+| Separate controlled stop | 600 | 0 | 1,206 | 1,206 |
+| Fresh-process resume | 1,000 | 600 | 764 | 1,970 |
+| Resume unfinished batch | 1,000 | 0 | 1,969 | 1,970 |
+| Repeat completed run | 1,000 | 1,000 | 0 | 1,970 |
 
-These are configuration quotes, not measured indexing costs or invoices. Model loading, idle time and interruptions affect the total. L40S currently has a flat preemptible rate; this test does not demonstrate dynamic spot-price bidding. [Nebius pricing](https://nebius.com/prices).
+These scenarios used **eight-dimensional fixture vectors and local files**, not Qwen, Object Storage or a GPU. Their timings are **not embedding benchmarks**. The unfinished-batch test exits after one verified chunk save, before a document marker; recovery reuses it. Checks also reject corruption, incomplete writes and incompatible data/model/chunk/encoder settings. [Executed recovery record](docs/vm-results/offline-recovery.json).
 
-The Endpoint was verified **STOPPED** at the end of testing. Local vectors and reports were retained separately from its GPU and temporary disk.
+Cached corpus preparation took 0.147 seconds in one local run. This excludes source download, VM startup and model loading; it does not estimate the video's workload.
+
+## Live execution still needed
+
+A small non-sensitive object was successfully written and read in a dedicated Nebius Object Storage prefix. Bucket ownership was checked in the selected project. That verifies S3 access only. Full S3 indexing, GPU embeddings, the real chess search and a controlled VM stop/start remain unverified because CLI authentication expired during an approval delay. No actual preemption occurred.
+
+Run the README scenarios in order on the same pinned Qwen revision, with native 1,024-dimensional output, float16, batches of 16 and 160-word chunks. Save real source-linked search results. Record preparation, VM startup/restart, model startup, scanning, embedding and saving separately. The CLI reports these application phases and hardware; measure VM/bootstrap time externally. Completed reruns skip model loading.
+
+L40S has **flat preemptible pricing**; this configuration does not validate changing spot prices or a price-policy stop. [Pricing](https://docs.nebius.com/compute/resources/pricing), [VM lifecycle](https://docs.nebius.com/compute/virtual-machines/preemptible).
+
+## Video alignment
+
+The architecture and successful-first / separate 600-plus-400 story are implemented. “Documents” here means real reference passages. Controlled interruption must not be called provider preemption. No “few minutes” benchmark is claimed. The video/script and unrelated work remain unchanged. Earlier Endpoint evidence is preserved in [ENDPOINT_VALIDATION.md](ENDPOINT_VALIDATION.md) and does not validate this VM route.

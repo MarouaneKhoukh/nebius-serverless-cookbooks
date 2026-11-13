@@ -1,0 +1,110 @@
+{
+  "scope": "Offline recovery on the pinned 1,000 real passages; local files, not Object Storage or a cloud VM",
+  "encoding": "Deterministic eight-dimensional test fixture, NOT Qwen embeddings or a performance benchmark",
+  "processes": "Each phase ran in a new Python subprocess",
+  "success": {
+    "stats": {
+      "run_fingerprint": "3d9d9f5ce385f4d3608427d2db9cf9e9a41077e77c26357ef8c0774cf4dbe2fb",
+      "documents_total": 1000,
+      "documents_completed": 1000,
+      "documents_reused": 0,
+      "documents_new": 1000,
+      "documents_remaining": 0,
+      "chunks_total": 1970,
+      "chunks_saved": 1970,
+      "chunks_reused": 0,
+      "chunks_new": 1970,
+      "chunks_remaining": 0,
+      "complete": true,
+      "scan_seconds": 0.46386595799413044,
+      "embedding_seconds": 0.007392293977318332,
+      "save_seconds": 1.9580399962869706,
+      "wall_seconds": 2.470940375002101
+    },
+    "encoded_chunks": 1970
+  },
+  "controlled_600": {
+    "stats": {
+      "run_fingerprint": "3d9d9f5ce385f4d3608427d2db9cf9e9a41077e77c26357ef8c0774cf4dbe2fb",
+      "documents_total": 1000,
+      "documents_completed": 600,
+      "documents_reused": 0,
+      "documents_new": 600,
+      "documents_remaining": 400,
+      "chunks_total": 1970,
+      "chunks_saved": 1206,
+      "chunks_reused": 0,
+      "chunks_new": 1206,
+      "chunks_remaining": 764,
+      "complete": false,
+      "scan_seconds": 0.2885997929988662,
+      "embedding_seconds": 0.004768499959027395,
+      "save_seconds": 1.2178562146000331,
+      "wall_seconds": 1.5380117500026245
+    },
+    "encoded_chunks": 1206
+  },
+  "resume_400": {
+    "stats": {
+      "run_fingerprint": "3d9d9f5ce385f4d3608427d2db9cf9e9a41077e77c26357ef8c0774cf4dbe2fb",
+      "documents_total": 1000,
+      "documents_completed": 1000,
+      "documents_reused": 600,
+      "documents_new": 400,
+      "documents_remaining": 0,
+      "chunks_total": 1970,
+      "chunks_saved": 1970,
+      "chunks_reused": 1206,
+      "chunks_new": 764,
+      "chunks_remaining": 0,
+      "complete": true,
+      "scan_seconds": 0.7782990420091664,
+      "embedding_seconds": 0.0028120429924456403,
+      "save_seconds": 0.7553982010576874,
+      "wall_seconds": 1.5527197909977986
+    },
+    "encoded_chunks": 764
+  },
+  "unfinished_batch_resume": {
+    "stats": {
+      "run_fingerprint": "3d9d9f5ce385f4d3608427d2db9cf9e9a41077e77c26357ef8c0774cf4dbe2fb",
+      "documents_total": 1000,
+      "documents_completed": 1000,
+      "documents_reused": 0,
+      "documents_new": 1000,
+      "documents_remaining": 0,
+      "chunks_total": 1970,
+      "chunks_saved": 1970,
+      "chunks_reused": 1,
+      "chunks_new": 1969,
+      "chunks_remaining": 0,
+      "complete": true,
+      "scan_seconds": 0.4503371659811819,
+      "embedding_seconds": 0.007281426020199433,
+      "save_seconds": 1.921896864892915,
+      "wall_seconds": 2.4211061660025734
+    },
+    "encoded_chunks": 1969
+  },
+  "complete_rerun": {
+    "stats": {
+      "run_fingerprint": "3d9d9f5ce385f4d3608427d2db9cf9e9a41077e77c26357ef8c0774cf4dbe2fb",
+      "documents_total": 1000,
+      "documents_completed": 1000,
+      "documents_reused": 1000,
+      "documents_new": 0,
+      "documents_remaining": 0,
+      "chunks_total": 1970,
+      "chunks_saved": 1970,
+      "chunks_reused": 1970,
+      "chunks_new": 0,
+      "chunks_remaining": 0,
+      "complete": true,
+      "scan_seconds": 0.9973080420022598,
+      "embedding_seconds": 0.0,
+      "save_seconds": 0.0,
+      "wall_seconds": 0.9974296250002226
+    },
+    "encoded_chunks": 0
+  }
+}

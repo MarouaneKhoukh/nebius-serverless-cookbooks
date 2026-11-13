@@ -1,212 +1,175 @@
 ---
-title: Search the Python Docs by Meaning
+title: Build a Resumable Search Index on a Preemptible VM
 category: inference
 type: cookbook
-runtime: Nebius Serverless AI Endpoint
-frameworks: [vLLM]
-keywords: [preemptible, embeddings, python, retrieval, qwen]
-difficulty: beginner
+runtime: Nebius Compute VM
+frameworks: [Transformers, PyTorch, S3]
+keywords: [preemptible, embeddings, recovery, object-storage, qwen]
+difficulty: intermediate
 ---
 
 <img src="docs/brand/nebius-logo.svg" alt="Nebius" width="140">
 
-# Search the Python Docs by Meaning
+# Build a Resumable Search Index on a Preemptible VM
 
-Search **55 real Python standard-library reference documents** with Qwen3-Embedding-0.6B. You'll save **2,138 passage embeddings**, ask a question and inspect the sources in a browser report. Twelve original Python FAQ questions let you compare semantic retrieval with a CPU keyword baseline.
+Index **1,000 real documents**, save their embeddings and completion records in **Nebius Object Storage**, then search by meaning. First, finish the whole workload. In a **separate controlled interruption test**, save 600 complete documents, restart compute and the application, and finish the remaining 400.
 
-Nebius Serverless AI hosts Qwen behind an **Endpoint**, an authenticated HTTPS model API. Your computer prepares the documents, saves vectors and searches them. No local GPU or vector database is required.
+The application and **Qwen3-Embedding-0.6B** run on a standalone GPU VM. Object Storage holds the authoritative results and progress outside that VM. The earlier [Serverless Endpoint recipe](ENDPOINT.md) remains separate: it indexes 55 Python documents from your computer.
 
-A **preemptible GPU** can offer a lower rate, but Nebius can reclaim it. Saved passage vectors survive on your computer, so indexing can continue later. New questions need the model Endpoint available; already saved reports open without it.
+Preemptible capacity suits work that can keep completed results and retry unfinished work. An interruption is possible, not inevitable. Nebius stops preemptible VMs without automatically restarting them. When capacity and pricing conditions allow, start compute and launch the application again. [VM lifecycle](https://docs.nebius.com/compute/virtual-machines/preemptible).
 
-## What you need
+## What we index
 
-- macOS or Ubuntu, Git and **Python 3.10+**. The local tools use Python's standard library.
-- A billing-enabled Nebius project in **eu-north1**, permission to create Endpoints and quota for **one preemptible L40S**.
+A document here is one Wikipedia reference passage from **Databricks Dolly 15k**, not a full article. The pinned selection contains **1,000 distinct passages, 219,197 words and 1,367,367 UTF-8 text bytes**. Paragraph-aware chunking at 160 words produces **1,970 chunks**. Stable source-line IDs, hashes, source links and the **CC BY-SA 3.0** license travel with the input. Instructions are display titles; answers are excluded. [Selection and attribution](vm/data/SOURCE.md).
 
-## 1. Get the files and real corpus
+The worker saves and validates each chunk before marking its document complete. A document is complete only when all required chunks are durable. On resume it validates saved state and reuses completed work. Changed input, model revision, encoder settings or chunking requires a new output prefix. Use **one writer per prefix**.
 
-```bash
-git clone https://github.com/MarouaneKhoukh/nebius-serverless-cookbooks.git
-cd nebius-serverless-cookbooks/document-search
-python3 scripts/prepare_data.py
-```
+## 1. Prepare the bucket and VM
 
-Run all remaining commands from this directory. Preparation downloads the official **Python 3.13.9** text archive, verifies its checksum and the selected files, and retains the PSF license. The result is 55 documents in `data/documents/`. [Data provenance and license](data/SOURCE.md).
-
-Try the CPU baseline before renting a GPU:
+You need a billing-enabled **eu-north1** project, permission and quota for one GPU VM, an internet-enabled subnet, SSH on your computer, and an Object Storage bucket in that project. On your computer, prepare an SSH key; choose another filename if this exists:
 
 ```bash
-python3 scripts/run_baseline.py --output-dir results-bm25
+ssh-keygen -t ed25519 -f "$HOME/.ssh/document-search-vm"
+cat "$HOME/.ssh/document-search-vm.pub"
 ```
 
-Open `results-bm25/report.html`. BM25 searches the same chunks by words. If it meets your needs, use it; the GPU path lets you compare a semantic model on these same questions.
+In the [console](https://console.nebius.com), select your project. Under **Object Storage → Buckets**, create a private Standard bucket or reuse one you can write to. Use a dedicated prefix such as `document-search-video-01` and preserve unrelated objects.
 
-## 2. Sign in to Nebius
+For fresh S3 access, an administrator can create a service account and a group granting **`storage.object-editor` on this bucket**, then add the account to that group. Under the service account's **Access keys**, create an expiring S3 access key. Keep its ID and secret for the masked prompts below. Bucket creation requires separate bucket-management permissions. Nebius CLI OAuth sign-in does not supply S3 credentials. [Roles](https://docs.nebius.com/iam/authorization/roles), [access keys](https://docs.nebius.com/iam/service-accounts/access-keys).
 
-Install the CLI if needed:
+Under **Compute → Virtual machines → Create virtual machine**, select:
+
+- **Compute:** Pay-as-you-go, **Preemptible**, **L40S AMD** (`gpu-l40s-d`), **1 GPU / 16 vCPU / 96 GiB**, name `document-search-video`.
+- **Pricing:** **Follows spot price**. L40S has **flat preemptible pricing**; this run does not demonstrate a changing spot price. The video's general price-policy explanation is separate: a cap on a dynamically priced platform limits its accepted GPU-hour rate, without guaranteeing capacity. Check the current full quote. [Compute pricing](https://docs.nebius.com/compute/resources/pricing), [pricing policies](https://docs.nebius.com/signup-billing/pricing-policy).
+- **Boot disk:** Ubuntu 24.04 LTS for NVIDIA GPUs **CUDA 13**, **80 GiB network SSD**.
+- **Network:** reuse your internet-enabled subnet, assign a public IPv4, and allow TCP 22 from your current public IP.
+- **SSH:** username `cookbook`, your **public** key above. Review the quote, create the VM and record its ID.
+
+Wait for **Running** and SSH initialization. Compare its host fingerprint from serial logs with the first SSH prompt. Copy the public IP and connect from your computer:
 
 ```bash
-curl -sSL https://artifacts.nebius.cloud/cli/install.sh | bash
+export VM_IP="YOUR_VM_PUBLIC_IP"
+ssh -i "$HOME/.ssh/document-search-vm" "cookbook@$VM_IP"
 ```
 
-Open a new terminal and return to this directory. Use CLI **0.12.303+**; run `nebius update` if yours is older. Copy your project ID from the [console](https://console.nebius.com), replace the placeholder and complete browser sign-in:
+## 2. Install and prepare on the VM
+
+In the **VM's SSH terminal**, run:
 
 ```bash
-export AI_AGENT="${AI_AGENT:-cookbook}"
-nebius version
-export NEBIUS_PROJECT_ID="YOUR_PROJECT_ID"
-nebius profile create cookbook --parent-id "$NEBIUS_PROJECT_ID"
-nebius profile activate cookbook
-nebius iam whoami
+git clone https://github.com/MarouaneKhoukh/nebius-serverless-cookbooks.git &&
+cd nebius-serverless-cookbooks/document-search &&
+python3 -m venv .venv &&
+source .venv/bin/activate &&
+python -m pip install -r vm/requirements.txt &&
+nvidia-smi
 ```
 
-Already signed in to this project? Activate that profile instead of creating `cookbook`.
+If `venv` is unavailable, install it with `sudo apt-get update && sudo apt-get install -y python3-venv`, then rerun the venv and package-install commands from the cookbook folder. Use Ubuntu's Python 3.10–3.12. The public model needs no Hugging Face token; its exact revision is pinned in [vm/runtime.json](vm/runtime.json).
 
-Choose a **subnet**, the Endpoint's network, with outbound internet access for model downloads. Copy its `metadata.id`:
+In that VM terminal, replace the bucket placeholder and enter your S3 key privately:
 
 ```bash
-nebius vpc subnet list --parent-id "$NEBIUS_PROJECT_ID" --format json
-export NEBIUS_SUBNET_ID="YOUR_SUBNET_ID"
+export S3_ENDPOINT_URL="https://storage.eu-north1.nebius.cloud"
+export AWS_DEFAULT_REGION="eu-north1"
+export RUN_ROOT="s3://YOUR_BUCKET/document-search-video-01"
+read -rs -p "S3 access key ID: " AWS_ACCESS_KEY_ID; printf '\n'
+read -rs -p "S3 secret access key: " AWS_SECRET_ACCESS_KEY; printf '\n'
+export AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY
+
+python scripts/prepare_vm_data.py &&
+python -m vm.cli upload-inputs --store "$RUN_ROOT/inputs"
 ```
 
-<details>
-<summary>If the project has no subnet</summary>
+Preparation verifies the source checksum and every selected passage, and reports its own elapsed time. Uploading saves the documents, pinned manifest, license and attribution outside the VM. Credentials live in this shell environment; enter them again in a fresh SSH session. Keep the bucket and `RUN_ROOT` when resuming.
+
+## 3. Finish all 1,000 documents first
+
+On the VM:
 
 ```bash
-export NEBIUS_NETWORK_ID="$(nebius vpc network create --parent-id "$NEBIUS_PROJECT_ID" --name cookbook-network --format jsonpath='{.metadata.id}')"
-export NEBIUS_SUBNET_ID="$(nebius vpc subnet create --parent-id "$NEBIUS_PROJECT_ID" --name cookbook-subnet --network-id "$NEBIUS_NETWORK_ID" --format jsonpath='{.metadata.id}')"
+mkdir -p .state &&
+python -m vm.cli index --store "$RUN_ROOT/success" --report .state/success.json &&
+python -m vm.cli verify --store "$RUN_ROOT/success"
 ```
 
-New networks have a default internet route. Use an approved subnet if your company manages networking.
+Expect **1,000 completed documents, 1,970 saved chunks, 0 remaining**. Model loading, saved-state scanning, embedding and saving are timed separately. No fixed runtime is promised. Repeating a complete run reuses every document without new document-embedding work.
 
-</details>
-
-## 3. Start the embedding model
-
-The [configuration](config/endpoint.json) uses **Qwen/Qwen3-Embedding-0.6B**, the vLLM **0.19.1** pooling runner, one L40S and a **500 GiB temporary disk**. The model is public; no Hugging Face token is required.
-
-Check the rate under **Serverless AI → Endpoints → Create endpoint → Preemptible**. L40S currently has a [flat preemptible rate](https://nebius.com/prices), although the CLI calls its setting **Follow Spot price**. Model loading and idle time are billable.
-
-Preview, create and wait for the model API:
+Search the completed collection:
 
 ```bash
-python3 scripts/endpoint.py create \
-  --project-id "$NEBIUS_PROJECT_ID" --subnet-id "$NEBIUS_SUBNET_ID" \
-  --name cookbook-python-doc-search --dry-run
-
-python3 scripts/endpoint.py create \
-  --project-id "$NEBIUS_PROJECT_ID" --subnet-id "$NEBIUS_SUBNET_ID" \
-  --name cookbook-python-doc-search --yes
-
-python3 scripts/endpoint.py wait --timeout 1800
+python -m vm.cli query --store "$RUN_ROOT/success" \
+  --text "What happens in chess when a player has no legal moves but is not in check?" \
+  --output-dir results-vm-search
 ```
 
-The helper passes the Endpoint URL and token privately to client commands. If readiness times out, inspect Endpoint logs and stop unused compute.
-
-<details>
-<summary>Reuse an existing embedding Endpoint</summary>
-
-Instead of creating one, copy the ID of a preemptible Endpoint serving this exact embedding model with the pooling runner:
+The terminal prints passages and links to their exact source records. `results-vm-search/search.html` is a readable report labelled **Powered by Nebius Compute**. Scores express similarity, not answer confidence. View it from a **second terminal on your computer**:
 
 ```bash
-python3 scripts/endpoint.py attach --project-id "$NEBIUS_PROJECT_ID" --id YOUR_ENDPOINT_ID
-python3 scripts/endpoint.py wait --timeout 1800
+scp -i "$HOME/.ssh/document-search-vm" -r \
+  "cookbook@$VM_IP:nebius-serverless-cookbooks/document-search/results-vm-search" .
+open results-vm-search/search.html
 ```
 
-A chat model Endpoint cannot create the required embedding vectors.
+On Ubuntu with a desktop, use `xdg-open` instead of `open`.
 
-</details>
+## 4. Run the separate controlled 600 plus 400 scenario
 
-<details>
-<summary>Run with an agent</summary>
-
-Install the [Nebius skills](https://github.com/nebius/skills#install) for an agent with terminal access and the signed-in CLI, then paste:
-
-```text
-Run document-search in MarouaneKhoukh/nebius-serverless-cookbooks.
-Use nebius-cloud-basics and nebius-serverless-endpoints in project
-<PROJECT_ID> and subnet <SUBNET_ID>. Follow config/endpoint.json.
-Prepare the pinned Python corpus. Show the price and confirm before
-launching unapproved compute. Index all 2,138 chunks, verify saved
-results, compare the 12 FAQ queries with BM25, then stop only this
-Endpoint and verify STOPPED. Keep tokens private.
-```
-
-</details>
-
-## 4. Save the document vectors
+Use a **new output prefix**, separate from the successful run. This command deliberately stops after 600 previously unfinished documents are durable:
 
 ```bash
-python3 scripts/endpoint.py run -- \
-  python3 src/embed.py index --input-dir data/documents \
-  --output-dir results --batch-size 16
-
-python3 scripts/check_result.py --input-dir data/documents --output-dir results
+python -m vm.cli index --store "$RUN_ROOT/recovery" \
+  --stop-after-documents 600 --report .state/recovery-before.json &&
+python -m vm.cli status --store "$RUN_ROOT/recovery"
 ```
 
-Expect **55 documents, 2,138 saved chunks and 1,024 dimensions**. Each completed chunk is saved independently on your computer. The checker verifies IDs, source text, vector/metadata alignment and the retained license.
+Expect **600 complete documents, 400 remaining**, with **1,206 chunks saved**. This is a controlled application stop, not a provider preemption. In the console, stop **only this VM**, wait for **Stopped**, then start it when capacity and your pricing conditions permit. Measure restart time separately. Capacity is not guaranteed.
 
-`vectors.jsonl` and `metadata.jsonl` are the reusable collection. Keep them together. The HTML is only a report view; you can use the exported data with your own interface or vector database.
-
-## 5. Search and compare
+Copy its current public IP again; it can change. Reconnect with SSH. In the **new VM session**, activate the environment, repeat the credential and `RUN_ROOT` exports above, and restore the input from Object Storage:
 
 ```bash
-python3 scripts/endpoint.py run -- \
-  python3 src/embed.py query --output-dir results \
-  --text "How do I copy a file?" --top-k 5
+cd nebius-serverless-cookbooks/document-search &&
+source .venv/bin/activate &&
+python -m vm.cli download-inputs --data data/restored-documents --store "$RUN_ROOT/inputs" &&
+python -m vm.cli index --data data/restored-documents --store "$RUN_ROOT/recovery" \
+  --report .state/recovery-after.json &&
+python -m vm.cli verify --data data/restored-documents --store "$RUN_ROOT/recovery"
 ```
 
-Open **`results/search.html`** and follow a source link to read the original reference. A similarity score expresses closeness, not the probability that a passage answers the question.
+Expect **600 documents reused, 400 newly completed, 1,000 complete**: 1,206 chunks reused and 764 added. The application finds progress by reading and validating S3 chunk objects and completion markers under the same prefix. It does not read a local progress file. A replacement compatible VM can do the same after installing these dependencies and downloading the pinned input.
 
-Run all twelve FAQ checks against Qwen and BM25:
+Attached network disks survive a normal stop, but processes and RAM do not. Keeping inputs, vectors and progress in Object Storage also lets this application recover without retaining the VM or its disk. [Stop/start behavior](https://docs.nebius.com/compute/virtual-machines/stop-start).
+
+## 5. Interrupt an unfinished batch
+
+This **third prefix** deliberately hard-exits after one verified chunk save, before its document completion marker. It returns exit code **75**:
 
 ```bash
-python3 scripts/endpoint.py run -- \
-  python3 src/embed.py check --output-dir results \
-  --queries data/queries.json --top-k 5
-
-python3 scripts/check_result.py --input-dir data/documents \
-  --output-dir results --require-checks
+python -m vm.cli index --store "$RUN_ROOT/unfinished-batch" --crash-after-saved-chunks 1
 ```
 
-Open **`results/retrieval-checks.html`**. The report shows both methods' ranked source documents and source hit rates. The FAQ answers are excluded from the index. Expected sources are curated from the FAQ's reference modules; these are diagnostic checks, not a blind benchmark or exhaustive relevance judgments. Inspect passages before choosing a search method. [Validation notes](VALIDATION.md).
-
-![Recorded retrieval checks against the Python documentation](docs/media/result.jpg)
-
-**Powered by Nebius Serverless AI**
-
-In the [recorded checks](docs/sample-results/), an expected reference appeared among the first five chunks for **11/12 questions with Qwen** and **10/12 with BM25**. These counts apply to the curated source checks above; inspect the returned passages as well.
-
-## 6. Resume or stop
-
-To check saved progress deliberately, use a new output directory and add `--limit-chunks 64` to the index command. Repeat the command without that limit: it should reuse 64 chunks and finish 2,074. Rerunning a complete index sends no new document-embedding requests.
-
-After an actual interruption, keep the original documents, settings and output directory. When capacity is available, explicitly start the Endpoint, wait, then repeat indexing:
+Inspect it and resume in a fresh process:
 
 ```bash
-python3 scripts/endpoint.py start
-python3 scripts/endpoint.py wait --timeout 1800
-python3 scripts/endpoint.py run -- \
-  python3 src/embed.py index --input-dir data/documents --output-dir results --batch-size 16
+python -m vm.cli status --store "$RUN_ROOT/unfinished-batch" &&
+python -m vm.cli index --store "$RUN_ROOT/unfinished-batch" --report .state/unfinished-resumed.json &&
+python -m vm.cli verify --store "$RUN_ROOT/unfinished-batch"
 ```
 
-An unfinished chunk may run again. Finish the collection before querying. A new question needs the Endpoint running.
+Before resuming, expect **one saved chunk and no complete documents**. The worker must reuse that chunk and finish the collection. Embeddings computed but not saved before exit may run again. The first batch is computed normally; no delays are added. This controlled process failure is not a Nebius preemption.
 
-Stop when finished, including after retries:
+## 6. Save results and clean up
 
-```bash
-python3 scripts/endpoint.py stop
-python3 scripts/endpoint.py status
-```
+Each output prefix holds immutable `run.json`, `chunks/` results and `documents/` completion markers. Timing records are in its sibling prefix, such as `success-measurements/`. Local `.state/*.json` files are report copies, not recovery state. Retain the input and result prefixes together.
 
-Verify **STOPPED** to release the GPU and temporary disk. Local vectors and reports remain. Until stopped, the Endpoint stays billable between requests.
+After saving reports and measurements, stop this VM and verify **Stopped**. Delete its VM and test boot disk if no longer needed; check its public IP allocation and dedicated SSH credential were removed. A stopped VM can retain billable disks. Preserve reused networking and buckets. Revoke only an access key created for this recipe. Object Storage results remain until you deliberately remove the recipe's prefixes.
 
-## Use your own documents
-
-Use UTF-8 `.txt` or `.md` files, up to 5 MiB each, in a separate folder and change `--input-dir`. Extract PDF text first. Choose a new output directory when changing documents, chunking or model settings. The included source checks apply only to the pinned Python corpus.
-
-For quota or capacity errors, check the console and retry when capacity is available. For changed-file errors, restore the original corpus with `scripts/prepare_data.py` or use a new input/output directory. Local checks create no cloud resources:
+## Validation and the Endpoint alternative
 
 ```bash
 python3 -m unittest discover -s tests -q
 ```
+
+Offline tests cover fresh-process recovery, partial writes, corruption and incompatible settings with fixture embeddings. They do not establish GPU performance. Plain local `--store` paths are for tests; the VM lesson uses `s3://` Object Storage.
+
+[VALIDATION.md](VALIDATION.md) separates offline checks, controlled tests and actual live execution. The earlier code and results remain in [ENDPOINT.md](ENDPOINT.md) and [ENDPOINT_VALIDATION.md](ENDPOINT_VALIDATION.md). Serverless branding applies only to that separate route.

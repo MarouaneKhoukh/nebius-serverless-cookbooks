@@ -1,0 +1,72 @@
+"""Optional real-corpus integration proof. Encoding is explicitly a test fixture."""
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+import tempfile
+import unittest
+
+ROOT = Path(__file__).resolve().parents[1]
+DATA = ROOT / "data/vm-documents"
+WORKER = r'''
+import hashlib,json,os,sys
+from pathlib import Path
+from vm.data import load_documents,manifest_digest
+from vm.durable import LocalStore,RunConfig,index_documents,inspect_documents
+data,output,mode=sys.argv[1:]
+config=RunConfig(manifest_digest(Path(data)),"offline-fixture-not-qwen","0"*40,8,160,{"fixture":True})
+documents=load_documents(Path(data));calls=0
+def encode(texts):
+    global calls
+    calls+=len(texts)
+    return [[(x+1)/256 for x in hashlib.sha256(text.encode()).digest()[:8]] for text in texts]
+def crash(_record):
+    os._exit(75)
+stats=index_documents(documents,LocalStore(output),encode,config,batch_size=16,
+                      stop_after_documents=600 if mode=="600" else None,
+                      after_chunk_saved=crash if mode=="crash" else None)
+verified=inspect_documents(documents,LocalStore(output),config)["stats"]
+assert verified["documents_completed"]==stats["documents_completed"]
+print(json.dumps({"stats":stats,"encoded_chunks":calls}))
+'''
+
+
+@unittest.skipUnless((DATA / "manifest.json").is_file(), "Prepare the real corpus with scripts/prepare_vm_data.py first")
+class RealCorpusRecoveryTests(unittest.TestCase):
+    def test_success_then_separate_fresh_process_resume_and_unfinished_batch(self):
+        with tempfile.TemporaryDirectory() as temp:
+            def run(name, mode="full", exit_code=0):
+                result = subprocess.run([sys.executable, "-c", WORKER, str(DATA), str(Path(temp)/name), mode],
+                                        cwd=ROOT, capture_output=True, text=True, timeout=90)
+                self.assertEqual(result.returncode, exit_code, result.stderr)
+                return json.loads(result.stdout) if result.stdout else None
+            success = run("success")
+            self.assertEqual(success["stats"]["documents_completed"],1000)
+            self.assertEqual(success["encoded_chunks"],1970)
+            before = run("recovery","600")
+            self.assertEqual(before["stats"]["documents_completed"],600)
+            self.assertEqual(before["encoded_chunks"],1206)
+            resumed = run("recovery")
+            self.assertEqual(resumed["stats"]["documents_reused"],600)
+            self.assertEqual(resumed["stats"]["documents_new"],400)
+            self.assertEqual(resumed["encoded_chunks"],764)
+            run("unfinished","crash",75)
+            unfinished = run("unfinished")
+            self.assertEqual(unfinished["stats"]["documents_reused"],0)
+            self.assertEqual(unfinished["stats"]["chunks_reused"],1)
+            self.assertEqual(unfinished["encoded_chunks"],1969)
+            reused = run("success")
+            self.assertEqual(reused["encoded_chunks"],0)
+            for item in [success,resumed,unfinished,reused]:
+                self.assertTrue(item["stats"]["complete"])
+                self.assertEqual(item["stats"]["chunks_saved"],1970)
+            report = os.environ.get("VM_SCENARIO_REPORT")
+            if report:
+                Path(report).parent.mkdir(parents=True,exist_ok=True)
+                Path(report).write_text(json.dumps({
+                    "scope":"Offline recovery on the pinned 1,000 real passages; local files, not Object Storage or a cloud VM",
+                    "encoding":"Deterministic eight-dimensional test fixture, NOT Qwen embeddings or a performance benchmark",
+                    "processes":"Each phase ran in a new Python subprocess",
+                    "success":success,"controlled_600":before,"resume_400":resumed,
+                    "unfinished_batch_resume":unfinished,"complete_rerun":reused},indent=2)+"\n")
