@@ -10,7 +10,7 @@ difficulty: intermediate
 
 # Save Your Progress with Preemptible Serverless Jobs
 
-Preemptible GPUs cost less than regular capacity, but work can be interrupted when capacity is reclaimed. Save each finished document to Object Storage as you go. If a Job stops, submit another Job with the same settings and storage location. It skips the saved documents and finishes what remains.
+Preemptible GPUs let you use spare capacity at lower rates, but work can be interrupted when that capacity is reclaimed. Save each finished document to Object Storage as you go. If a Job stops, submit another Job with the same settings and storage location. It skips the saved documents and finishes what remains.
 
 This example builds a searchable index of **1,000 distinct Dolly reference passages**, using Qwen3-Embedding-0.6B. They produce **1,970 chunks**. Serverless handles the GPU environment and releases compute when each Job finishes; you manage no VM or SSH connection. [Data and license](worker/data/SOURCE.md).
 
@@ -27,10 +27,10 @@ nebius profile create
 Complete the CLI sign-in and select your project. In the [console](https://console.nebius.com), prepare:
 
 - A private **Object Storage bucket**. Create an [S3 access key](https://docs.nebius.com/iam/service-accounts/access-keys) for a service account with `storage.object-editor` access to that bucket.
-- A **SecretStash secret** with two text entries: `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`, containing that access key's ID and secret. Copy the secret's `mbsec-…` ID. Keep the values out of your code and terminal commands. [SecretStash instructions](https://docs.nebius.com/mysterybox/secrets/create).
+- A **SecretStash secret**: open **Cryptography → SecretStash → Create secret**, name it `document-index-s3`, and add two text entries: `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`, containing that access key's ID and secret (use **Add pair** for the second entry). Copy the secret's `mbsec-…` ID. Keep the values out of your code and terminal commands. [SecretStash instructions](https://docs.nebius.com/mysterybox/secrets/create).
 - Your **project ID** and **subnet ID**, available on their console pages.
 
-Save these non-secret settings locally. Replace every `YOUR_…` value and use a fresh bucket prefix:
+Your account needs permission to create Jobs and read the secret payload (`mysterybox.payload-viewer`, included in `admin`). Save these non-secret settings locally. Replace every `YOUR_…` value and use a fresh bucket prefix. When repeating this guide, choose new Job names too:
 
 ```bash
 cat > .env <<'ENV'
@@ -42,14 +42,14 @@ ENV
 source .env
 ```
 
-The launcher uses one preemptible **L40S AMD GPU**, an 80 GiB temporary disk, no automatic retries and a **one-hour timeout per Job**. Review the current [price](https://nebius.com/prices) before submitting. L40S has flat preemptible pricing; the required CLI flag `--follows-spot-price` does not make this a changing-price demonstration. Setup, model download and execution all use billable compute.
+The launcher uses one preemptible **L40S AMD GPU**, an 80 GiB temporary disk, no automatic retries and a **one-hour timeout per Job**. Review the current [price](https://nebius.com/prices) before submitting. Setup, model download and execution all use billable compute.
 
 ## 2 Save the first 600 documents
 
 Validate the configuration, then submit:
 
 ```bash
-JOB_NAME=document-index-first bash scripts/submit.sh --dry-run
+JOB_NAME=document-index-first bash scripts/submit.sh --dry-run &&
 JOB_NAME=document-index-first bash scripts/submit.sh --async
 ```
 
@@ -59,7 +59,7 @@ This deliberate pause after 600 documents is a controlled interruption test, not
 
 ## 3 Resume in a new Job
 
-Submit the same workload under a new Job name:
+If you closed your terminal, return to this cookbook folder and run `source .env` first. Submit the same workload under a new Job name:
 
 ```bash
 JOB_NAME=document-index-resume bash scripts/submit.sh --async
@@ -67,7 +67,7 @@ JOB_NAME=document-index-resume bash scripts/submit.sh --async
 
 The new container downloads the same pinned input and model. It reads saved progress and prints **“600 documents already saved, 400 to go.”** It should finish with **400 new, 600 reused, 0 remaining**: **1,000 complete documents / 1,970 chunks**.
 
-If you closed your terminal, return to this folder and run `source .env` first. There are no credentials to re-enter: Serverless injects them from SecretStash into each Job.
+There are no credentials to re-enter: Serverless injects them from SecretStash into each Job.
 
 ## 4 Search the index
 

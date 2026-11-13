@@ -1,8 +1,0 @@
-{
-  "stop_to_observed_seconds": 46.729,
-  "start_to_observed_ssh_seconds": 57.817306995391846,
-  "boot_id_changed": true,
-  "measurement_note": "Observed end-to-end readiness interval includes UI polling and operator time; cached disk/model retained.",
-  "creation_to_observed_host_key_seconds": 73.9679024219513,
-  "initial_startup_note": "Observed interval includes console/operator work and polling; not pure boot time"
-}

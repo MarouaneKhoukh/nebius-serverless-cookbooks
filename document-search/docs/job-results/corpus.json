@@ -1,17 +1,15 @@
 {
-  "scope": "Real pinned corpus preparation and local verified loading; no embedding/model/VM execution",
+  "scope": "Current corpus preparation from a cached pinned source; no GPU execution in this measurement",
   "dataset": "Databricks Dolly 15k reference passages",
   "revision": "bdd27f4d94b9c1f951818a7da7fd7aeea5dbff1a",
   "manifest_sha256": "288db1b5b9470a8e2e0278eb2f00e0a4c0a268048bb882292259fecd1cf9dd9a",
-  "documents_sha256": "c4a2c171870431386f8188b13e06159181dc7f25f59abaf46cb703473a7c7785",
   "counts": {
-    "chunks_160_words": 1970,
     "documents": 1000,
+    "words": 219197,
     "text_bytes": 1367367,
-    "words": 219197
+    "chunks_160_words": 1970
   },
-  "preparation_seconds_cached": 0.147,
-  "download_timing": "Not measured as a complete preparation benchmark; the source was already downloaded",
+  "preparation_seconds_cached": 0.06013779199565761,
   "document_words": {
     "min": 80,
     "median": 158.5,
@@ -20,7 +18,7 @@
   },
   "document_text_bytes": {
     "min": 433,
-    "median": 969,
+    "median": 969.0,
     "p95": 3088,
     "max": 21189
   }

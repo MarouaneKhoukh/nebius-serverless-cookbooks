@@ -1,5 +1,5 @@
 {
-  "scope": "Offline recovery on the pinned 1,000 real passages; local files, not Object Storage or a cloud VM",
+  "scope": "Offline recovery on the pinned 1,000 real passages; local files, not Object Storage or a Serverless Job",
   "encoding": "Deterministic eight-dimensional test fixture, NOT Qwen embeddings or a performance benchmark",
   "processes": "Each phase ran in a new Python subprocess",
   "controlled_600": {
@@ -16,10 +16,10 @@
       "chunks_new": 1206,
       "chunks_remaining": 764,
       "complete": false,
-      "scan_seconds": 0.01747774999239482,
-      "embedding_seconds": 0.0031685771245975047,
-      "save_seconds": 0.11408316089364234,
-      "wall_seconds": 0.1356443330005277
+      "scan_seconds": 0.017460125003708526,
+      "embedding_seconds": 0.0032952301407931373,
+      "save_seconds": 0.11981896426004823,
+      "wall_seconds": 0.14154445899475832
     },
     "encoded_chunks": 1206
   },
@@ -37,10 +37,10 @@
       "chunks_new": 764,
       "chunks_remaining": 0,
       "complete": true,
-      "scan_seconds": 0.044140875004814006,
-      "embedding_seconds": 0.002180339943151921,
-      "save_seconds": 0.07702237665944267,
-      "wall_seconds": 0.12417366700537968
+      "scan_seconds": 0.044026000003213994,
+      "embedding_seconds": 0.0019478799222270027,
+      "save_seconds": 0.07628003186255228,
+      "wall_seconds": 0.1230627079930855
     },
     "encoded_chunks": 764
   },
@@ -58,10 +58,10 @@
       "chunks_new": 0,
       "chunks_remaining": 1955,
       "complete": false,
-      "scan_seconds": 0.019232457998441532,
+      "scan_seconds": 0.019596958998590708,
       "embedding_seconds": 0.0,
       "save_seconds": 0.0,
-      "wall_seconds": 0.019256917003076524
+      "wall_seconds": 0.019619792001321912
     },
     "encoded_chunks": 0
   },
@@ -79,10 +79,10 @@
       "chunks_new": 1955,
       "chunks_remaining": 0,
       "complete": true,
-      "scan_seconds": 0.01818470799480565,
-      "embedding_seconds": 0.004979191071470268,
-      "save_seconds": 0.18761574309610296,
-      "wall_seconds": 0.2121791670069797
+      "scan_seconds": 0.020094040999538265,
+      "embedding_seconds": 0.004779992988915183,
+      "save_seconds": 0.18794975262426306,
+      "wall_seconds": 0.21420104100252502
     },
     "encoded_chunks": 1955
   },
@@ -100,10 +100,10 @@
       "chunks_new": 0,
       "chunks_remaining": 0,
       "complete": true,
-      "scan_seconds": 0.06236170799820684,
+      "scan_seconds": 0.06285804101207759,
       "embedding_seconds": 0.0,
       "save_seconds": 0.0,
-      "wall_seconds": 0.06257683300646022
+      "wall_seconds": 0.06309045800298918
     },
     "encoded_chunks": 0
   }
