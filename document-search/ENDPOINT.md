@@ -12,7 +12,7 @@ difficulty: beginner
 
 # Search the Python Docs by Meaning
 
-This is the separate Serverless Endpoint route: 55 Python documents, indexed from your computer. For the standalone preemptible VM companion and its 1,000-document recovery example, use [README.md](README.md).
+This is the separate Serverless Endpoint route: 55 Python documents, indexed from your computer. For the Serverless Job route and its 1,000-document search index, use [README.md](README.md).
 
 Search **55 real Python standard-library reference documents** with Qwen3-Embedding-0.6B. You'll save **2,138 passage embeddings**, ask a question and inspect the sources in a browser report. Twelve original Python FAQ questions let you compare semantic retrieval with a CPU keyword baseline.
 

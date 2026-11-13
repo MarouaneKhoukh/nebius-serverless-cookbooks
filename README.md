@@ -15,5 +15,5 @@ Start with the batch-classification workflow. The evaluation and training recipe
 The other cookbooks work with video, documents and photos:
 
 - [Generate Video Clips from a List of Prompts](batch-video-generation/README.md) — run eight published VBench prompts through Wan and reuse completed MP4 downloads.
-- [Save Your Progress with Preemptible Serverless Jobs](document-search/README.md) — save finished documents to Object Storage, then submit a new Job that skips them and finishes the index.
+- [Build a Document Search Index with a Serverless Job](document-search/README.md) — index 1,000 documents with Qwen, save embeddings to Object Storage and search the collection by meaning.
 - [Search Your Photos and Create New Images](photo-video-ai-search/README.md) — search photos with Qwen3-VL and create missing images with FLUX.

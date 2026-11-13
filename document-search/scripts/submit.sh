@@ -20,7 +20,7 @@ nebius ai job create \
   --env "S3_ENDPOINT_URL=https://storage.eu-north1.nebius.cloud" \
   --env "AWS_DEFAULT_REGION=eu-north1" \
   --env "RECIPE_REF=${RECIPE_REF:-main}" \
-  --env "MAX_NEW_DOCUMENTS=${MAX_NEW_DOCUMENTS:-600}" \
+  --env "MAX_NEW_DOCUMENTS=${MAX_NEW_DOCUMENTS:-0}" \
   --env "CRASH_AFTER_CHUNKS=${CRASH_AFTER_CHUNKS:-}" \
   --env PYTHONUNBUFFERED=1 \
   --env-secret "AWS_ACCESS_KEY_ID=$S3_SECRET_ID" \

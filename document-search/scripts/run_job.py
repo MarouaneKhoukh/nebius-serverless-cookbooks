@@ -54,7 +54,7 @@ def main():
     run_root = os.environ["RUN_ROOT"].rstrip("/")
     report_file = WORKSPACE / ".state/index.json"
     args = ["index", "--store", run_root + "/index", "--report", str(report_file)]
-    limit = int(os.environ.get("MAX_NEW_DOCUMENTS", "600"))
+    limit = int(os.environ.get("MAX_NEW_DOCUMENTS", "0"))
     if limit:
         args += ["--max-new-documents", str(limit)]
     if os.environ.get("CRASH_AFTER_CHUNKS"):

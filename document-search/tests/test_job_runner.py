@@ -5,6 +5,7 @@ import io
 import json
 import os
 from pathlib import Path
+import subprocess
 import tempfile
 import unittest
 from unittest.mock import Mock, patch
@@ -16,7 +17,7 @@ spec.loader.exec_module(runner)
 
 
 class JobRunnerTests(unittest.TestCase):
-    def execute(self, *, complete=False, index_code=0, extra_env=None):
+    def execute(self, *, complete=True, index_code=0, extra_env=None):
         with tempfile.TemporaryDirectory() as temp:
             folder = Path(temp)
             calls, output = [], io.StringIO()
@@ -36,7 +37,7 @@ class JobRunnerTests(unittest.TestCase):
                     report = folder / ".state/index.json"
                     report.parent.mkdir()
                     report.write_text(json.dumps({"complete": complete, "documents_total": 1000, "documents_completed": 1000 if complete else 600,
-                        "documents_reused": 600 if complete else 0, "documents_new": 400 if complete else 600,
+                        "documents_reused": 0, "documents_new": 1000 if complete else 600,
                         "documents_remaining": 0 if complete else 400, "chunks_saved": 1970 if complete else 1206}))
                 else:
                     target = Path(args[args.index("--output-dir") + 1])
@@ -59,8 +60,9 @@ class JobRunnerTests(unittest.TestCase):
             self.assertIn("transformers==4.51.3", pip.call_args.args[0])
             return code, calls, store, load.return_value[2], output.getvalue()
 
-    def test_first_job_indexes_600_and_publishes_report_without_query(self):
-        code, calls, store, open_store, output = self.execute()
+    def test_explicit_600_limit_publishes_report_without_query(self):
+        code, calls, store, open_store, output = self.execute(
+            complete=False, extra_env={"MAX_NEW_DOCUMENTS": "600"})
         self.assertEqual(code, 0)
         self.assertEqual([args[0] for args in calls], ["index"])
         self.assertEqual(calls[0][calls[0].index("--max-new-documents") + 1], "600")
@@ -72,14 +74,35 @@ class JobRunnerTests(unittest.TestCase):
         store.put.assert_not_called()
         self.assertIn("s3://test-bucket/recipe/outputs/", output)
 
-    def test_completed_job_searches_and_publishes_both_results(self):
+    def test_default_job_indexes_all_and_publishes_search_results(self):
         code, calls, store, _, output = self.execute(
-            complete=True, extra_env={"MAX_NEW_DOCUMENTS": "0", "SEARCH_QUERY": "chess draw"})
+            extra_env={"SEARCH_QUERY": "chess draw"})
         self.assertEqual(code, 0)
         self.assertNotIn("--max-new-documents", calls[0])
+        report = store.put_json.call_args.args[1]
+        self.assertEqual((report["documents_completed"], report["documents_new"], report["documents_reused"]),
+                         (1000, 1000, 0))
         self.assertEqual(calls[1][:5], ["query", "--store", "s3://test-bucket/recipe/index", "--text", "chess draw"])
         self.assertEqual([c.args[0] for c in store.put.call_args_list], ["search.json", "search.html"])
         self.assertIn("s3://test-bucket/recipe/outputs/search.html", output)
+
+    def test_launcher_defaults_to_no_cap_and_forwards_explicit_limit(self):
+        with tempfile.TemporaryDirectory() as temp:
+            executable = Path(temp) / "nebius"
+            executable.write_text('#!/bin/sh\nprintf "%s\\n" "$@"\n')
+            executable.chmod(0o755)
+            env = {"PATH": temp + os.pathsep + os.defpath, "NEBIUS_PROJECT_ID": "project-fixture",
+                   "NEBIUS_SUBNET_ID": "vpcsubnet-fixture", "S3_SECRET_ID": "mbsec-fixture",
+                   "RUN_ROOT": "s3://fixture-bucket/run", "JOB_NAME": "document-index"}
+            for extra, expected in (({}, "0"), ({"MAX_NEW_DOCUMENTS": "600"}, "600")):
+                with self.subTest(limit=expected):
+                    result = subprocess.run(["bash", str(ROOT / "scripts/submit.sh"), "--dry-run"],
+                                            cwd=temp, env={**env, **extra}, capture_output=True,
+                                            text=True, check=True)
+                    args = result.stdout.splitlines()
+                    position = args.index("MAX_NEW_DOCUMENTS=" + expected)
+                    self.assertEqual(args[position - 1], "--env")
+                    self.assertEqual(args[-1], "--dry-run")
 
     def test_index_failure_does_not_publish_or_search(self):
         code, calls, store, open_store, _ = self.execute(index_code=1)
