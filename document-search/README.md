@@ -76,7 +76,7 @@ In Object Storage → your bucket → document-index-demo-01 → outputs, downlo
 
 Check that `document-index` is Completed. Cancel an unfinished attempt under Serverless AI → Jobs → ⋯ → Cancel. Completed Jobs release their compute; the saved index and reports remain in Object Storage.
 
-When you no longer need the data, remove only this run's bucket prefix and temporary SecretStash secret. Preserve shared buckets, access keys and networking. Choose new Job names and fresh prefixes when repeating the guide.
+Keep the secret and `.env` if continuing to the optional test below. When you no longer need the data, remove only this run's bucket prefix and temporary SecretStash secret. Preserve shared buckets, access keys and networking. Choose new Job names and fresh prefixes when repeating the guide.
 
 ## 5 What if the Job is interrupted?
 

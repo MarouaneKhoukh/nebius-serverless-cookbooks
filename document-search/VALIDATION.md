@@ -1,64 +1,49 @@
 # Validation
 
-## Live Serverless execution
+## Current full-index flow
 
-On **November 13, 2026**, five fresh **preemptible Serverless Jobs** exercised indexing and recovery through Nebius Object Storage. Each used one **NVIDIA L40S** and `pytorch/pytorch:2.7.1-cuda12.6-cudnn9-runtime`; the runtime reported PyTorch **2.7.1+cu126** and CUDA **12.6**.
+On November 13, 2026, three fresh preemptible Serverless Jobs exercised the new full-run default and optional 600/400 test in Mkhoukh. They executed published commit [`f1d8ca048018c924edef6b7cf21052b5c479974a`](https://github.com/MarouaneKhoukh/nebius-serverless-cookbooks/tree/f1d8ca048018c924edef6b7cf21052b5c479974a/document-search). The main and final resume submissions left `MAX_NEW_DOCUMENTS` unset; the launcher supplied its default `0`. Only the optional first attempt explicitly set `600`. [Effective launch settings](docs/job-results/default-flow/launch-settings.json).
 
-The executed source was commit [`3e602fb0877de0b0c6ed72ab199201b4d83ece32`](https://github.com/MarouaneKhoukh/nebius-serverless-cookbooks/tree/3e602fb0877de0b0c6ed72ab199201b4d83ece32/document-search), supplied through `RECIPE_REF`. These tests ran before merge with a PR commit override. **The post-merge check is still pending:** follow README steps 1–5 from a clean `main` clone with `RECIPE_REF` unset, then record that run separately.
-
-**Qwen3-Embedding-0.6B** was pinned to revision `97b0c614be4d77ee51c0cef4e5f07c00f9eb65b3`, using float16, last-token pooling, normalized **1,024-dimensional** vectors, batches of **16** and **160-word** chunks. The pinned input contains **1,000 distinct Dolly reference passages**, **219,197 words**, **1,367,367 UTF-8 text bytes** and **1,970 chunks**. These are passages, not full articles. [Corpus record](docs/job-results/corpus.json).
-
-| Live attempt | Documents complete | Documents reused | Documents newly saved | Chunks reused | Chunks newly saved |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| First Job, limited to 600 new documents | 600 | 0 | 600 | 0 | 1,206 |
-| New Job, same prefix and limit | 1,000 | 600 | 400 | 1,206 | 764 |
-| Separate uninterrupted full run | 1,000 | 0 | 1,000 | 0 | 1,970 |
-| Fresh Job after the controlled crash | 1,000 | 10 | 990 | 15 | 1,955 |
-
-The second container prepared the same pinned input, read the saved document results from Object Storage and skipped all 600 completed documents. Both reports have the same run fingerprint. One complete result object makes each document reusable; unfinished documents have no result object and must run again. These were deliberately separate attempts, not an observed provider preemption. [First report](docs/job-results/live/first-600.json), [resume report](docs/job-results/live/resume-400.json).
-
-The optional crash test exited with code **75** after **17 computed chunks**. Reading the actual S3 results afterward confirmed **10 complete documents containing 15 saved chunks**; the unfinished document had no saved result. A new Job reused those results and completed **990 documents / 1,955 chunks**. The separate uninterrupted run also completed all 1,000 documents. [Full run](docs/job-results/live/full-run.json), [crash readback](docs/job-results/live/crash-after-stop.json), [crash resume](docs/job-results/live/crash-resume-990.json).
-
-## Measured phases
-
-Seconds measured inside the containers, rounded to two decimal places:
-
-| Phase | First 600 | Remaining 400 | Full 1,000 | Crash resume 990 |
+| Attempt | New documents | Reused documents | Remaining | Saved chunks |
 | --- | ---: | ---: | ---: | ---: |
-| Source and Python dependency setup | 11.31 | 10.16 | 10.62 | 10.23 |
-| Pinned data preparation | 0.84 | 1.07 | 0.89 | 0.84 |
-| Model startup | 37.97 | 39.18 | 36.82 | 37.80 |
-| Embedding | 12.74 | 8.44 | 20.60 | 20.56 |
-| Saving complete document results | 5.52 | 3.64 | 9.60 | 9.38 |
-| State scanning | 0.05 | 2.91 | 0.04 | 0.09 |
-| Index application total | 56.55 | 54.45 | 67.46 | 68.22 |
+| Main flow with default settings | 1,000 | 0 | 0 | 1,970 |
+| Optional first attempt | 600 | 0 | 400 | 1,206 |
+| Optional fresh Job | 400 | 600 | 0 | 1,970 |
 
-The index total includes model startup, embedding, saving, scanning and small application overheads. It excludes source/dependency setup, data preparation, the later search and output uploads. The abrupt-crash attempt produced no final index report; its log records only **10.45 seconds of setup** and **1.14 seconds of data preparation** before indexing. No complete model, embedding or saving timing is claimed for that attempt. [Crash log](docs/job-results/live/crash-log.txt).
+The main Job printed `Finished: 1,000 new, 0 reused, 0 remaining.` and generated the search JSON and HTML in the same attempt. The optional test used a separate fresh prefix: one Job saved 600 documents, then a new default Job printed `600 documents already saved, 400 to go.` and finished the remaining 400. All reports match the same input/model fingerprint. This controlled application stop was not a provider preemption. [Main report](docs/job-results/default-flow/main.json), [first 600](docs/job-results/default-flow/limited-600.json), [remaining 400](docs/job-results/default-flow/resumed-400.json).
 
-Creation to first observed **Running** ranged from **279.209 to 331.459 seconds** across these attempts. Those coarse status polls include observation delay and can include work already performed; they are not exact provisioning, image-pull or cold-start benchmarks. [Lifecycle observations](docs/job-results/live/lifecycle.json). All timings describe these executions, not runtime promises.
+## Runtime and input
 
-L40S has **flat preemptible pricing**. The required `--follows-spot-price` setting is not evidence of a changing market price or a pricing-policy stop. [Compute pricing](https://docs.nebius.com/compute/resources/pricing).
+Each Job used one NVIDIA L40S, `pytorch/pytorch:2.7.1-cuda12.6-cudnn9-runtime`, PyTorch 2.7.1+cu126 and Transformers 4.51.3. The model was `Qwen/Qwen3-Embedding-0.6B` at revision `97b0c614be4d77ee51c0cef4e5f07c00f9eb65b3`, with normalized 1,024-dimensional float16 vectors, last-token pooling, a maximum batch size of 16 within each document, and paragraph-aware 160-word chunks.
 
-## Search result
+The pinned input contains 1,000 distinct Dolly reference passages and produces 1,970 chunks. Its text volume and provenance are recorded in the unchanged [corpus manifest record](docs/job-results/corpus.json); the worker validates the pinned data before indexing.
 
-The original recovery Jobs used **“What happens in chess when a player has no legal moves but is not in check?”** The stalemate passage ranked **third**, similarity **0.6506**. Those historical outputs remain in [search.json](docs/job-results/live/search.json) and [search.html](docs/job-results/live/search.html).
+## New measured phases
 
-A later query-only Serverless Job used the same pinned CUDA encoder and saved 1,970-chunk index, with worker source from commit `d9d30bf`. It checked three natural stalemate questions; the relevant passage ranked **first for all three**. The README and Job now default to **“What is stalemate in chess?”**, which scored **0.8240** for the first result (next result **0.5424**). No documents were re-embedded. [Query checks](docs/job-results/live/showcase-queries.json), [selected results](docs/job-results/live/showcase-search.json), [HTML report](docs/job-results/live/showcase-search.html). This verifies the selected example, not a retrieval benchmark or a post-merge walkthrough.
+Seconds measured inside these new containers, rounded to two decimal places:
 
-## Local checks
+| Phase | Main 1,000 | Optional 600 | Resume 400 |
+| --- | ---: | ---: | ---: |
+| Source and dependency setup | 11.40 | 10.24 | 10.11 |
+| Pinned data preparation | 0.86 | 1.75 | 0.80 |
+| Model startup | 38.20 | 36.58 | 37.55 |
+| Embedding | 21.16 | 12.46 | 8.38 |
+| Saving results | 10.12 | 6.01 | 3.92 |
+| State scan | 0.04 | 0.04 | 4.87 |
+| Index application total | 69.92 | 55.37 | 55.00 |
 
-**67 local tests passed**, including the unchanged Endpoint tests:
+The index application total includes model startup, embedding, saving, scanning and small application overheads. It excludes dependency setup, input preparation, later search and report uploads. Provisioning/image-pull time is recorded separately as coarse status observations, which include polling delay and can include work already performed. [Lifecycle observations](docs/job-results/default-flow/lifecycle.json). These measurements are not runtime promises.
 
-```bash
-python3 -m unittest discover -s tests
-```
+## Search
 
-Recovery tests use the real passages with deterministic fixture embeddings, local storage and fresh Python processes. They verify the 600/400 resume, reuse of completed documents after a mid-document crash, and refusal to mix changed input or model settings. Bootstrap tests mock downloads, package installation, model execution and storage; they check the document limit, report uploads, complete-only search and the controlled crash exit code. S3 fake-client tests cover safe provider error codes, including `AccessDenied` and `NoSuchBucket`, without credential-bearing details.
+The main Job used the default query, “What is stalemate in chess?” The relevant stalemate passage ranked first, similarity 0.8240; the next result scored 0.5424. Results link to the pinned source dataset records. [Search JSON](docs/job-results/default-flow/search.json), [HTML report](docs/job-results/default-flow/search.html). This is an executed example, not a retrieval benchmark.
 
-The separate input-transfer commands were removed. Each new Job prepares the same pinned public input and writes its finished results directly to Object Storage. No actual Nebius preemption was demonstrated.
+## Local checks and execution scope
+
+68 local tests passed with `python3 -m unittest discover -s tests`. They cover full-run/search defaults, explicit-limit forwarding by both launchers, resume and mid-document crash recovery with fixture embeddings, changed-setting refusal, and safe S3 errors. Local fixtures and mocked bootstrap checks are separate from the live runs above.
+
+The existing live crash records and earlier capped-default measurements remain in [historical results](docs/job-results/live/); they were not rerun for this framing/default change and do not supply any timings in the new table. The worker recovery design is unchanged. The three live Jobs used a published PR revision; a clean-`main` walkthrough after merge remains a separate release check.
 
 ## Cleanup
 
-All five Jobs reached terminal states: **four Completed** and the controlled crash **Failed**, with **zero active instances** and no remaining test compute. The temporary secret was deleted; its metadata lookup returned `NotFound`. The existing S3 access key, bucket and durable results were retained. [Cleanup record](docs/job-results/live/cleanup.json).
-
-The later query-check Job also completed and its managed compute was removed. Its separate temporary secret was deleted; the index and query results were retained. [Query-check cleanup](docs/job-results/live/showcase-cleanup.json).
+All three test Jobs completed and their managed compute was removed. The temporary SecretStash copy was deleted; the pre-existing S3 access key and bucket were preserved. New index and search artifacts remain in Object Storage. [Cleanup record](docs/job-results/default-flow/cleanup.json).
