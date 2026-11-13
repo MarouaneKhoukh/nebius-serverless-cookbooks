@@ -67,4 +67,6 @@ Offline recovery used **eight-dimensional fixture vectors and local files**, not
 
 The cookbook reproduces the video's standalone-VM, durable-storage, successful-first and separate 600-plus-400 recovery workflow. The 1,000 documents are licensed reference passages. The test interruptions must be described as controlled; L40S does not demonstrate dynamic price changes. No delay was added to stretch the example, and no earlier runtime estimate was reused as a benchmark.
 
-The video/script and unrelated recipes remain unchanged. The earlier Endpoint route and evidence remain separate in [ENDPOINT.md](ENDPOINT.md) and [ENDPOINT_VALIDATION.md](ENDPOINT_VALIDATION.md); they do not validate the VM implementation. Cleanup status is recorded in [live/cleanup.json](docs/vm-results/live/cleanup.json).
+The temporary VM was stopped within 20 minutes of the creation request, then the VM and its managed 80 GiB boot disk were deleted and their absence verified in the console. Existing networking, credentials and the bucket were preserved; the dedicated Object Storage result prefixes remain available. [Cleanup record](docs/vm-results/live/cleanup.json).
+
+The video/script and unrelated recipes remain unchanged. The earlier Endpoint route and evidence remain separate in [ENDPOINT.md](ENDPOINT.md) and [ENDPOINT_VALIDATION.md](ENDPOINT_VALIDATION.md); they do not validate the VM implementation.

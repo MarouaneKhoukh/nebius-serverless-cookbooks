@@ -166,7 +166,17 @@ Before resuming, expect **17 saved chunks and 10 complete documents**. Recovery 
 
 Each output prefix holds immutable `run.json`, `chunks/` results and `documents/` completion markers. Timing records are in its sibling prefix, such as `success-measurements/`. Local `.state/*.json` files are report copies, not recovery state. Retain the input and result prefixes together.
 
-After saving reports and measurements, stop this VM and verify **Stopped**. Delete its VM and test boot disk if no longer needed; check its public IP allocation and dedicated SSH credential were removed. A stopped VM can retain billable disks. Preserve reused networking and buckets. Revoke only an access key created for this recipe. Object Storage results remain until you deliberately remove the recipe's prefixes.
+Before deleting the VM, copy the local reports from a **terminal on your computer**:
+
+```bash
+export VM_IP="YOUR_VM_CURRENT_PUBLIC_IP"
+mkdir -p document-search-reports
+scp -i "$HOME/.ssh/document-search-vm" \
+  "cookbook@$VM_IP:nebius-serverless-cookbooks/document-search/.state/*.json" \
+  document-search-reports/
+```
+
+In the console, stop this VM and verify **Stopped**. Under **Settings → Delete virtual machine**, review the VM name and managed disks, then choose **Delete VM and disks** when no longer needed. A stopped VM retains billable disks; its dynamic public IPv4 is released. Preserve reused networking, buckets and credentials. Revoke only an S3 key or saved SSH credential created solely for this recipe. Object Storage results remain until you deliberately remove the recipe's prefixes.
 
 ## Validation and the Endpoint alternative
 
