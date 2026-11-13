@@ -24,6 +24,8 @@ cd nebius-serverless-cookbooks/document-search
 nebius profile create
 ```
 
+Each Job downloads worker files from `MarouaneKhoukh/nebius-serverless-cookbooks` at `RECIPE_REF` (default `main`); local worker edits are not uploaded, so publish changes and set `RECIPE_REF` to their branch or commit when testing (for a fork, update the repository URL in `scripts/run_job.py`).
+
 Complete the CLI sign-in and select your project. In the [console](https://console.nebius.com), prepare:
 
 - A private **Object Storage bucket**. Create an [S3 access key](https://docs.nebius.com/iam/service-accounts/access-keys) for a service account with `storage.object-editor` access to that bucket.
@@ -53,7 +55,7 @@ JOB_NAME=document-index-first bash scripts/submit.sh --dry-run &&
 JOB_NAME=document-index-first bash scripts/submit.sh --async
 ```
 
-In **Serverless AI → Jobs**, open `document-index-first` and its **Logs**. Wait for **Completed** before continuing. The log should end with **600 new, 0 reused, 400 remaining**. Each saved document is one object containing all its chunk embeddings.
+In **Serverless AI → Jobs**, open `document-index-first` and its **Logs**. Expect roughly **five minutes** for provisioning and the image pull before **Running**, based on our tests; application logs may be empty during that wait. Wait for **Completed** before continuing. The log should end with **600 new, 0 reused, 400 remaining**. Each saved document is one object containing all its chunk embeddings.
 
 This deliberate pause after 600 documents is a controlled interruption test, not an actual Nebius preemption. The Job ends and releases its compute. Its temporary disk is discarded; the finished results and run settings remain under `$RUN_ROOT/index` in Object Storage.
 

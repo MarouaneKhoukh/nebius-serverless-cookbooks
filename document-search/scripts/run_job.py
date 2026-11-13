@@ -13,7 +13,7 @@ WORKSPACE = Path("/workspace/document-search")
 FILES = (
     "worker/__init__.py", "worker/cli.py", "worker/data.py", "worker/durable.py", "worker/model.py",
     "worker/requirements.txt", "worker/runtime.json", "worker/data/source.json", "worker/data/LICENSE",
-    "worker/data/DATASET_CARD.md", "worker/data/SOURCE.md", "scripts/prepare_vm_data.py",
+    "worker/data/DATASET_CARD.md", "worker/data/SOURCE.md", "scripts/prepare_job_data.py",
     "src/embed.py", "src/retrieval.py", "docs/brand/nebius-logo.svg",
 )
 DEFAULT_QUERY = "What happens in chess when a player has no legal moves but is not in check?"

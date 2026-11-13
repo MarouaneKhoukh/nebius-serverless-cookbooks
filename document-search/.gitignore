@@ -6,8 +6,6 @@ __pycache__/
 .venv/
 data/documents/
 
-data/vm-documents/
-data/restored-documents/
 
 data/job-documents/
 .state/job-data-cache/

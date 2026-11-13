@@ -7,7 +7,6 @@ cd "$(dirname "$0")/.."
 : "${S3_SECRET_ID:?Set S3_SECRET_ID in .env}"
 : "${RUN_ROOT:?Set RUN_ROOT in .env}"
 : "${JOB_NAME:?Choose a new JOB_NAME for this attempt}"
-export AI_AGENT="${AI_AGENT:-cookbook}"
 nebius ai job create \
   --parent-id "$NEBIUS_PROJECT_ID" --name "$JOB_NAME" \
   --image pytorch/pytorch:2.7.1-cuda12.6-cudnn9-runtime \

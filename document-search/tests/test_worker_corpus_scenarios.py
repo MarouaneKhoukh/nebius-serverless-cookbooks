@@ -39,7 +39,7 @@ print(json.dumps({"stats":stats,"encoded_chunks":calls}))
 '''
 
 
-@unittest.skipUnless((DATA / "manifest.json").is_file(), "Prepare the real corpus with scripts/prepare_vm_data.py first")
+@unittest.skipUnless((DATA / "manifest.json").is_file(), "Prepare the real corpus with scripts/prepare_job_data.py first")
 class RealCorpusRecoveryTests(unittest.TestCase):
     def test_same_command_resume_and_crash_mid_document(self):
         with tempfile.TemporaryDirectory() as temp:
@@ -69,7 +69,7 @@ class RealCorpusRecoveryTests(unittest.TestCase):
             for item in [resumed,partial,reused]:
                 self.assertTrue(item["stats"]["complete"])
                 self.assertEqual(item["stats"]["chunks_saved"],1970)
-            report = os.environ.get("VM_SCENARIO_REPORT")
+            report = os.environ.get("RECOVERY_SCENARIO_REPORT")
             if report:
                 Path(report).parent.mkdir(parents=True,exist_ok=True)
                 Path(report).write_text(json.dumps({
