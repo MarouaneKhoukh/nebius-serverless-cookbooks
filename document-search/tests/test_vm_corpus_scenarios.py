@@ -21,11 +21,15 @@ def encode(texts):
     global calls
     calls+=len(texts)
     return [[(x+1)/256 for x in hashlib.sha256(text.encode()).digest()[:8]] for text in texts]
+saved=0
 def crash(_record):
-    os._exit(75)
+    global saved
+    saved+=1
+    if saved >= (17 if mode=="crash17" else 1):
+        os._exit(75)
 stats=index_documents(documents,LocalStore(output),encode,config,batch_size=16,
                       stop_after_documents=600 if mode=="600" else None,
-                      after_chunk_saved=crash if mode=="crash" else None)
+                      after_chunk_saved=crash if mode in ("crash","crash17") else None)
 verified=inspect_documents(documents,LocalStore(output),config)["stats"]
 assert verified["documents_completed"]==stats["documents_completed"]
 print(json.dumps({"stats":stats,"encoded_chunks":calls}))
@@ -56,9 +60,15 @@ class RealCorpusRecoveryTests(unittest.TestCase):
             self.assertEqual(unfinished["stats"]["documents_reused"],0)
             self.assertEqual(unfinished["stats"]["chunks_reused"],1)
             self.assertEqual(unfinished["encoded_chunks"],1969)
+            run("unfinished-with-completed","crash17",75)
+            partial = run("unfinished-with-completed")
+            self.assertEqual(partial["stats"]["documents_reused"],10)
+            self.assertEqual(partial["stats"]["documents_new"],990)
+            self.assertEqual(partial["stats"]["chunks_reused"],17)
+            self.assertEqual(partial["encoded_chunks"],1953)
             reused = run("success")
             self.assertEqual(reused["encoded_chunks"],0)
-            for item in [success,resumed,unfinished,reused]:
+            for item in [success,resumed,unfinished,partial,reused]:
                 self.assertTrue(item["stats"]["complete"])
                 self.assertEqual(item["stats"]["chunks_saved"],1970)
             report = os.environ.get("VM_SCENARIO_REPORT")
@@ -69,4 +79,5 @@ class RealCorpusRecoveryTests(unittest.TestCase):
                     "encoding":"Deterministic eight-dimensional test fixture, NOT Qwen embeddings or a performance benchmark",
                     "processes":"Each phase ran in a new Python subprocess",
                     "success":success,"controlled_600":before,"resume_400":resumed,
-                    "unfinished_batch_resume":unfinished,"complete_rerun":reused},indent=2)+"\n")
+                    "unfinished_batch_resume":unfinished,"unfinished_with_completed_resume":partial,
+                    "complete_rerun":reused},indent=2)+"\n")

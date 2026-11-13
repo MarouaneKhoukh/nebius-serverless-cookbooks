@@ -16,7 +16,7 @@ Index **1,000 real documents**, save their embeddings and completion records in 
 
 The application and **Qwen3-Embedding-0.6B** run on a standalone GPU VM. Object Storage holds the authoritative results and progress outside that VM. The earlier [Serverless Endpoint recipe](ENDPOINT.md) remains separate: it indexes 55 Python documents from your computer.
 
-Preemptible capacity suits work that can keep completed results and retry unfinished work. An interruption is possible, not inevitable. Nebius stops preemptible VMs without automatically restarting them. When capacity and pricing conditions allow, start compute and launch the application again. [VM lifecycle](https://docs.nebius.com/compute/virtual-machines/preemptible).
+Preemptible VMs use discounted capacity that Nebius can reclaim. They suit work that can keep completed results and retry unfinished work. An interruption is possible, not inevitable. Nebius stops preemptible VMs without automatically restarting them. When capacity and pricing conditions allow, start compute and launch the application again. [VM lifecycle](https://docs.nebius.com/compute/virtual-machines/preemptible).
 
 ## What we index
 
@@ -29,6 +29,7 @@ The worker saves and validates each chunk before marking its document complete. 
 You need a billing-enabled **eu-north1** project, permission and quota for one GPU VM, an internet-enabled subnet, SSH on your computer, and an Object Storage bucket in that project. On your computer, prepare an SSH key; choose another filename if this exists:
 
 ```bash
+mkdir -p "$HOME/.ssh"
 ssh-keygen -t ed25519 -f "$HOME/.ssh/document-search-vm"
 cat "$HOME/.ssh/document-search-vm.pub"
 ```
@@ -57,7 +58,7 @@ ssh -i "$HOME/.ssh/document-search-vm" "cookbook@$VM_IP"
 In the **VM's SSH terminal**, run:
 
 ```bash
-git clone https://github.com/MarouaneKhoukh/nebius-serverless-cookbooks.git &&
+git clone --branch codex/document-search-vm https://github.com/MarouaneKhoukh/nebius-serverless-cookbooks.git &&
 cd nebius-serverless-cookbooks/document-search &&
 python3 -m venv .venv &&
 source .venv/bin/activate &&
@@ -106,6 +107,7 @@ python -m vm.cli query --store "$RUN_ROOT/success" \
 The terminal prints passages and links to their exact source records. `results-vm-search/search.html` is a readable report labelled **Powered by Nebius Compute**. Scores express similarity, not answer confidence. View it from a **second terminal on your computer**:
 
 ```bash
+export VM_IP="YOUR_VM_CURRENT_PUBLIC_IP"
 scp -i "$HOME/.ssh/document-search-vm" -r \
   "cookbook@$VM_IP:nebius-serverless-cookbooks/document-search/results-vm-search" .
 open results-vm-search/search.html
@@ -125,7 +127,7 @@ python -m vm.cli status --store "$RUN_ROOT/recovery"
 
 Expect **600 complete documents, 400 remaining**, with **1,206 chunks saved**. This is a controlled application stop, not a provider preemption. In the console, stop **only this VM**, wait for **Stopped**, then start it when capacity and your pricing conditions permit. Measure restart time separately. Capacity is not guaranteed.
 
-Copy its current public IP again; it can change. Reconnect with SSH. In the **new VM session**, activate the environment, repeat the credential and `RUN_ROOT` exports above, and restore the input from Object Storage:
+Copy its current public IP again; it can change. Reconnect with SSH. In the **new VM session**, re-enter all five S3 variables from step 2: `S3_ENDPOINT_URL`, `AWS_DEFAULT_REGION`, `RUN_ROOT`, `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`. Keep the same `RUN_ROOT`. Activate the environment and restore the input from Object Storage:
 
 ```bash
 cd nebius-serverless-cookbooks/document-search &&
@@ -142,21 +144,23 @@ Attached network disks survive a normal stop, but processes and RAM do not. Keep
 
 ## 5. Interrupt an unfinished batch
 
-This **third prefix** deliberately hard-exits after one verified chunk save, before its document completion marker. It returns exit code **75**:
+This **third prefix** deliberately hard-exits during the second batch, after 17 verified chunk saves. Ten documents are complete; the next has only two of its six chunks saved and has no completion marker. It returns exit code **75**:
 
 ```bash
-python -m vm.cli index --store "$RUN_ROOT/unfinished-batch" --crash-after-saved-chunks 1
+python -m vm.cli index --data data/restored-documents \
+  --store "$RUN_ROOT/unfinished-batch" --crash-after-saved-chunks 17
 ```
 
 Inspect it and resume in a fresh process:
 
 ```bash
-python -m vm.cli status --store "$RUN_ROOT/unfinished-batch" &&
-python -m vm.cli index --store "$RUN_ROOT/unfinished-batch" --report .state/unfinished-resumed.json &&
-python -m vm.cli verify --store "$RUN_ROOT/unfinished-batch"
+python -m vm.cli status --data data/restored-documents --store "$RUN_ROOT/unfinished-batch" &&
+python -m vm.cli index --data data/restored-documents --store "$RUN_ROOT/unfinished-batch" \
+  --report .state/unfinished-resumed.json &&
+python -m vm.cli verify --data data/restored-documents --store "$RUN_ROOT/unfinished-batch"
 ```
 
-Before resuming, expect **one saved chunk and no complete documents**. The worker must reuse that chunk and finish the collection. Embeddings computed but not saved before exit may run again. The first batch is computed normally; no delays are added. This controlled process failure is not a Nebius preemption.
+Before resuming, expect **17 saved chunks and 10 complete documents**. Recovery must retain those documents, reuse all 17 saved chunks, and finish the other **990 documents / 1,953 chunks**. Embeddings computed but not saved before exit run again. Both batches are computed normally; no delays are added. This controlled process failure is not a Nebius preemption.
 
 ## 6. Save results and clean up
 
@@ -173,3 +177,14 @@ python3 -m unittest discover -s tests -q
 Offline tests cover fresh-process recovery, partial writes, corruption and incompatible settings with fixture embeddings. They do not establish GPU performance. Plain local `--store` paths are for tests; the VM lesson uses `s3://` Object Storage.
 
 [VALIDATION.md](VALIDATION.md) separates offline checks, controlled tests and actual live execution. The earlier code and results remain in [ENDPOINT.md](ENDPOINT.md) and [ENDPOINT_VALIDATION.md](ENDPOINT_VALIDATION.md). Serverless branding applies only to that separate route.
+
+For an agent-assisted run, install the [Nebius skills](https://github.com/nebius/skills#install), then use this handoff:
+
+```text
+Read document-search/README.md and its implementation. Run the standalone
+Compute VM route in my selected project and within my approved GPU budget.
+Use a fresh Object Storage prefix. Verify the full 1,000-document run first,
+then the separate 600/400 VM restart and unfinished-batch tests, and a real
+search query. Report actual timings and reused work. Stop test compute;
+scope cleanup to resources created for this run and preserve my other work.
+```

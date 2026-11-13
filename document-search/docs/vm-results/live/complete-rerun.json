@@ -1,0 +1,55 @@
+{
+  "run_fingerprint": "73f68b4c4376beeeb522993d094b3fefe5e73a4d591f7c82cb70a4efa9642acc",
+  "documents_total": 1000,
+  "documents_completed": 1000,
+  "documents_reused": 1000,
+  "documents_new": 0,
+  "documents_remaining": 0,
+  "chunks_total": 1970,
+  "chunks_saved": 1970,
+  "chunks_reused": 1970,
+  "chunks_new": 0,
+  "chunks_remaining": 0,
+  "complete": true,
+  "scan_seconds": 28.250670125000056,
+  "embedding_seconds": 0.0,
+  "save_seconds": 0.0,
+  "wall_seconds": 28.250884831999997,
+  "hardware": {
+    "device": "cuda",
+    "model_load_seconds": 0.0,
+    "model_not_loaded": true
+  },
+  "model_startup_seconds": 0.0,
+  "batch_size": 16,
+  "settings": {
+    "model": "Qwen/Qwen3-Embedding-0.6B",
+    "model_revision": "97b0c614be4d77ee51c0cef4e5f07c00f9eb65b3",
+    "dimensions": 1024,
+    "chunk_words": 160,
+    "batch_size": 16,
+    "encoder_settings": {
+      "pooling": "last-token",
+      "normalize": true,
+      "max_length": 8192,
+      "dtype": "float16",
+      "torch": "2.7.1",
+      "transformers": "4.51.3"
+    }
+  },
+  "utc": "2026-11-13T15:05:50.187815+00:00",
+  "application_wall_seconds": 28.330774530999975,
+  "controlled_stop_after_documents": null,
+  "corpus": {
+    "documents": 1000,
+    "chunks": 1970,
+    "text_words": 219197,
+    "text_utf8_bytes": 1367367,
+    "document_words": {
+      "min": 80,
+      "median": 158.5,
+      "p95": 491,
+      "max": 3681
+    }
+  }
+}

@@ -175,6 +175,7 @@ class VMCLIIntegrationTests(unittest.TestCase):
         self.assertEqual(len(document["matches"]), 2)
         report = (output / "search.html").read_text()
         self.assertIn("Powered by Nebius Compute", report)
+        self.assertIn("CC BY-SA 3.0", report)
         self.assertNotIn("Serverless", report)
         self.assertIn("search.html", stdout)
         query_text = MockEncoder.instances[-1].calls[0][0]

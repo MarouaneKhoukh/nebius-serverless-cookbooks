@@ -1,0 +1,14 @@
+{
+  "scope": "Only the temporary VM and managed boot disk created for this validation",
+  "vm_state": "STOPPED",
+  "stopped_verified": true,
+  "vm_deleted": false,
+  "managed_boot_disk_deleted": false,
+  "deletion_confirmation_pending": true,
+  "object_storage_results": "Retained in the existing bucket under a dedicated run prefix",
+  "reused_network_bucket_ssh_credential": "Preserved",
+  "new_iam_or_s3_credentials_created": false,
+  "elapsed_creation_to_final_stopped_seconds": 1163.199,
+  "within_one_hour_limit": true,
+  "elapsed_note": "Observed wall-clock upper bound including controlled stopped interval and operator time; not billed running time."
+}

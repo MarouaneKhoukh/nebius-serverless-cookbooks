@@ -61,7 +61,9 @@ def write_search(folder: Path, query: str, matches: list[dict], fingerprint: str
         '<title>Document search on Nebius Compute</title><style>body{font:17px/1.6 system-ui;max-width:920px;margin:40px auto;padding:0 24px;color:#24271f;background:#fafaf6}'
         'header svg{width:140px;height:auto}article{padding:20px 0;border-bottom:1px solid #ddd}a{color:inherit}</style>'
         f'<header>{logo}<p>Powered by Nebius Compute</p></header><h1>{html.escape(query)}</h1>'
-        + ''.join(cards) + '<p>Scores express similarity, not answer confidence.</p></html>', encoding="utf-8")
+        + ''.join(cards) + '<p>Scores express similarity, not answer confidence.</p>'
+        '<footer><p>Passages: <a href="https://huggingface.co/datasets/databricks/databricks-dolly-15k">Databricks Dolly 15k</a>'
+        ' (Wikipedia reference text), <a href="https://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0</a>.</p></footer></html>', encoding="utf-8")
 
 
 def parser() -> argparse.ArgumentParser:

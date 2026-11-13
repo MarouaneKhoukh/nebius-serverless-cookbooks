@@ -1,0 +1,51 @@
+{
+  "query": "What happens in chess when a player has no legal moves but is not in check?",
+  "run_fingerprint": "73f68b4c4376beeeb522993d094b3fefe5e73a4d591f7c82cb70a4efa9642acc",
+  "matches": [
+    {
+      "id": "f9a05b6473a957dcaf72c2b6ecf071967df1025ed8d6c872b756cbf68dfbe58a",
+      "source": "dolly-context-L02015",
+      "chunk_index": 1,
+      "text": "The object of the game is to checkmate the opponent; this occurs when the opponent's king is in check, and there is no legal way to get it out of check. It is never legal for a player to make a move that puts or leaves the player's own king in check. In casual games, it is common to announce \"check\" when putting the opponent's king in check, but this is not required by the rules of chess and is usually not done in tournaments.",
+      "source_url": "https://huggingface.co/datasets/databricks/databricks-dolly-15k/blob/bdd27f4d94b9c1f951818a7da7fd7aeea5dbff1a/databricks-dolly-15k.jsonl#L2015",
+      "title": "What is the difference between check and checkmate?",
+      "similarity": 0.702344269105879
+    },
+    {
+      "id": "2bf59b008a0fce4ad79c0ec29ed01d64b52214f3fd93f3eea676b2b3482b3f73",
+      "source": "dolly-context-L02015",
+      "chunk_index": 0,
+      "text": "When a king is under immediate attack, it is said to be in check. A move in response to a check is legal only if it results in a position where the king is no longer in check. This can involve capturing the checking piece; interposing a piece between the checking piece and the king (which is possible only if the attacking piece is a queen, rook, or bishop and there is a square between it and the king); or moving the king to a square where it is not under attack. Castling is not a permissible response to a check.",
+      "source_url": "https://huggingface.co/datasets/databricks/databricks-dolly-15k/blob/bdd27f4d94b9c1f951818a7da7fd7aeea5dbff1a/databricks-dolly-15k.jsonl#L2015",
+      "title": "What is the difference between check and checkmate?",
+      "similarity": 0.6909995527798856
+    },
+    {
+      "id": "993be00d63681d750712cc33134cac0adc7fc2dc73d7278243b6110281579c2c",
+      "source": "dolly-context-L00006",
+      "chunk_index": 0,
+      "text": "Stalemate is a situation in chess where the player whose turn it is to move is not in check and has no legal move. Stalemate results in a draw. During the endgame, stalemate is a resource that can enable the player with the inferior position to draw the game rather than lose. In more complex positions, stalemate is much rarer, usually taking the form of a swindle that succeeds only if the superior side is inattentive.[citation needed] Stalemate is also a common theme in endgame studies and other chess problems. The outcome of a stalemate was standardized as a draw in the 19th century. Before this standardization, its treatment varied widely, including being deemed a win for the stalemating player, a half-win for that player, or a loss for that player; not being permitted; and resulting in the stalemated player missing a turn. Stalemate rules vary in other games of the chess family.",
+      "source_url": "https://huggingface.co/datasets/databricks/databricks-dolly-15k/blob/bdd27f4d94b9c1f951818a7da7fd7aeea5dbff1a/databricks-dolly-15k.jsonl#L6",
+      "title": "If I have more pieces at the time of stalemate, have I won?",
+      "similarity": 0.6505146894936047
+    },
+    {
+      "id": "70df94c4a05f42b114785da34f9840a59d9ba3a521ed9ec1bf1add453e993f43",
+      "source": "dolly-context-L03562",
+      "chunk_index": 0,
+      "text": "Chess pieces are divided into two different colored sets. While the sets might not be literally white and black (e.g. the light set may be a yellowish or off-white color, the dark set may be brown or red), they are always referred to as \"white\" and \"black\". The players of the sets are referred to as White and Black, respectively. Each set consists of sixteen pieces: one king, one queen, two rooks, two bishops, two knights, and eight pawns. Chess sets come in a wide variety of styles; for competition, the Staunton pattern is preferred. The game is played on a square board of eight rows (called ranks) and eight columns (called files). By convention, the 64 squares alternate in color and are referred to as light and dark squares; common colors for chessboards are white and brown, or white and dark green.",
+      "source_url": "https://huggingface.co/datasets/databricks/databricks-dolly-15k/blob/bdd27f4d94b9c1f951818a7da7fd7aeea5dbff1a/databricks-dolly-15k.jsonl#L3562",
+      "title": "What are the chess pieces that a player starts out with?",
+      "similarity": 0.522307076684001
+    },
+    {
+      "id": "88eeece3b81752865a7080a2a2abb90fdd71e8e8950ec9e82ef6577d971ea00d",
+      "source": "dolly-context-L03190",
+      "chunk_index": 0,
+      "text": "Texas hold 'em (also known as Texas holdem, hold 'em, and holdem) is one of the most popular variants of the card game of poker. Two cards, known as hole cards, are dealt face down to each player, and then five community cards are dealt face up in three stages. The stages consist of a series of three cards (\"the flop\"), later an additional single card (\"the turn\" or \"fourth street\"), and a final card (\"the river\" or \"fifth street\"). Each player seeks the best five card poker hand from any combination of the seven cards; the five community cards and their two hole cards. Players have betting options to check, call, raise, or fold. Rounds of betting take place before the flop is dealt and after each subsequent deal. The player who has the best hand and has not folded by the end of all betting rounds wins all of the money bet for the hand, known as the",
+      "source_url": "https://huggingface.co/datasets/databricks/databricks-dolly-15k/blob/bdd27f4d94b9c1f951818a7da7fd7aeea5dbff1a/databricks-dolly-15k.jsonl#L3190",
+      "title": "Based on the text how does someone win in Texas Hold 'em?",
+      "similarity": 0.41117891908379534
+    }
+  ]
+}

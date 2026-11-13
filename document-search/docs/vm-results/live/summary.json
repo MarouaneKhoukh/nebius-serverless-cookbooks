@@ -1,0 +1,51 @@
+{
+  "scope": "Live standalone preemptible Compute VM with real Qwen GPU embeddings and Nebius Object Storage; controlled failures, not provider preemption",
+  "date_utc": "2026-11-13",
+  "region": "eu-north1",
+  "platform": "gpu-l40s-d",
+  "preset": "1gpu-16vcpu-96gb",
+  "os": "Ubuntu 24.04 GPU CUDA 13 image",
+  "python": "3.12.3",
+  "model": {
+    "model": "Qwen/Qwen3-Embedding-0.6B",
+    "model_revision": "97b0c614be4d77ee51c0cef4e5f07c00f9eb65b3",
+    "dimensions": 1024,
+    "chunk_words": 160,
+    "batch_size": 16,
+    "encoder_settings": {
+      "pooling": "last-token",
+      "normalize": true,
+      "max_length": 8192,
+      "dtype": "float16",
+      "torch": "2.7.1",
+      "transformers": "4.51.3"
+    }
+  },
+  "run_fingerprint": "73f68b4c4376beeeb522993d094b3fefe5e73a4d591f7c82cb70a4efa9642acc",
+  "corpus": {
+    "documents": 1000,
+    "chunks": 1970,
+    "text_words": 219197,
+    "text_utf8_bytes": 1367367,
+    "document_words": {
+      "min": 80,
+      "median": 158.5,
+      "p95": 491,
+      "max": 3681
+    }
+  },
+  "checks": {
+    "full_success_first": true,
+    "verified_new_vm_boot": true,
+    "reused_600_finished_400": true,
+    "unfinished_batch_kept_10_complete_documents_and_17_chunks": true,
+    "completed_rerun_did_not_load_model": true,
+    "source_linked_real_query": true,
+    "stalemate_source_rank": 3
+  },
+  "limitations": [
+    "No natural Nebius preemption was induced or observed.",
+    "L40S flat preemptible pricing does not validate dynamically changing spot prices or a pricing-policy stop.",
+    "This is one corpus/configuration run, not a general throughput or retrieval-quality benchmark."
+  ]
+}
