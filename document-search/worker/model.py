@@ -17,9 +17,9 @@ class LocalEncoder:
         for package in ("torch", "transformers"):
             actual = importlib.metadata.version(package).split("+")[0]
             if actual != encoder[package]:
-                raise ValueError(f"Install vm/requirements.txt: expected {package} {encoder[package]}, got {actual}")
+                raise ValueError(f"Install worker/requirements.txt: expected {package} {encoder[package]}, got {actual}")
         if device == "cuda" and not torch.cuda.is_available():
-            raise ValueError("CUDA is unavailable. Use the GPU VM image, or explicitly select --device cpu for a CPU run.")
+            raise ValueError("CUDA is unavailable. Use a GPU Job, or explicitly select --device cpu for a CPU run.")
         dtype = {"float16": torch.float16, "float32": torch.float32}[encoder["dtype"]]
         if device == "cpu" and dtype != torch.float32:
             raise ValueError("CPU runs require a separate config with encoder_settings.dtype=float32; do not mix indexes.")

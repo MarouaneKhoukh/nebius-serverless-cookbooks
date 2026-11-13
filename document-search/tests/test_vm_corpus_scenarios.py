@@ -8,12 +8,12 @@ import tempfile
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
-DATA = ROOT / "data/vm-documents"
+DATA = ROOT / "data/job-documents"
 WORKER = r'''
 import hashlib,json,os,sys
 from pathlib import Path
-from vm.data import load_documents,manifest_digest
-from vm.durable import LocalStore,RunConfig,index_documents,inspect_documents
+from worker.data import load_documents,manifest_digest
+from worker.durable import LocalStore,RunConfig,index_documents,inspect_documents
 data,output,mode=sys.argv[1:]
 config=RunConfig(manifest_digest(Path(data)),"offline-fixture-not-qwen","0"*40,8,160,{"fixture":True})
 documents=load_documents(Path(data));calls=0
@@ -73,7 +73,7 @@ class RealCorpusRecoveryTests(unittest.TestCase):
             if report:
                 Path(report).parent.mkdir(parents=True,exist_ok=True)
                 Path(report).write_text(json.dumps({
-                    "scope":"Offline recovery on the pinned 1,000 real passages; local files, not Object Storage or a cloud VM",
+                    "scope":"Offline recovery on the pinned 1,000 real passages; local files, not Object Storage or a Serverless Job",
                     "encoding":"Deterministic eight-dimensional test fixture, NOT Qwen embeddings or a performance benchmark",
                     "processes":"Each phase ran in a new Python subprocess",
                     "controlled_600":before,"same_command_resume_400":resumed,

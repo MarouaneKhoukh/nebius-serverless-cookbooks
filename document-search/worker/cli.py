@@ -1,4 +1,4 @@
-"""Index on a standalone VM; keep authoritative vectors/progress outside it."""
+"""Index documents in a Serverless Job; keep results in Object Storage."""
 from __future__ import annotations
 
 import argparse
@@ -13,10 +13,8 @@ import time
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 from embed import QUERY_INSTRUCTION, semantic_rank  # existing pooling/retrieval contract
-from vm.data import load_documents, manifest_digest
-from vm.durable import RunConfig, index_documents, inspect_documents, open_store
-
-SOURCE_FILES = ("documents.jsonl", "manifest.json", "LICENSE", "SOURCE.md")
+from worker.data import load_documents, manifest_digest
+from worker.durable import RunConfig, index_documents, inspect_documents, open_store
 
 
 def settings_from(path: Path) -> dict:
@@ -52,13 +50,12 @@ def write_search(folder: Path, query: str, matches: list[dict], fingerprint: str
             raise ValueError("Search source links must use HTTPS.")
         cards.append(f'<article><h2><a href="{html.escape(url, quote=True)}">{title}</a></h2>'
                      f'<p>Similarity {match["similarity"]:.4f}</p><p>{html.escape(match["text"])}</p></article>')
-    # VM reports deliberately carry no Serverless branding.
     logo = (ROOT / "docs/brand/nebius-logo.svg").read_text()
     (folder / "search.html").write_text(
         '<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
-        '<title>Document search on Nebius Compute</title><style>body{font:17px/1.6 system-ui;max-width:920px;margin:40px auto;padding:0 24px;color:#24271f;background:#fafaf6}'
+        '<title>Document search with a Nebius Serverless Job</title><style>body{font:17px/1.6 system-ui;max-width:920px;margin:40px auto;padding:0 24px;color:#24271f;background:#fafaf6}'
         'header svg{width:140px;height:auto}article{padding:20px 0;border-bottom:1px solid #ddd}a{color:inherit}</style>'
-        f'<header>{logo}<p>Powered by Nebius Compute</p></header><h1>{html.escape(query)}</h1>'
+        f'<header>{logo}<p>Powered by Nebius Serverless AI</p></header><h1>{html.escape(query)}</h1>'
         + ''.join(cards) + '<p>Scores express similarity, not answer confidence.</p>'
         '<footer><p>Passages: <a href="https://huggingface.co/datasets/databricks/databricks-dolly-15k">Databricks Dolly 15k</a>'
         ' (Wikipedia reference text), <a href="https://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0</a>.</p></footer></html>', encoding="utf-8")
@@ -69,9 +66,9 @@ def parser() -> argparse.ArgumentParser:
     sub = p.add_subparsers(dest="command", required=True)
     for command in ("index", "verify", "status", "query"):
         c = sub.add_parser(command)
-        c.add_argument("--data", type=Path, default=ROOT / "data/vm-documents")
+        c.add_argument("--data", type=Path, default=ROOT / "data/job-documents")
         c.add_argument("--store", required=True, help="s3://bucket/prefix; plain local paths are for offline tests")
-        c.add_argument("--config", type=Path, default=ROOT / "vm/runtime.json")
+        c.add_argument("--config", type=Path, default=ROOT / "worker/runtime.json")
         if command != "query":
             c.add_argument("--report", type=Path)
         if command in ("index", "query"):
@@ -83,11 +80,7 @@ def parser() -> argparse.ArgumentParser:
         if command == "query":
             c.add_argument("--text", required=True)
             c.add_argument("--top-k", type=int, default=5)
-            c.add_argument("--output-dir", type=Path, default=Path("results-vm-search"))
-    for command in ("upload-inputs", "download-inputs"):
-        c = sub.add_parser(command)
-        c.add_argument("--data", type=Path, default=ROOT / "data/vm-documents")
-        c.add_argument("--store", required=True, help="Separate s3://bucket/input-prefix")
+            c.add_argument("--output-dir", type=Path, default=Path("results-job-search"))
     return p
 
 
@@ -118,7 +111,7 @@ def index(args) -> None:
     def encode(texts):
         nonlocal encoder, model_startup_seconds
         if encoder is None:
-            from vm.model import LocalEncoder
+            from worker.model import LocalEncoder
             loading = time.perf_counter()
             encoder = LocalEncoder(settings, device=args.device)
             model_startup_seconds = time.perf_counter() - loading
@@ -183,7 +176,7 @@ def query(args) -> None:
     inspected = inspect_documents(documents, store, config)
     if not inspected["stats"]["complete"]:
         raise ValueError("Index is incomplete; rerun index before searching.")
-    from vm.model import LocalEncoder
+    from worker.model import LocalEncoder
     encoder = LocalEncoder(settings, device=args.device)
     vector = encoder([f"Instruct: {QUERY_INSTRUCTION}\nQuery:{args.text.strip()}"])[0]
     matches = semantic_rank(inspected["records"], vector, args.top_k)
@@ -194,34 +187,9 @@ def query(args) -> None:
     print("Saved report:", args.output_dir / "search.html")
 
 
-def upload_inputs(args) -> None:
-    documents = load_documents(args.data)
-    store = open_store(args.store)
-    for name in SOURCE_FILES:
-        value = (args.data / name).read_bytes()
-        store.put(name, value)
-    print(f"Uploaded {len(documents):,} documents and their source manifest.")
-
-
-def download_inputs(args) -> None:
-    store = open_store(args.store)
-    args.data.mkdir(parents=True, exist_ok=True)
-    for name in SOURCE_FILES:
-        value = store.get(name)
-        if value is None:
-            raise ValueError("Durable input is missing: " + name)
-        path = args.data / name
-        if path.exists() and path.read_bytes() != value:
-            raise ValueError("Local input differs. Download into a fresh --data directory.")
-        path.write_bytes(value)
-    documents = load_documents(args.data)
-    print(f"Downloaded and verified {len(documents):,} documents.")
-
-
 def main(argv=None) -> int:
     args = parser().parse_args(argv)
-    commands = {"index": index, "status": status, "verify": verify, "query": query,
-                "upload-inputs": upload_inputs, "download-inputs": download_inputs}
+    commands = {"index": index, "status": status, "verify": verify, "query": query}
     try:
         commands[args.command](args)
         return 0

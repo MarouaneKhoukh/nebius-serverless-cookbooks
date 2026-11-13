@@ -1,4 +1,4 @@
-"""Offline VM CLI integration checks; encoding/data are mocked, no GPU or cloud."""
+"""Offline worker CLI integration checks; encoding/data are mocked, no GPU or cloud."""
 import contextlib
 import io
 import json
@@ -6,12 +6,12 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from vm import cli
-from vm.durable import LocalStore
+from worker import cli
+from worker.durable import LocalStore
 
 
 class MockEncoder:
@@ -41,10 +41,10 @@ class VMCLIIntegrationTests(unittest.TestCase):
         self.data = self.root / "input"
         self.data.mkdir()
         self.store = self.root / "index"
-        self.runtime = json.loads((cli.ROOT / "vm/runtime.json").read_text())
+        self.runtime = json.loads((cli.ROOT / "worker/runtime.json").read_text())
         self.assertEqual(self.runtime["dimensions"], 1024)
-        (self.root / "vm").mkdir()
-        (self.root / "vm/runtime.json").write_text(json.dumps(self.runtime))
+        (self.root / "worker").mkdir()
+        (self.root / "worker/runtime.json").write_text(json.dumps(self.runtime))
         brand = self.root / "docs/brand"
         brand.mkdir(parents=True)
         (brand / "nebius-logo.svg").write_text('<svg xmlns="http://www.w3.org/2000/svg"><title>Offline fixture</title></svg>')
@@ -54,20 +54,12 @@ class VMCLIIntegrationTests(unittest.TestCase):
             {"id": "fixture-two", "title": "Second fixture", "source_url": "https://example.invalid/two",
              "text": "Second fixture passage that is separate from the first input document."},
         ]
-        self.files = {
-            "documents.jsonl": b'{"fixture":"documents"}\n',
-            "manifest.json": b'{"fixture":"manifest"}\n',
-            "LICENSE": b"Offline fixture license.\n",
-            "SOURCE.md": b"Offline fixture source.\n",
-        }
-        for name, payload in self.files.items():
-            (self.data / name).write_bytes(payload)
         MockEncoder.instances = []
         self.patches = [
             patch.object(cli, "ROOT", self.root),
             patch.object(cli, "load_documents", return_value=self.documents),
             patch.object(cli, "manifest_digest", return_value="a" * 64),
-            patch("vm.model.LocalEncoder", MockEncoder),
+            patch("worker.model.LocalEncoder", MockEncoder),
         ]
         for item in self.patches:
             item.start()
@@ -101,25 +93,6 @@ class VMCLIIntegrationTests(unittest.TestCase):
         self.assertIn("All 2 documents verified", stdout)
         self.assertEqual(len(MockEncoder.instances), 1)  # Verify never loads the model.
 
-    def test_upload_download_roundtrip_includes_all_four_input_files(self):
-        object_store = self.root / "durable-inputs"
-        downloaded = self.root / "downloaded"
-
-        def validated(path):
-            self.assertEqual({name: (path / name).read_bytes() for name in cli.SOURCE_FILES}, self.files)
-            return self.documents
-
-        with patch.object(cli, "load_documents", side_effect=validated) as validate, \
-                contextlib.redirect_stdout(io.StringIO()) as stdout:
-            self.assertEqual(cli.main(["upload-inputs", "--data", str(self.data), "--store", str(object_store)]), 0)
-            self.assertEqual(cli.main(["download-inputs", "--data", str(downloaded), "--store", str(object_store)]), 0)
-        self.assertIn("Uploaded 2 documents", stdout.getvalue())
-        self.assertIn("Downloaded and verified 2 documents", stdout.getvalue())
-        self.assertEqual({p.name for p in downloaded.iterdir()}, set(cli.SOURCE_FILES))
-        self.assertEqual(set(LocalStore(object_store).keys()), set(cli.SOURCE_FILES))
-        self.assertEqual({name: (downloaded / name).read_bytes() for name in cli.SOURCE_FILES}, self.files)
-        self.assertEqual([item.args[0] for item in validate.call_args_list], [self.data, downloaded])
-        self.assertEqual(MockEncoder.instances, [])
 
     def test_complete_rerun_skips_model_loading_and_embedding(self):
         self.index()
@@ -130,41 +103,9 @@ class VMCLIIntegrationTests(unittest.TestCase):
         self.assertTrue(result["hardware"]["model_not_loaded"])
         self.assertEqual(len(MockEncoder.instances), 1)
 
-    def test_upload_rejects_invalid_inputs_before_any_object_write(self):
-        target = self.root / "durable-inputs"
-        with patch.object(cli, "load_documents", side_effect=ValueError("fixture input checksum changed")), \
-                contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()) as error:
-            status = cli.main(["upload-inputs", "--data", str(self.data), "--store", str(target)])
-        self.assertEqual(status, 1)
-        self.assertIn("checksum changed", error.getvalue())
-        self.assertEqual(LocalStore(target).keys(), [])
-        self.assertEqual(MockEncoder.instances, [])
 
-    def test_download_rejects_missing_input_or_existing_conflicting_file(self):
-        for missing in (True, False):
-            with self.subTest(missing=missing):
-                target = self.root / ("missing-store" if missing else "complete-store")
-                store = LocalStore(target)
-                for name, payload in self.files.items():
-                    if not missing or name != "SOURCE.md":
-                        store.put(name, payload)
-                downloaded = self.root / ("missing-download" if missing else "conflict-download")
-                if not missing:
-                    downloaded.mkdir()
-                    (downloaded / "documents.jsonl").write_bytes(b"user-owned file")
-                with patch.object(cli, "load_documents") as validate, \
-                        contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()) as error:
-                    status = cli.main(["download-inputs", "--data", str(downloaded), "--store", str(target)])
-                self.assertEqual(status, 1)
-                validate.assert_not_called()
-                if missing:
-                    self.assertIn("Durable input is missing: SOURCE.md", error.getvalue())
-                else:
-                    self.assertIn("Local input differs", error.getvalue())
-                    self.assertEqual((downloaded / "documents.jsonl").read_bytes(), b"user-owned file")
-        self.assertEqual(MockEncoder.instances, [])
 
-    def test_query_writes_compute_report_without_old_serverless_report(self):
+    def test_query_writes_serverless_job_report(self):
         self.index()
         output = self.root / "query-output"
         with patch("embed.report", side_effect=AssertionError("do not use the old report")) as old_report:
@@ -176,9 +117,10 @@ class VMCLIIntegrationTests(unittest.TestCase):
         self.assertEqual(document["query"], "Find the first fixture")
         self.assertEqual(len(document["matches"]), 2)
         report = (output / "search.html").read_text()
-        self.assertIn("Powered by Nebius Compute", report)
+        self.assertIn("Powered by Nebius Serverless AI", report)
+        self.assertIn("Serverless Job", report)
         self.assertIn("CC BY-SA 3.0", report)
-        self.assertNotIn("Serverless", report)
+        self.assertNotIn("Nebius Compute", report)
         self.assertIn("search.html", stdout)
         query_text = MockEncoder.instances[-1].calls[0][0]
         self.assertEqual(query_text, f"Instruct: {cli.QUERY_INSTRUCTION}\nQuery:Find the first fixture")

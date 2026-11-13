@@ -7,10 +7,11 @@ from pathlib import Path
 import subprocess
 import sys
 import tempfile
+import traceback
 import unittest
 from unittest.mock import Mock
 
-SOURCE = Path(__file__).resolve().parents[1] / "vm/durable.py"
+SOURCE = Path(__file__).resolve().parents[1] / "worker/durable.py"
 SPEC = importlib.util.spec_from_file_location("simple_vm_durable", SOURCE)
 durable = importlib.util.module_from_spec(SPEC)
 sys.modules[SPEC.name] = durable
@@ -214,6 +215,58 @@ print(json.dumps({"stats":stats,"encoded":count}))
 
 
 class S3OperationTests(unittest.TestCase):
+    def test_storage_errors_show_safe_code_without_request_or_credential_details(self):
+        secret = "https://private.invalid/request?X-Amz-Credential=fixture-secret"
+        for code in ("AccessDenied", "NoSuchBucket"):
+            for action in ("get", "put", "keys"):
+                with self.subTest(code=code, action=action):
+                    error = RuntimeError(secret)
+                    error.response = {"Error": {"Code": code, "Message": secret},
+                                      "ResponseMetadata": {"RequestId": "private-request-detail"}}
+                    client = Mock()
+                    for operation in ("get_object", "put_object", "list_objects_v2"):
+                        getattr(client, operation).side_effect = error
+                    store = durable.S3Store("s3://fixture-bucket/run", endpoint_url="https://example.invalid", client=client)
+                    with self.assertRaises(durable.DurableError) as raised:
+                        if action == "get":
+                            store.get("document.json")
+                        elif action == "put":
+                            store.put("document.json", b"{}")
+                        else:
+                            store.keys()
+                    shown = str(raised.exception) + "".join(traceback.format_exception(raised.exception))
+                    self.assertIn("(" + code + ")", shown)
+                    self.assertNotIn("fixture-secret", shown)
+                    self.assertNotIn("private.invalid", shown)
+                    self.assertNotIn("private-request-detail", shown)
+
+    def test_unsafe_or_missing_storage_code_uses_unknown(self):
+        secret = "https://private.invalid/?token=fixture-secret"
+        for response in ({}, None, {"Error": None},
+                         *({"Error": {"Code": code}} for code in (None, "", secret, "x" * 65, ["AccessDenied"]))):
+            with self.subTest(response=response):
+                error = RuntimeError(secret)
+                error.response = response
+                client = Mock()
+                client.put_object.side_effect = error
+                store = durable.S3Store("s3://fixture-bucket/run", endpoint_url="https://example.invalid", client=client)
+                with self.assertRaisesRegex(durable.DurableError, r"\(Unknown\)") as raised:
+                    store.put("document.json", b"{}")
+                self.assertNotIn("fixture-secret", str(raised.exception))
+
+    def test_missing_key_get_still_returns_none_but_failed_put_does_not(self):
+        for code in ("NoSuchKey", "NotFound", "404"):
+            with self.subTest(code=code):
+                error = RuntimeError("private request details")
+                error.response = {"Error": {"Code": code}}
+                client = Mock()
+                client.get_object.side_effect = error
+                client.put_object.side_effect = error
+                store = durable.S3Store("s3://fixture-bucket/run", endpoint_url="https://example.invalid", client=client)
+                self.assertIsNone(store.get("missing.json"))
+                with self.assertRaisesRegex(durable.DurableError, code):
+                    store.put("document.json", b"{}")
+
     def test_document_puts_have_no_get_before_put_or_readback(self):
         client = FakeS3()
         store = durable.S3Store("s3://fixture-bucket/run", endpoint_url="https://example.invalid", client=client)

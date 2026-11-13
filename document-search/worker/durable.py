@@ -131,10 +131,13 @@ class S3Store(JSONStore):
         try:
             return getattr(self.client, action)(Bucket=self.bucket, **kwargs)
         except Exception as exc:
-            code = str(getattr(exc, "response", {}).get("Error", {}).get("Code", ""))
+            error = getattr(exc, "response", {})
+            error = error.get("Error", {}) if isinstance(error, dict) else {}
+            code = error.get("Code") if isinstance(error, dict) else None
+            code = code if isinstance(code, str) and re.fullmatch(r"[A-Za-z0-9_.-]{1,64}", code) else "Unknown"
             if action == "get_object" and code in {"NoSuchKey", "NotFound", "404"}:
                 return None
-            raise DurableError("Object Storage request failed; check access and connectivity.") from exc
+            raise DurableError(f"Object Storage request failed ({code}); check access and connectivity.") from None
 
     def get(self, key):
         result = self._call("get_object", Key=f"{self.prefix}/{key}")

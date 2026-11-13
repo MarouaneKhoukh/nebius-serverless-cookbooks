@@ -2,7 +2,7 @@
 
 ## Current execution scope
 
-This simplified implementation has **not been rerun on a Nebius GPU VM**. The previous temporary VM was deleted; no new cloud resources were created. GPU startup, embedding, Object Storage saving and VM restart timings have not been measured for this revision.
+This revision runs on **preemptible Serverless Jobs**, with Object Storage shared between attempts. Live execution of the Job launcher has not yet been completed; the results below are offline checks only. No standalone Compute VM is used.
 
 ## Local checks
 
@@ -13,7 +13,7 @@ python3 scripts/prepare_vm_data.py
 python3 -m unittest discover -s tests
 ```
 
-**62 tests passed** on the current code, including the unchanged Endpoint tests.
+**67 tests passed** on the current code, including the unchanged Endpoint tests.
 
 Recovery checks use the real passages with deterministic fixture embeddings, local storage and a fresh Python process for each phase. They are not GPU or cloud benchmarks. They cover resuming finished documents, restarting an unfinished document, and refusing changed data or model settings.
 
@@ -26,7 +26,7 @@ Recovery checks use the real passages with deterministic fixture embeddings, loc
 
 The crash left 10 complete documents containing 15 saved chunks. The unfinished document had no result object and was recomputed. [Current offline results](docs/vm-results/offline-recovery.json).
 
-The session helper was checked with dummy credentials: it loads non-secret settings, activates the environment and prompts privately without writing or echoing credentials. README shell examples passed Bash syntax checks.
+Job bootstrap tests mock downloads, package installation, the model and storage. They check the 600-document limit, report uploads, complete-only search, and forwarding of the controlled crash exit. The launcher passed Bash syntax checks; S3 error tests check safe provider error codes without credential-bearing details.
 
 ## Scope of the simpler pattern
 

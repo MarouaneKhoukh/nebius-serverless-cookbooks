@@ -1,140 +1,120 @@
 ---
-title: Save Your Progress on a Preemptible VM
+title: Save Your Progress with Preemptible Serverless Jobs
 category: inference
 type: cookbook
-runtime: Nebius Compute VM
+runtime: Nebius Serverless Job
 frameworks: [Transformers, PyTorch, S3]
 keywords: [preemptible, recovery, object-storage, embeddings]
 difficulty: intermediate
 ---
 
-# Save Your Progress on a Preemptible VM
+# Save Your Progress with Preemptible Serverless Jobs
 
-Preemptible VMs cost less than regular capacity, but Nebius can stop them. Save each finished document to Object Storage as you go. After a stop, start the VM again and rerun the same index command. Documents already saved are skipped.
+Preemptible GPUs cost less than regular capacity, but work can be interrupted when capacity is reclaimed. Save each finished document to Object Storage as you go. If a Job stops, submit another Job with the same settings and storage location. It skips the saved documents and finishes what remains.
 
-The example indexes **1,000 distinct Dolly reference passages** with Qwen3-Embedding-0.6B, producing **1,970 chunks**. [Data and license](vm/data/SOURCE.md).
+This example builds a searchable index of **1,000 distinct Dolly reference passages**, using Qwen3-Embedding-0.6B. They produce **1,970 chunks**. Serverless handles the GPU environment and releases compute when each Job finishes; you manage no VM or SSH connection. [Data and license](worker/data/SOURCE.md).
 
 ## 1 Set up
 
-Use a billing-enabled **eu-north1** project with GPU quota. In the [console](https://console.nebius.com), create or reuse a private Object Storage bucket and an S3 access key with `storage.object-editor` access to it. Your administrator can grant that role to a service account through a group; create its key under **IAM → Service accounts → Access keys**. [Access key instructions](https://docs.nebius.com/iam/service-accounts/access-keys).
-
-On your computer, create an SSH key (choose another filename if this exists):
+Run all commands below **on your computer**, from the cookbook folder. You need a billing-enabled **eu-north1** project with L40S GPU quota, an internet-enabled subnet and the [Nebius CLI](https://docs.nebius.com/cli/install) (0.12.305 or newer).
 
 ```bash
-mkdir -p "$HOME/.ssh"
-ssh-keygen -t ed25519 -f "$HOME/.ssh/document-search-vm"
-cat "$HOME/.ssh/document-search-vm.pub"
+git clone https://github.com/MarouaneKhoukh/nebius-serverless-cookbooks.git
+cd nebius-serverless-cookbooks/document-search
+nebius profile create
 ```
 
-Under **Compute → Virtual machines → Create virtual machine**, choose **Preemptible** and name it `document-index-demo`. An example configuration is **L40S AMD, 1 GPU / 16 vCPU / 96 GiB**, **Follows spot price**, **Ubuntu 24.04 GPU CUDA 13**, and an **80 GiB network SSD**. Use an internet-enabled subnet, a dynamic public IPv4, and SSH access on TCP 22 from your IP. Set SSH username `cookbook` with the public key above. Review the quote and create the VM.
+Complete the CLI sign-in and select your project. In the [console](https://console.nebius.com), prepare:
 
-Once **Running**, check its SSH fingerprint against the serial logs. Connect from your computer:
+- A private **Object Storage bucket**. Create an [S3 access key](https://docs.nebius.com/iam/service-accounts/access-keys) for a service account with `storage.object-editor` access to that bucket.
+- A **SecretStash secret** with two text entries: `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`, containing that access key's ID and secret. Copy the secret's `mbsec-…` ID. Keep the values out of your code and terminal commands. [SecretStash instructions](https://docs.nebius.com/mysterybox/secrets/create).
+- Your **project ID** and **subnet ID**, available on their console pages.
 
-```bash
-export VM_IP="YOUR_VM_PUBLIC_IP"
-ssh -i "$HOME/.ssh/document-search-vm" "cookbook@$VM_IP"
-```
-
-In the **VM terminal**, install the worker:
+Save these non-secret settings locally. Replace every `YOUR_…` value and use a fresh bucket prefix:
 
 ```bash
-git clone --branch codex/document-search-vm https://github.com/MarouaneKhoukh/nebius-serverless-cookbooks.git &&
-cd nebius-serverless-cookbooks/document-search &&
-python3 -m venv .venv &&
-.venv/bin/python -m pip install -r vm/requirements.txt
-```
-
-If `venv` is missing, run `sudo apt-get update && sudo apt-get install -y python3-venv`, then repeat the venv and install commands. Use Python 3.10–3.12.
-
-Save only non-secret settings, replacing `YOUR_BUCKET`. Use a fresh prefix for this run:
-
-```bash
-cat > .env.vm <<'ENV'
-export S3_ENDPOINT_URL="https://storage.eu-north1.nebius.cloud"
-export AWS_DEFAULT_REGION="eu-north1"
+cat > .env <<'ENV'
+export NEBIUS_PROJECT_ID="YOUR_PROJECT_ID"
+export NEBIUS_SUBNET_ID="YOUR_SUBNET_ID"
+export S3_SECRET_ID="YOUR_SECRET_ID"
 export RUN_ROOT="s3://YOUR_BUCKET/document-index-demo-01"
 ENV
-source vm/session.sh
-python scripts/prepare_vm_data.py
+source .env
 ```
 
-`session.sh` activates Python, loads these settings and privately prompts for the two S3 credentials. Credentials stay in the shell environment, never in the file. The pinned input is saved at the default `data/vm-documents` path.
+The launcher uses one preemptible **L40S AMD GPU**, an 80 GiB temporary disk, no automatic retries and a **one-hour timeout per Job**. Review the current [price](https://nebius.com/prices) before submitting. L40S has flat preemptible pricing; the required CLI flag `--follows-spot-price` does not make this a changing-price demonstration. Setup, model download and execution all use billable compute.
 
-## 2 Run the indexer
+## 2 Save the first 600 documents
 
-In the VM terminal:
+Validate the configuration, then submit:
 
 ```bash
-python -m vm.cli index --store "$RUN_ROOT/index" --max-new-documents 600
+JOB_NAME=document-index-first bash scripts/submit.sh --dry-run
+JOB_NAME=document-index-first bash scripts/submit.sh --async
 ```
 
-For this walkthrough, each invocation processes up to **600 new documents**. The first invocation saves 600 and leaves 400. Each finished document becomes one S3 object containing all its chunk embeddings; an unfinished document has no saved result.
+In **Serverless AI → Jobs**, open `document-index-first` and its **Logs**. Wait for **Completed** before continuing. The log should end with **600 new, 0 reused, 400 remaining**. Each saved document is one object containing all its chunk embeddings.
 
-## 3 Stop the VM partway
+This deliberate pause after 600 documents is a controlled interruption test, not an actual Nebius preemption. The Job ends and releases its compute. Its temporary disk is discarded; the finished results and run settings remain under `$RUN_ROOT/index` in Object Storage.
 
-In the console, **Stop** this VM and wait for **Stopped**. This is a manual stop, not an actual preemption. The network disk retains your code and input; Object Storage retains the finished results.
+## 3 Resume in a new Job
 
-## 4 Start it again and rerun
-
-In the console, **Start** the VM. Copy its current public IP and reconnect with the SSH command from step 1. In the new VM terminal, run:
+Submit the same workload under a new Job name:
 
 ```bash
-cd nebius-serverless-cookbooks/document-search
-source vm/session.sh
-python -m vm.cli index --store "$RUN_ROOT/index" --max-new-documents 600
+JOB_NAME=document-index-resume bash scripts/submit.sh --async
 ```
 
-After the credential prompts, you should see **“600 documents already saved, 400 to go”**. The same command finishes the remaining 400. The result is **1,000 complete documents / 1,970 chunks**. No input download or `--data` argument is needed after this stop/start.
+The new container downloads the same pinned input and model. It reads saved progress and prints **“600 documents already saved, 400 to go.”** It should finish with **400 new, 600 reused, 0 remaining**: **1,000 complete documents / 1,970 chunks**.
 
-## 5 Search the results
+If you closed your terminal, return to this folder and run `source .env` first. There are no credentials to re-enter: Serverless injects them from SecretStash into each Job.
 
-On the VM:
+## 4 Search the index
 
-```bash
-python -m vm.cli query --store "$RUN_ROOT/index" \
-  --text "What happens in chess when a player has no legal moves but is not in check?"
-```
+The completed Job automatically runs this query:
 
-Read the returned passages and source links in the terminal. To open the HTML report, use a **terminal on your computer**:
+> What happens in chess when a player has no legal moves but is not in check?
 
-```bash
-export VM_IP="YOUR_VM_CURRENT_PUBLIC_IP"
-scp -i "$HOME/.ssh/document-search-vm" -r \
-  "cookbook@$VM_IP:nebius-serverless-cookbooks/document-search/results-vm-search" .
-open results-vm-search/search.html
-```
+Read the ranked passages and source links in its **Logs**. In **Object Storage → your bucket → document-index-demo-01 → outputs**, download `search.html` and open it in your browser for a readable report. `search.json` contains the same results; the other JSON files record each attempt's counts and timings. The bucket stays private.
 
-On a Linux desktop, use `xdg-open` instead of `open`.
+## 5 Finish
 
-## What to do when your VM is preempted
+Check both Jobs are **Completed**, not still starting or running. Completed Jobs no longer use compute. Cancel any unfinished test under **Serverless AI → Jobs → ⋯ → Cancel**. Keep the results, or delete only this run's bucket prefix and temporary secret when you no longer need them. Preserve shared buckets and credentials.
 
-- Start compute again when capacity is available. Nebius does not automatically restart a preemptible VM.
-- Reconnect using its current IP, activate your environment and supply credentials.
-- Rerun the same job with the same input, model settings and Object Storage prefix.
-- Check how many documents were reused. Work on an unfinished document runs again.
-- Keep one writer per prefix. If you change the input or model settings, use a new prefix.
+## When a Job is preempted
 
-The reusable pattern is in [vm/durable.py](vm/durable.py): list saved documents, skip them, compute the next document, then save its complete result. [Nebius VM lifecycle](https://docs.nebius.com/compute/virtual-machines/preemptible).
+- Wait for the previous attempt to reach a terminal state.
+- Submit a new Job with a new name and the **same** input, model settings and `RUN_ROOT`.
+- Check the log's reused and remaining counts. An unfinished document is recomputed.
+- Use one active Job per prefix. Changed input or model settings require a fresh prefix.
 
-## Clean up
-
-Stop the VM and verify **Stopped**. To remove it and its managed boot disk, use **Settings → Delete virtual machine → Delete VM and disks**. A stopped VM still has billable disks. Preserve reused buckets, networking and credentials; remove only this example's S3 prefix when you no longer need the results.
+The pattern lives in [worker/durable.py](worker/durable.py): list saved documents, skip them, compute the next document, then save its complete result. A run manifest refuses incompatible settings. [Serverless Job lifecycle](https://docs.nebius.com/serverless/lifecycle).
 
 ## Go further
 
-For an uninterrupted run, choose a fresh prefix and omit the demo limit:
+For an uninterrupted run, use a separate output location and remove the 600-document cap (`0` means no cap):
 
 ```bash
-python -m vm.cli index --store "$RUN_ROOT/full-run"
-python -m vm.cli verify --store "$RUN_ROOT/full-run"
+JOB_NAME=document-index-full RUN_ROOT="$RUN_ROOT/full-run" \
+  MAX_NEW_DOCUMENTS=0 bash scripts/submit.sh --async
 ```
 
-To try a crash mid-document, this exits with code **75** during the seventeenth chunk. Rerun without the crash flag:
+Wait for **Completed** and check **1,000 new, 0 reused, 0 remaining**.
+
+To test a crash during an unfinished document, use another prefix. This attempt deliberately exits with code **75** during the seventeenth computed chunk:
 
 ```bash
-python -m vm.cli index --store "$RUN_ROOT/crash-test" --crash-after-chunks 17
-python -m vm.cli index --store "$RUN_ROOT/crash-test"
-python -m vm.cli verify --store "$RUN_ROOT/crash-test"
+JOB_NAME=document-index-crash RUN_ROOT="$RUN_ROOT/crash-test" \
+  MAX_NEW_DOCUMENTS=0 CRASH_AFTER_CHUNKS=17 bash scripts/submit.sh --async
 ```
 
-Only finished documents survive; the interrupted document is recomputed. See [VALIDATION.md](VALIDATION.md) for checks, measurement scope and remaining validation.
+Wait for **Failed**, then submit without the crash flag:
+
+```bash
+JOB_NAME=document-index-crash-resume RUN_ROOT="$RUN_ROOT/crash-test" \
+  MAX_NEW_DOCUMENTS=0 bash scripts/submit.sh --async
+```
+
+The new Job reuses only fully saved documents. Check **Completed**, **1,000 documents / 1,970 chunks**, and the reused count in its log. See [VALIDATION.md](VALIDATION.md) for actual execution results and timing scope.
+
+For the separate Serverless Endpoint route, see [ENDPOINT.md](ENDPOINT.md).

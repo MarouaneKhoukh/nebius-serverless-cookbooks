@@ -9,4 +9,6 @@ data/documents/
 data/vm-documents/
 data/restored-documents/
 
-.env.vm
+data/job-documents/
+.state/job-data-cache/
+results-job-search/
