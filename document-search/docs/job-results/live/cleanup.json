@@ -1,0 +1,40 @@
+{
+  "checked_at": "2026-11-13T17:16:52.219352+00:00",
+  "jobs": [
+    {
+      "attempt": "first",
+      "job_id": "aijob-e00hcrms5kp65pcj6e",
+      "state": "COMPLETED",
+      "active_instances": 0
+    },
+    {
+      "attempt": "resume",
+      "job_id": "aijob-e00xxzjh45x852qhwk",
+      "state": "COMPLETED",
+      "active_instances": 0
+    },
+    {
+      "attempt": "full",
+      "job_id": "aijob-e00vrs52acsbd7pwgc",
+      "state": "COMPLETED",
+      "active_instances": 0
+    },
+    {
+      "attempt": "crash",
+      "job_id": "aijob-e00d203dk9jdyf0x0n",
+      "state": "FAILED",
+      "active_instances": 0
+    },
+    {
+      "attempt": "crash-resume",
+      "job_id": "aijob-e00kyyepm2t8tazt5s",
+      "state": "COMPLETED",
+      "active_instances": 0,
+      "managed_compute_deleted": true,
+      "cleanup_note": "Compute API returned NotFound; Job status briefly retained a completed instance reference."
+    }
+  ],
+  "standalone_compute_vm_created": false,
+  "results_retained_in_object_storage": true,
+  "temporary_secret": "Deleted; metadata lookup returned NotFound. The existing S3 access key was preserved."
+}

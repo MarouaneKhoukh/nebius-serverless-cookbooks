@@ -1,0 +1,3 @@
+{"setup_seconds": 10.45148987600001, "preparation_seconds": 1.1389239739999937}
+0 documents already saved, 1,000 to go.
+Controlled test stop after 17 computed chunks. The unfinished document will run again; saved documents are kept.

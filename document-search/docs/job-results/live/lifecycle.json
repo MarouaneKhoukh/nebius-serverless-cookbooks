@@ -1,0 +1,150 @@
+{
+  "scope": "Selected observed status transitions; intervals include polling delay and can include work already performed. Not an exact cold-start benchmark.",
+  "attempts": [
+    {
+      "attempt": "first",
+      "observations": [
+        {
+          "state": "PROVISIONING",
+          "observed_at": "2026-11-13T16:42:23.538236+00:00",
+          "seconds_since_creation": 32.882
+        },
+        {
+          "state": "STARTING",
+          "observed_at": "2026-11-13T16:42:54.948488+00:00",
+          "seconds_since_creation": 64.293
+        },
+        {
+          "state": "IMAGE_PULLING",
+          "observed_at": "2026-11-13T16:44:06.268196+00:00",
+          "seconds_since_creation": 135.612
+        },
+        {
+          "state": "RUNNING",
+          "observed_at": "2026-11-13T16:46:29.864719+00:00",
+          "seconds_since_creation": 279.209
+        },
+        {
+          "state": "COMPLETED",
+          "observed_at": "2026-11-13T16:48:23.122571+00:00",
+          "seconds_since_creation": 392.467
+        }
+      ]
+    },
+    {
+      "attempt": "resume",
+      "observations": [
+        {
+          "state": "PROVISIONING",
+          "observed_at": "2026-11-13T16:49:22.402028+00:00",
+          "seconds_since_creation": 22.791
+        },
+        {
+          "state": "STARTING",
+          "observed_at": "2026-11-13T16:50:38.042090+00:00",
+          "seconds_since_creation": 98.431
+        },
+        {
+          "state": "IMAGE_PULLING",
+          "observed_at": "2026-11-13T16:51:42.014754+00:00",
+          "seconds_since_creation": 162.404
+        },
+        {
+          "state": "RUNNING",
+          "observed_at": "2026-11-13T16:53:48.092588+00:00",
+          "seconds_since_creation": 288.482
+        },
+        {
+          "state": "COMPLETED",
+          "observed_at": "2026-11-13T16:55:11.010842+00:00",
+          "seconds_since_creation": 371.4
+        }
+      ]
+    },
+    {
+      "attempt": "full",
+      "observations": [
+        {
+          "state": "PROVISIONING",
+          "observed_at": "2026-11-13T16:56:28.250527+00:00",
+          "seconds_since_creation": 33.786
+        },
+        {
+          "state": "STARTING",
+          "observed_at": "2026-11-13T16:57:25.777099+00:00",
+          "seconds_since_creation": 91.312
+        },
+        {
+          "state": "IMAGE_PULLING",
+          "observed_at": "2026-11-13T16:58:22.029432+00:00",
+          "seconds_since_creation": 147.565
+        },
+        {
+          "state": "RUNNING",
+          "observed_at": "2026-11-13T17:01:25.924402+00:00",
+          "seconds_since_creation": 331.459
+        },
+        {
+          "state": "COMPLETED",
+          "observed_at": "2026-11-13T17:02:22.876534+00:00",
+          "seconds_since_creation": 388.412
+        }
+      ]
+    },
+    {
+      "attempt": "crash",
+      "observations": [
+        {
+          "state": "PROVISIONING",
+          "observed_at": "2026-11-13T17:03:20.420276+00:00",
+          "seconds_since_creation": 29.226
+        },
+        {
+          "state": "STARTING",
+          "observed_at": "2026-11-13T17:04:21.678608+00:00",
+          "seconds_since_creation": 90.485
+        },
+        {
+          "state": "IMAGE_PULLING",
+          "observed_at": "2026-11-13T17:05:20.863032+00:00",
+          "seconds_since_creation": 149.669
+        },
+        {
+          "state": "RUNNING",
+          "observed_at": "2026-11-13T17:07:38.665209+00:00",
+          "seconds_since_creation": 287.471
+        },
+        {
+          "state": "FAILED",
+          "observed_at": "2026-11-13T17:08:25.774358+00:00",
+          "seconds_since_creation": 334.58
+        }
+      ]
+    },
+    {
+      "attempt": "crash-resume",
+      "observations": [
+        {
+          "state": "STARTING",
+          "observed_at": "2026-11-13T17:10:07.117608+00:00",
+          "seconds_since_creation": 69.12
+        },
+        {
+          "state": "IMAGE_PULLING",
+          "observed_at": "2026-11-13T17:11:30.841813+00:00",
+          "seconds_since_creation": 152.845
+        },
+        {
+          "state": "RUNNING",
+          "observed_at": "2026-11-13T17:14:28.668366+00:00",
+          "seconds_since_creation": 330.671
+        },
+        {
+          "state": "COMPLETED",
+          "observed_at": "2026-11-13T17:15:19.315542+00:00",
+          "seconds_since_creation": 381.318
+        }
+      ]
+    }
+  ]
+}

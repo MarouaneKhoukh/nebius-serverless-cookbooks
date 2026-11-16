@@ -1,212 +1,128 @@
 ---
-title: Search the Python Docs by Meaning
+title: Build a Document Search Index with a Serverless Job
 category: inference
 type: cookbook
-runtime: Nebius Serverless AI Endpoint
-frameworks: [vLLM]
-keywords: [preemptible, embeddings, python, retrieval, qwen]
-difficulty: beginner
+runtime: Nebius Serverless Job
+frameworks: [Transformers, PyTorch, S3]
+keywords: [documents, embeddings, search, serverless, preemptible]
+difficulty: intermediate
 ---
 
-<img src="docs/brand/nebius-logo.svg" alt="Nebius" width="140">
+# Build a Document Search Index with a Serverless Job
 
-# Search the Python Docs by Meaning
+Build a searchable index of 1,000 distinct Dolly reference passages with Qwen3-Embedding-0.6B, save the embeddings to Object Storage, and search the collection by meaning. A single Serverless Job prepares the input, indexes all 1,970 chunks and writes a readable search report. It runs on a lower-cost preemptible GPU and can pick up where it left off if interrupted. [Data and license](worker/data/SOURCE.md).
 
-Search **55 real Python standard-library reference documents** with Qwen3-Embedding-0.6B. You'll save **2,138 passage embeddings**, ask a question and inspect the sources in a browser report. Twelve original Python FAQ questions let you compare semantic retrieval with a CPU keyword baseline.
+## 1 Set up
 
-Nebius Serverless AI hosts Qwen behind an **Endpoint**, an authenticated HTTPS model API. Your computer prepares the documents, saves vectors and searches them. No local GPU or vector database is required.
-
-A **preemptible GPU** can offer a lower rate, but Nebius can reclaim it. Saved passage vectors survive on your computer, so indexing can continue later. New questions need the model Endpoint available; already saved reports open without it.
-
-## What you need
-
-- macOS or Ubuntu, Git and **Python 3.10+**. The local tools use Python's standard library.
-- A billing-enabled Nebius project in **eu-north1**, permission to create Endpoints and quota for **one preemptible L40S**.
-
-## 1. Get the files and real corpus
+Run the commands on your computer, from the cookbook folder. You need Git, the [Nebius CLI](https://docs.nebius.com/cli/install) 0.12.305 or newer, and a billing-enabled eu-north1 project with L40S GPU quota and an internet-enabled subnet.
 
 ```bash
 git clone https://github.com/MarouaneKhoukh/nebius-serverless-cookbooks.git
 cd nebius-serverless-cookbooks/document-search
-python3 scripts/prepare_data.py
+nebius profile create
 ```
 
-Run all remaining commands from this directory. Preparation downloads the official **Python 3.13.9** text archive, verifies its checksum and the selected files, and retains the PSF license. The result is 55 documents in `data/documents/`. [Data provenance and license](data/SOURCE.md).
+Complete sign-in and select your project. In the [console](https://console.nebius.com), prepare:
 
-Try the CPU baseline before renting a GPU:
+- A private Object Storage bucket and an [S3 access key](https://docs.nebius.com/iam/service-accounts/access-keys) for a service account with `storage.object-editor` access to it.
+- A SecretStash secret: open Cryptography → SecretStash → Create secret. Add text entries named `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` with the key values; use Add pair for the second entry. Copy the secret's `mbsec-…` ID. [SecretStash setup](https://docs.nebius.com/mysterybox/secrets/create).
+- Your project ID and the ID of an internet-enabled subnet, available on their console pages.
 
-```bash
-python3 scripts/run_baseline.py --output-dir results-bm25
-```
-
-Open `results-bm25/report.html`. BM25 searches the same chunks by words. If it meets your needs, use it; the GPU path lets you compare a semantic model on these same questions.
-
-## 2. Sign in to Nebius
-
-Install the CLI if needed:
+Your account needs permission to create Jobs and read the secret payload (`mysterybox.payload-viewer`, included in `admin`). Replace all `YOUR_…` values below and use a fresh bucket prefix. The file contains a secret reference, not the S3 credentials.
 
 ```bash
-curl -sSL https://artifacts.nebius.cloud/cli/install.sh | bash
-```
-
-Open a new terminal and return to this directory. Use CLI **0.12.303+**; run `nebius update` if yours is older. Copy your project ID from the [console](https://console.nebius.com), replace the placeholder and complete browser sign-in:
-
-```bash
-export AI_AGENT="${AI_AGENT:-cookbook}"
-nebius version
+cat > .env <<'ENV'
 export NEBIUS_PROJECT_ID="YOUR_PROJECT_ID"
-nebius profile create cookbook --parent-id "$NEBIUS_PROJECT_ID"
-nebius profile activate cookbook
-nebius iam whoami
-```
-
-Already signed in to this project? Activate that profile instead of creating `cookbook`.
-
-Choose a **subnet**, the Endpoint's network, with outbound internet access for model downloads. Copy its `metadata.id`:
-
-```bash
-nebius vpc subnet list --parent-id "$NEBIUS_PROJECT_ID" --format json
 export NEBIUS_SUBNET_ID="YOUR_SUBNET_ID"
+export S3_SECRET_ID="YOUR_SECRET_ID"
+export RUN_ROOT="s3://YOUR_BUCKET/document-index-demo-01"
+export RECIPE_REF="$(git rev-parse HEAD)"
+ENV
+source .env
 ```
 
-<details>
-<summary>If the project has no subnet</summary>
+Jobs download worker files from `MarouaneKhoukh/nebius-serverless-cookbooks` at `RECIPE_REF`, matching this checkout. Local worker edits aren't uploaded; publish changes and select their commit to test them. For a fork, update the repository URL in `scripts/run_job.py`.
+
+The launcher uses one preemptible L40S AMD GPU, an 80 GiB temporary disk and a one-hour timeout. Review [current prices](https://nebius.com/prices); image and model setup use billable compute too.
+
+## 2 Index all 1,000 documents
+
+Validate the configuration, then submit one Job:
 
 ```bash
-export NEBIUS_NETWORK_ID="$(nebius vpc network create --parent-id "$NEBIUS_PROJECT_ID" --name cookbook-network --format jsonpath='{.metadata.id}')"
-export NEBIUS_SUBNET_ID="$(nebius vpc subnet create --parent-id "$NEBIUS_PROJECT_ID" --name cookbook-subnet --network-id "$NEBIUS_NETWORK_ID" --format jsonpath='{.metadata.id}')"
+JOB_NAME=document-index bash scripts/submit.sh --dry-run &&
+JOB_NAME=document-index bash scripts/submit.sh --async
 ```
 
-New networks have a default internet route. Use an approved subnet if your company manages networking.
-
-</details>
-
-## 3. Start the embedding model
-
-The [configuration](config/endpoint.json) uses **Qwen/Qwen3-Embedding-0.6B**, the vLLM **0.19.1** pooling runner, one L40S and a **500 GiB temporary disk**. The model is public; no Hugging Face token is required.
-
-Check the rate under **Serverless AI → Endpoints → Create endpoint → Preemptible**. L40S currently has a [flat preemptible rate](https://nebius.com/prices), although the CLI calls its setting **Follow Spot price**. Model loading and idle time are billable.
-
-Preview, create and wait for the model API:
-
-```bash
-python3 scripts/endpoint.py create \
-  --project-id "$NEBIUS_PROJECT_ID" --subnet-id "$NEBIUS_SUBNET_ID" \
-  --name cookbook-python-doc-search --dry-run
-
-python3 scripts/endpoint.py create \
-  --project-id "$NEBIUS_PROJECT_ID" --subnet-id "$NEBIUS_SUBNET_ID" \
-  --name cookbook-python-doc-search --yes
-
-python3 scripts/endpoint.py wait --timeout 1800
-```
-
-The helper passes the Endpoint URL and token privately to client commands. If readiness times out, inspect Endpoint logs and stop unused compute.
-
-<details>
-<summary>Reuse an existing embedding Endpoint</summary>
-
-Instead of creating one, copy the ID of a preemptible Endpoint serving this exact embedding model with the pooling runner:
-
-```bash
-python3 scripts/endpoint.py attach --project-id "$NEBIUS_PROJECT_ID" --id YOUR_ENDPOINT_ID
-python3 scripts/endpoint.py wait --timeout 1800
-```
-
-A chat model Endpoint cannot create the required embedding vectors.
-
-</details>
-
-<details>
-<summary>Run with an agent</summary>
-
-Install the [Nebius skills](https://github.com/nebius/skills#install) for an agent with terminal access and the signed-in CLI, then paste:
+Open Serverless AI → Jobs → document-index → Logs. Expect roughly five minutes for provisioning and the image pull before Running, based on our tests; logs can be empty during that wait. Wait for Completed and check:
 
 ```text
-Run document-search in MarouaneKhoukh/nebius-serverless-cookbooks.
-Use nebius-cloud-basics and nebius-serverless-endpoints in project
-<PROJECT_ID> and subnet <SUBNET_ID>. Follow config/endpoint.json.
-Prepare the pinned Python corpus. Show the price and confirm before
-launching unapproved compute. Index all 2,138 chunks, verify saved
-results, compare the 12 FAQ queries with BM25, then stop only this
-Endpoint and verify STOPPED. Keep tokens private.
+Finished: 1,000 new, 0 reused, 0 remaining.
 ```
 
-</details>
+The completed index contains **1,000 documents / 1,970 chunks**. The Job also runs the search below and saves its report.
 
-## 4. Save the document vectors
+## 3 Search the index
+
+The Job automatically asks:
+
+> What is stalemate in chess?
+
+Read the ranked passages and source links in its Logs. The expected first result explains that stalemate occurs when a player has no legal move and isn't in check, and that the game is a draw.
+
+In Object Storage → your bucket → document-index-demo-01 → outputs, download `search.html` and open it in your browser. `search.json` holds the same passages; the other JSON files record counts and timings. The bucket stays private.
+
+## 4 Clean up
+
+Check that `document-index` is Completed. Cancel an unfinished attempt under Serverless AI → Jobs → ⋯ → Cancel. Completed Jobs release their compute; the saved index and reports remain in Object Storage.
+
+Keep the secret and `.env` if continuing to the optional test below. When you no longer need the data, remove only this run's bucket prefix and temporary SecretStash secret. Preserve shared buckets, access keys and networking. Choose new Job names and fresh prefixes when repeating the guide.
+
+## 5 What if the Job is interrupted?
+
+**Each finished document is saved to Object Storage as its own object.** Its complete chunk embeddings survive the container. Submit the workload again with the same input, settings and prefix; it skips saved documents and finishes the rest. The run manifest refuses incompatible data or model settings.
+
+Nebius `on-failure` restarts containers that exit with an error; it doesn't recover preemption, unavailable capacity, startup failures or timeouts. This recipe uses `--restart-policy never` so you can inspect a failure and choose when to resubmit, instead of repeatedly retrying it. [Preemption and retries](https://docs.nebius.com/serverless/jobs/auto-restarts).
+
+- Wait for the previous attempt to reach a terminal state.
+- Submit a new Job with a new name and the same input, model settings and `RUN_ROOT`.
+- Check the log's reused and remaining counts. An unfinished document is recomputed.
+- Use one active Job per prefix. Changed input or model settings require a fresh prefix.
+
+### Try it yourself
+
+Use a fresh prefix for this optional controlled test. Limit the first attempt to 600 documents:
 
 ```bash
-python3 scripts/endpoint.py run -- \
-  python3 src/embed.py index --input-dir data/documents \
-  --output-dir results --batch-size 16
-
-python3 scripts/check_result.py --input-dir data/documents --output-dir results
+JOB_NAME=document-index-600 RUN_ROOT="$RUN_ROOT/optional-resume" \
+  MAX_NEW_DOCUMENTS=600 bash scripts/submit.sh --async
 ```
 
-Expect **55 documents, 2,138 saved chunks and 1,024 dimensions**. Each completed chunk is saved independently on your computer. The checker verifies IDs, source text, vector/metadata alignment and the retained license.
-
-`vectors.jsonl` and `metadata.jsonl` are the reusable collection. Keep them together. The HTML is only a report view; you can use the exported data with your own interface or vector database.
-
-## 5. Search and compare
+Wait for Completed and **600 new, 0 reused, 400 remaining**. Then submit an uncapped Job against that same test prefix:
 
 ```bash
-python3 scripts/endpoint.py run -- \
-  python3 src/embed.py query --output-dir results \
-  --text "How do I copy a file?" --top-k 5
+JOB_NAME=document-index-resume RUN_ROOT="$RUN_ROOT/optional-resume" \
+  bash scripts/submit.sh --async
 ```
 
-Open **`results/search.html`** and follow a source link to read the original reference. A similarity score expresses closeness, not the probability that a passage answers the question.
+Expect **“600 documents already saved, 400 to go.”** The Job should finish with **400 new, 600 reused, 0 remaining** and **1,000 documents / 1,970 chunks**. This deliberate application stop isn't an actual Nebius preemption. Check both test Jobs are Completed and apply the same cleanup as step 4.
 
-Run all twelve FAQ checks against Qwen and BM25:
+## Go further
+
+To test a crash during an unfinished document, use another fresh prefix. This attempt deliberately exits with code 75 during the seventeenth computed chunk:
 
 ```bash
-python3 scripts/endpoint.py run -- \
-  python3 src/embed.py check --output-dir results \
-  --queries data/queries.json --top-k 5
-
-python3 scripts/check_result.py --input-dir data/documents \
-  --output-dir results --require-checks
+JOB_NAME=document-index-crash RUN_ROOT="$RUN_ROOT/crash-test" \
+  CRASH_AFTER_CHUNKS=17 bash scripts/submit.sh --async
 ```
 
-Open **`results/retrieval-checks.html`**. The report shows both methods' ranked source documents and source hit rates. The FAQ answers are excluded from the index. Expected sources are curated from the FAQ's reference modules; these are diagnostic checks, not a blind benchmark or exhaustive relevance judgments. Inspect passages before choosing a search method. [Validation notes](VALIDATION.md).
-
-![Recorded retrieval checks against the Python documentation](docs/media/result.jpg)
-
-**Powered by Nebius Serverless AI**
-
-In the [recorded checks](docs/sample-results/), an expected reference appeared among the first five chunks for **11/12 questions with Qwen** and **10/12 with BM25**. These counts apply to the curated source checks above; inspect the returned passages as well.
-
-## 6. Resume or stop
-
-To check saved progress deliberately, use a new output directory and add `--limit-chunks 64` to the index command. Repeat the command without that limit: it should reuse 64 chunks and finish 2,074. Rerunning a complete index sends no new document-embedding requests.
-
-After an actual interruption, keep the original documents, settings and output directory. When capacity is available, explicitly start the Endpoint, wait, then repeat indexing:
+Wait for Failed, then submit without the crash flag:
 
 ```bash
-python3 scripts/endpoint.py start
-python3 scripts/endpoint.py wait --timeout 1800
-python3 scripts/endpoint.py run -- \
-  python3 src/embed.py index --input-dir data/documents --output-dir results --batch-size 16
+JOB_NAME=document-index-crash-resume RUN_ROOT="$RUN_ROOT/crash-test" \
+  bash scripts/submit.sh --async
 ```
 
-An unfinished chunk may run again. Finish the collection before querying. A new question needs the Endpoint running.
+Only fully saved documents are reused. Check Completed and **1,000 documents / 1,970 chunks**, then clean up these test Jobs and their prefix. See [worker/durable.py](worker/durable.py) for the pattern and [VALIDATION.md](VALIDATION.md) for actual execution results.
 
-Stop when finished, including after retries:
-
-```bash
-python3 scripts/endpoint.py stop
-python3 scripts/endpoint.py status
-```
-
-Verify **STOPPED** to release the GPU and temporary disk. Local vectors and reports remain. Until stopped, the Endpoint stays billable between requests.
-
-## Use your own documents
-
-Use UTF-8 `.txt` or `.md` files, up to 5 MiB each, in a separate folder and change `--input-dir`. Extract PDF text first. Choose a new output directory when changing documents, chunking or model settings. The included source checks apply only to the pinned Python corpus.
-
-For quota or capacity errors, check the console and retry when capacity is available. For changed-file errors, restore the original corpus with `scripts/prepare_data.py` or use a new input/output directory. Local checks create no cloud resources:
-
-```bash
-python3 -m unittest discover -s tests -q
-```
+For the separate Serverless Endpoint route, see [ENDPOINT.md](ENDPOINT.md).

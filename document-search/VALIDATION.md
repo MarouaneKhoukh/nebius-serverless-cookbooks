@@ -1,64 +1,49 @@
 # Validation
 
-Tested on 9 November 2026 in `eu-north1` using the real Python documentation corpus.
+## Current full-index flow
 
-| Component | Recorded configuration |
-| --- | --- |
-| Deployment | Preemptible Serverless AI Endpoint |
-| Model | `Qwen/Qwen3-Embedding-0.6B`, native 1,024-dimensional output |
-| Runtime | `vllm/vllm-openai:v0.19.1`, pooling runner |
-| Compute | One L40S, `gpu-l40s-a` / `1gpu-8vcpu-32gb` |
-| Temporary disk | 500 GiB |
-| Input | 55 Python 3.13.9 reference documents, 2,138 chunks of up to 160 words |
-| API batches | 16 document chunks per request |
+On November 13, 2026, three fresh preemptible Serverless Jobs exercised the new full-run default and optional 600/400 test in Mkhoukh. They executed published commit [`f1d8ca048018c924edef6b7cf21052b5c479974a`](https://github.com/MarouaneKhoukh/nebius-serverless-cookbooks/tree/f1d8ca048018c924edef6b7cf21052b5c479974a/document-search). The main and final resume submissions left `MAX_NEW_DOCUMENTS` unset; the launcher supplied its default `0`. Only the optional first attempt explicitly set `600`. [Effective launch settings](docs/job-results/default-flow/launch-settings.json).
 
-The serving configuration names the model without pinning its weights revision. Recorded vectors therefore describe this deployment, rather than promising bit-for-bit equality across future model updates.
+| Attempt | New documents | Reused documents | Remaining | Saved chunks |
+| --- | ---: | ---: | ---: | ---: |
+| Main flow with default settings | 1,000 | 0 | 0 | 1,970 |
+| Optional first attempt | 600 | 0 | 400 | 1,206 |
+| Optional fresh Job | 400 | 600 | 0 | 1,970 |
 
-## Corpus and query provenance
+The main Job printed `Finished: 1,000 new, 0 reused, 0 remaining.` and generated the search JSON and HTML in the same attempt. The optional test used a separate fresh prefix: one Job saved 600 documents, then a new default Job printed `600 documents already saved, 400 to go.` and finished the remaining 400. All reports match the same input/model fingerprint. This controlled application stop was not a provider preemption. [Main report](docs/job-results/default-flow/main.json), [first 600](docs/job-results/default-flow/limited-600.json), [remaining 400](docs/job-results/default-flow/resumed-400.json).
 
-The official plain-text archive SHA-256 is `2522c3aee3c6617e99f7db5e43356471108739e35fe8a97b5d10da33832ff141`. The selected source documents total 2,304,869 bytes. Preparation verified the archive, individual files and retained PSF license against [the source manifest](data/source.json). A second preparation run downloaded the official archive into an empty cache, verified the same checksum and prepared all 55 documents successfully.
+## Runtime and input
 
-The twelve questions are original text from the Python Library and Extension FAQ. FAQ answers are excluded from the indexed corpus. Expected reference modules were curated from those answers and restricted to this collection. These are source-level diagnostic checks, not independently judged passage relevance or generated-answer scores. Different retrieved reference documents can also be useful.
+Each Job used one NVIDIA L40S, `pytorch/pytorch:2.7.1-cuda12.6-cudnn9-runtime`, PyTorch 2.7.1+cu126 and Transformers 4.51.3. The model was `Qwen/Qwen3-Embedding-0.6B` at revision `97b0c614be4d77ee51c0cef4e5f07c00f9eb65b3`, with normalized 1,024-dimensional float16 vectors, last-token pooling, a maximum batch size of 16 within each document, and paragraph-aware 160-word chunks.
 
-## Indexing and reuse
+The pinned input contains 1,000 distinct Dolly reference passages and produces 1,970 chunks. Its text volume and provenance are recorded in the unchanged [corpus manifest record](docs/job-results/corpus.json); the worker validates the pinned data before indexing.
 
-The first client process saved **64 chunks**. A fresh process reused those records and embedded the remaining **2,074**, producing **2,138 complete vectors**. All vectors were finite, normalized and 1,024-dimensional, with aligned source metadata.
+## New measured phases
 
-The offline result checker passed against the actual prepared documents and complete saved index, including every input ID, source-text join, vector/metadata export order, corpus fingerprint, retained license and twelve query-check records.
+Seconds measured inside these new containers, rounded to two decimal places:
 
-A third client run reused all **2,138 chunks**, reported zero remaining work and sent no new document-embedding requests.
+| Phase | Main 1,000 | Optional 600 | Resume 400 |
+| --- | ---: | ---: | ---: |
+| Source and dependency setup | 11.40 | 10.24 | 10.11 |
+| Pinned data preparation | 0.86 | 1.75 | 0.80 |
+| Model startup | 38.20 | 36.58 | 37.55 |
+| Embedding | 21.16 | 12.46 | 8.38 |
+| Saving results | 10.12 | 6.01 | 3.92 |
+| State scan | 0.04 | 0.04 | 4.87 |
+| Index application total | 69.92 | 55.37 | 55.00 |
 
-Index fingerprint: `aaf68ca7adc224b3273334539aa51e161c49adf209fb5f03e69f2e438de7af78`.
+The index application total includes model startup, embedding, saving, scanning and small application overheads. It excludes dependency setup, input preparation, later search and report uploads. Provisioning/image-pull time is recorded separately as coarse status observations, which include polling delay and can include work already performed. [Lifecycle observations](docs/job-results/default-flow/lifecycle.json). These measurements are not runtime promises.
 
-This tested continuation across client processes. It did not test recovery from an actual GPU reclaim or GPU stop/start during indexing.
+## Search
 
-## Retrieval checks
+The main Job used the default query, “What is stalemate in chess?” The relevant stalemate passage ranked first, similarity 0.8240; the next result scored 0.5424. Results link to the pinned source dataset records. [Search JSON](docs/job-results/default-flow/search.json), [HTML report](docs/job-results/default-flow/search.html). This is an executed example, not a retrieval benchmark.
 
-| Method | Expected source first | Expected source within five chunks |
-| --- | --- | --- |
-| Qwen embedding similarity | 9/12 | 11/12 |
-| BM25, CPU | 8/12 | 10/12 |
+## Local checks and execution scope
 
-Both methods searched the same 2,138 chunks. The question “How do I copy a file?” returned `library/shutil.txt` first with Qwen. For “Is there an equivalent to C's onexit() in Python?”, Qwen returned `library/atexit.txt` first.
+68 local tests passed with `python3 -m unittest discover -s tests`. They cover full-run/search defaults, explicit-limit forwarding by both launchers, resume and mid-document crash recovery with fixture embeddings, changed-setting refusal, and safe S3 errors. Local fixtures and mocked bootstrap checks are separate from the live runs above.
 
-The binary-data question illustrates the limits of this scoring: the expected reference list names `struct` and `array`, while both methods returned the also-useful `io` reference first. The reported counts are source-check results, not a general accuracy score.
+The existing live crash records and earlier capped-default measurements remain in [historical results](docs/job-results/live/); they were not rerun for this framing/default change and do not supply any timings in the new table. The worker recovery design is unchanged. The three live Jobs used a published PR revision; a clean-`main` walkthrough after merge remains a separate release check.
 
-The local BM25 index and twelve checks took about **0.20 seconds on the author's Mac**. This is local CPU time, not a cloud or billing measurement. No cloud embedding-throughput measurement is claimed.
+## Cleanup
 
-The [recorded reports](docs/sample-results/) include every query's returned passages and provenance. Their table wrapping was adjusted offline after the run; vectors, ranked results and metrics were unchanged. The full vector working directory was retained locally; the public repository contains a lightweight report sample.
-
-## Offline checks
-
-The **31 offline checks pass**. They cover archive/document checksums, retained license, cache reuse, unsafe paths, changed inputs, native vector validation, API response ordering, partial-batch recovery, source-level scoring, export alignment, HTML escaping and offline report rendering without changing saved vectors or results. Fixture vectors are separate from the actual model results above.
-
-```bash
-python3 -m unittest discover -s tests -q
-```
-
-## Pricing and final resource state
-
-The calculator quoted **$0.7492/hour** for the preemptible VM and **$1.5484/hour** for its regular counterpart. A 500 GiB network SSD disk added **$0.048611/hour** in either case: approximately **$0.80/hour versus $1.60/hour**, before tax.
-
-These are configuration quotes, not measured indexing costs or invoices. Model loading, idle time and interruptions affect the total. L40S currently has a flat preemptible rate; this test does not demonstrate dynamic spot-price bidding. [Nebius pricing](https://nebius.com/prices).
-
-The Endpoint was verified **STOPPED** at the end of testing. Local vectors and reports were retained separately from its GPU and temporary disk.
+All three test Jobs completed and their managed compute was removed. The temporary SecretStash copy was deleted; the pre-existing S3 access key and bucket were preserved. New index and search artifacts remain in Object Storage. [Cleanup record](docs/job-results/default-flow/cleanup.json).
