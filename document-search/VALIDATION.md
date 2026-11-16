@@ -2,7 +2,7 @@
 
 ## Current full-index flow
 
-On November 13, 2026, three fresh preemptible Serverless Jobs exercised the new full-run default and optional 600/400 test in Mkhoukh. They executed published commit [`f1d8ca048018c924edef6b7cf21052b5c479974a`](https://github.com/MarouaneKhoukh/nebius-serverless-cookbooks/tree/f1d8ca048018c924edef6b7cf21052b5c479974a/document-search). The main and final resume submissions left `MAX_NEW_DOCUMENTS` unset; the launcher supplied its default `0`. Only the optional first attempt explicitly set `600`. [Effective launch settings](docs/job-results/default-flow/launch-settings.json).
+On November 13, 2026, three fresh preemptible Serverless Jobs exercised the new full-run default and optional 600/400 test. They executed published commit [`f1d8ca048018c924edef6b7cf21052b5c479974a`](https://github.com/MarouaneKhoukh/nebius-serverless-cookbooks/tree/f1d8ca048018c924edef6b7cf21052b5c479974a/document-search). The main and final resume submissions left `MAX_NEW_DOCUMENTS` unset; the launcher supplied its default `0`. Only the optional first attempt explicitly set `600`. [Effective launch settings](docs/job-results/default-flow/launch-settings.json).
 
 | Attempt | New documents | Reused documents | Remaining | Saved chunks |
 | --- | ---: | ---: | ---: | ---: |

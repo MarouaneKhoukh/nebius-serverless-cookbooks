@@ -10,7 +10,7 @@ difficulty: intermediate
 
 # Build a Document Search Index with a Serverless Job
 
-Build a searchable index of 1,000 distinct Dolly reference passages with Qwen3-Embedding-0.6B, save the embeddings to Object Storage, and search the collection by meaning. A single Serverless Job prepares the input, indexes all 1,970 chunks and writes a readable search report. It runs on a lower-cost preemptible GPU and can pick up where it left off if interrupted. [Data and license](worker/data/SOURCE.md).
+Build a searchable index of 1,000 Wikipedia reference passages from the Databricks Dolly dataset with Qwen3-Embedding-0.6B, save the embeddings to Object Storage, and search the collection by meaning. A single Serverless Job prepares the input, indexes all 1,970 chunks and writes a readable search report. It runs on a lower-cost preemptible GPU and can pick up where it left off if interrupted.
 
 ## 1 Set up
 
@@ -44,6 +44,8 @@ source .env
 Jobs download worker files from `MarouaneKhoukh/nebius-serverless-cookbooks` at `RECIPE_REF`, matching this checkout. Local worker edits aren't uploaded; publish changes and select their commit to test them. For a fork, update the repository URL in `scripts/run_job.py`.
 
 The launcher uses one preemptible L40S AMD GPU, an 80 GiB temporary disk and a one-hour timeout. Review [current prices](https://nebius.com/prices); image and model setup use billable compute too.
+
+Each Job prepares the same pinned passage data automatically. These are reference passages, not full articles; their [provenance and CC BY-SA 3.0 license](worker/data/SOURCE.md) are included.
 
 ## 2 Index all 1,000 documents
 
@@ -82,7 +84,7 @@ Keep the secret and `.env` if continuing to the optional test below. When you no
 
 **Each finished document is saved to Object Storage as its own object.** Its complete chunk embeddings survive the container. Submit the workload again with the same input, settings and prefix; it skips saved documents and finishes the rest. The run manifest refuses incompatible data or model settings.
 
-Nebius `on-failure` restarts containers that exit with an error; it doesn't recover preemption, unavailable capacity, startup failures or timeouts. This recipe uses `--restart-policy never` so you can inspect a failure and choose when to resubmit, instead of repeatedly retrying it. [Preemption and retries](https://docs.nebius.com/serverless/jobs/auto-restarts).
+`on-failure` restarts a container that exits with an error while its Job is running. It does not recover from preemption, unavailable capacity at startup, unexpected VM stops, or startup failures and timeouts. This recipe uses `--restart-policy never` so you can inspect a failure and choose when to resubmit. [Automatic job restarts](https://docs.nebius.com/serverless/jobs/auto-restarts#when-jobs-arent-restarted).
 
 - Wait for the previous attempt to reach a terminal state.
 - Submit a new Job with a new name and the same input, model settings and `RUN_ROOT`.
@@ -124,5 +126,18 @@ JOB_NAME=document-index-crash-resume RUN_ROOT="$RUN_ROOT/crash-test" \
 ```
 
 Only fully saved documents are reused. Check Completed and **1,000 documents / 1,970 chunks**, then clean up these test Jobs and their prefix. See [worker/durable.py](worker/durable.py) for the pattern and [VALIDATION.md](VALIDATION.md) for actual execution results.
+
+## Run with an agent
+
+With the [Nebius skills installed](https://github.com/nebius/skills#install), share this cookbook and ask:
+
+```text
+Run the document-search recipe at my checked-out RECIPE_REF with
+nebius-cloud-basics and nebius-serverless-jobs in my selected project
+and approved GPU budget. Keep credentials in SecretStash. Use the
+default Job to index all 1,000 documents, inspect the search result,
+and verify the Job is terminal. Preserve the saved index and my
+other resources.
+```
 
 For the separate Serverless Endpoint route, see [ENDPOINT.md](ENDPOINT.md).
