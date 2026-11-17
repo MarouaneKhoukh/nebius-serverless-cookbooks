@@ -148,7 +148,7 @@ def create(args):
     if args.subnet_id:
         command += ['--subnet-id', args.subnet_id]
     print(shlex.join([CLI, *command, '--dry-run' if args.dry_run else '--async']))
-    print('SPOT GPU: paid from provisioning through stop, including model download and idle time. '
+    print('PREEMPTIBLE GPU: running compute is billed, including image/model loading and idle time. '
           + ('The selected policy caps the hourly market price; capacity is not guaranteed.' if args.spot_pricing_policy_id
              else 'Following the Spot market price without a price cap; capacity is not guaranteed.'))
     if args.dry_run:

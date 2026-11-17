@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify bundled VBench inputs, or prepare a larger reproducible batch."""
+"""Verify bundled VBench inputs, or prepare a reproducible batch."""
 import argparse
 from pathlib import Path
 import sys
@@ -12,7 +12,7 @@ def main():
     parser.add_argument("--verify", action="store_true", help="Check bundled CSV, selection and license without network access")
     parser.add_argument("--output", type=Path, default=ROOT / "data/prompts.csv")
     parser.add_argument("--cache-dir", type=Path, default=ROOT / ".state/vbench-source")
-    parser.add_argument("--per-category", type=int, default=1)
+    parser.add_argument("--per-category", type=int, default=25)
     parser.add_argument("--seed", type=int, default=42)
     args = parser.parse_args()
     try:
