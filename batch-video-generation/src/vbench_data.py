@@ -81,7 +81,7 @@ def encode_csv(rows: list[dict]) -> bytes:
     return stream.getvalue().encode("utf-8")
 
 
-def prepare(output: Path, cache_dir: Path, *, per_category: int = 1, seed: int = 42) -> dict:
+def prepare(output: Path, cache_dir: Path, *, per_category: int = 25, seed: int = 42) -> dict:
     source = definition()
     contents = {relative: fetch_source(relative, spec, cache_dir, source)
                 for relative, spec in source["files"].items()}

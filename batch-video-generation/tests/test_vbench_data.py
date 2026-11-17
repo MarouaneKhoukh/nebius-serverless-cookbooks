@@ -1,5 +1,6 @@
 """Public-source identity and reproducible selection checks; no paid inference."""
 import csv
+from collections import Counter
 import importlib.util
 import json
 from pathlib import Path
@@ -17,14 +18,23 @@ spec.loader.exec_module(video)
 
 
 class VBenchDataTests(unittest.TestCase):
-    def test_bundled_batch_has_one_sourced_prompt_per_category(self):
+    def test_bundled_batch_has_25_sourced_prompts_per_category(self):
         source = vbench_data.verify(ROOT / "data/prompts.csv")
         rows = video.read_prompts(ROOT / "data/prompts.csv")
-        self.assertEqual(len(rows), 8)
-        self.assertEqual({row["category"] for row in rows}, set(vbench_data.CATEGORIES))
+        self.assertEqual(len(rows), 200)
+        self.assertEqual(source["per_category"], 25)
+        self.assertEqual(Counter(row["category"] for row in rows),
+                         {category: 25 for category in vbench_data.CATEGORIES})
         self.assertEqual(rows, source["selection"])
-        self.assertEqual(len({row["seed"] for row in rows}), 8)
+        self.assertEqual(len({row["id"] for row in rows}), 200)
+        self.assertEqual(len({row["seed"] for row in rows}), 200)
         self.assertTrue(all(row["source_revision"] == source["revision"] for row in rows))
+
+    def test_historical_eight_prompt_selection_remains_valid(self):
+        source = vbench_data.verify(ROOT / "docs/sample-results/input.csv")
+        self.assertEqual(source["rows"], 8)
+        self.assertEqual(source["per_category"], 1)
+        self.assertEqual(len(video.read_prompts(ROOT / "docs/sample-results/input.csv")), 8)
 
     def test_changed_csv_cannot_reuse_its_provenance(self):
         with tempfile.TemporaryDirectory() as directory:
