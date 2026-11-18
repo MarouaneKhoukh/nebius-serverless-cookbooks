@@ -14,7 +14,9 @@ difficulty: intermediate
 
 Generate 200 clips with Wan2.1-T2V-1.3B from published VBench video-generation prompts, 25 per content category. Review them in a gallery and use the manifest to trace every clip to its prompt, seed and settings. A repeatable prompt set helps you compare generation settings or model versions.
 
-Nebius Serverless AI hosts Wan behind an authenticated Endpoint. Your computer submits prompts and saves each finished download. We’ll use a preemptible GPU with a price cap; saved clips remain on your computer if the GPU is reclaimed.
+Nebius Serverless AI hosts Wan behind an authenticated Endpoint and manages the underlying VM. Your computer submits prompts and saves each finished download.
+
+[Preemptible VMs](https://docs.nebius.com/compute/virtual-machines/preemptible) can lower GPU costs for batch work that can pause and resume. Nebius can stop the VM when capacity is needed elsewhere or when the current price exceeds your cap. We’ll use a price cap and save clips outside the Endpoint, so restarting compute doesn’t mean regenerating completed work.
 
 ![Generated video examples from VBench prompts](docs/media/result.jpg)
 
@@ -38,8 +40,6 @@ Complete sign-in and choose your project. If already configured, use `nebius pro
 Follow [CLI installation](https://docs.nebius.com/cli/install); run `nebius update` if it is older than 0.12.303. Install FFmpeg with `brew install ffmpeg` on macOS, or `sudo apt-get update && sudo apt-get install -y ffmpeg` on Ubuntu. If needed, [create a network and subnet](https://docs.nebius.com/vpc/networking/resources). Return to this folder after opening a new terminal.
 
 </details>
-
-Check the tools and bundled inputs without calling a model:
 
 ```bash
 ffmpeg -version
