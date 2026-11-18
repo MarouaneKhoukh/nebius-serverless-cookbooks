@@ -16,7 +16,7 @@ Generate a 200-clip video dataset with Wan2.1-T2V-1.3B from VBench’s published
 
 Nebius Serverless AI hosts Wan behind an authenticated Endpoint and manages the underlying VM. Your computer submits prompts and saves each finished download.
 
-[Preemptible VMs](https://docs.nebius.com/compute/virtual-machines/preemptible) can lower batch GPU costs, with finished clips saved outside the Endpoint so they can be reused if capacity is reclaimed or the price exceeds your cap.
+We’ll use a lower-cost [preemptible GPU](https://docs.nebius.com/compute/virtual-machines/preemptible). Finished clips are saved on your computer and reused after a restart.
 
 ![Selected frames from the completed 200-clip dataset](docs/media/result.jpg)
 
@@ -36,6 +36,8 @@ Complete sign-in and choose your project. If already configured, use `nebius pro
 
 For missing tools, follow [CLI installation](https://docs.nebius.com/cli/install) or run `nebius update`; install FFmpeg with `brew install ffmpeg` on macOS or `sudo apt-get update && sudo apt-get install -y ffmpeg` on Ubuntu. If needed, [create a network and subnet](https://docs.nebius.com/vpc/networking/resources). Return here after opening a new terminal.
 
+Check the tools and the bundled prompts:
+
 ```bash
 ffmpeg -version
 ffprobe -version
@@ -47,7 +49,7 @@ Expect **200 prompts** and **49 frames at 832×480**. The [source selection and 
 
 ## 2. Start Wan with a price cap
 
-In the [console](https://console.nebius.com), open Billing → Pricing → Pricing policy → Create pricing policy. Select your project and `gpu-h100-sxm`, check the current rate, and enter the maximum price per GPU hour you accept. A cap limits price exposure; it doesn’t guarantee capacity. [Pricing policy details](https://docs.nebius.com/signup-billing/manage-pricing-policy).
+In the [console](https://console.nebius.com), open Billing → Pricing → Pricing policy → Create pricing policy. Select your project and `gpu-h100-sxm`, check the current rate, and enter the maximum price per GPU hour you accept. The cap limits what you pay per GPU hour; it doesn’t guarantee a GPU. [Pricing policy details](https://docs.nebius.com/signup-billing/manage-pricing-policy).
 
 Copy the project ID from the project selector’s ⋯ menu → Copy project ID, the subnet ID from Networking → Virtual Networks → Subnets, and the new policy ID. Replace all three values:
 
@@ -60,11 +62,11 @@ ENV
 source .env
 ```
 
-The [configuration](config/endpoint.json) uses vLLM-Omni 0.24.0, one H100 and a 500 GiB temporary disk. Wan is public; no Hugging Face token is needed. You pay for compute used to pull the image and load the model, plus idle time. The disk is billed separately.
+The [configuration](config/endpoint.json) uses vLLM-Omni 0.24.0, one H100 and a 500 GiB temporary disk. Wan is public; no Hugging Face token is needed. You’re also billed while the image is pulled and the model loads, and while the Endpoint is idle. The disk is billed separately.
 
-At the recorded launch quotes, our validation sessions would cost roughly $7.65 before tax, including startup, paused time and the separate 26-clip attempt. Quotes varied between runs: about $2.12/hour and $2.42/hour for GPU and disk. See the [cost breakdown](VALIDATION.md#quoted-compute-and-disk-costs).
+The quoted GPU-and-disk rate was about $2.12–$2.42/hour. At those rates, budget a few dollars for a full run including startup; see the [cost details](VALIDATION.md#quoted-compute-and-disk-costs).
 
-The first command validates the configuration; the second creates the Endpoint; the last waits for the model. On Ubuntu, replace the `caffeinate -i` prefix below with `systemd-inhibit --what=sleep --mode=block`.
+The first command checks your settings; the second creates the Endpoint; the last waits for the model. On Ubuntu, replace `caffeinate -i` with [`systemd-inhibit --what=sleep --mode=block`](https://manpages.ubuntu.com/manpages/noble/man1/systemd-inhibit.1.html) in every command.
 
 ```bash
 python3 scripts/endpoint.py create \
@@ -78,15 +80,13 @@ python3 scripts/endpoint.py create \
 caffeinate -i python3 scripts/endpoint.py wait --timeout 1800
 ```
 
-Startup and model loading took about 6½ minutes in our tests. Proceed at **Model API ready**. The helper keeps its selection in `.state/` and passes credentials privately. A timeout doesn’t stop compute; inspect logs and stop it while diagnosing. In a new terminal, return here and run `source .env`.
+Startup and model loading took about 6½ minutes in our tests. Continue when it prints **Model API ready**. The helper keeps its selection in `.state/` and passes credentials privately. A timeout doesn’t stop compute; inspect logs and stop it while diagnosing. If you open a new terminal, return to this folder and run `source .env`.
 
 For uncapped pricing, omit `--spot-pricing-policy-id` from both create commands. The helper then follows the spot price, which can exceed the regular rate.
 
 ## 3. Generate and review 200 clips
 
-Keep this computer awake and connected, with the lid open: it sends each prompt and downloads each clip. Commands below use `caffeinate -i` on macOS. On Ubuntu, replace that prefix with `systemd-inhibit --what=sleep --mode=block` ([official manpage](https://manpages.ubuntu.com/manpages/noble/man1/systemd-inhibit.1.html)). On an automated runner, use persistent storage for the output folder. For the main Ubuntu run: `systemd-inhibit --what=sleep --mode=block python3 scripts/endpoint.py run -- python3 src/generate.py --input data/prompts.csv --output results-vbench-200 && python3 scripts/check_results.py results-vbench-200`.
-
-The dataset completed across resumed runs whose client-command spans totalled about 2 h 45 min, including pauses. The final 143-clip continuation took 1 h 25 min 42 s, including a roughly 46-minute wall-clock gap whose cause was not confirmed. Across all 200 clips, recorded per-clip timers totalled 54 min 13 s, averaging 16.27 seconds per clip; [validation](VALIDATION.md) describes the earlier confirmed Mac sleep and what each clock includes.
+Allow about an hour for 200 clips; recorded clip timers averaged 16 seconds in our run. Keep this computer awake and connected, with the lid open: it sends each prompt and downloads each clip. On an automated runner, use persistent storage for the output folder.
 
 ```bash
 caffeinate -i python3 scripts/endpoint.py run -- \
@@ -154,7 +154,7 @@ caffeinate -i python3 scripts/endpoint.py run -- \
   python3 src/generate.py --input data/prompts.csv --output results-vbench-200
 ```
 
-If it reports “server no longer has this request” or “submission outcome or Endpoint changed”, it stopped before submitting a replacement. If you connected to a replacement Endpoint, confirm the previous Endpoint is STOPPED in the console. Then use `--retry-lost` to allow a new paid request for unfinished work:
+If it reports “server no longer has this request” or “submission outcome or Endpoint changed”, it stopped before submitting a replacement. If you created a new Endpoint instead of restarting the old one, confirm the old Endpoint shows STOPPED in the console. Then use `--retry-lost` to allow a new paid request for unfinished work:
 
 ```bash
 caffeinate -i python3 scripts/endpoint.py run -- \
@@ -181,7 +181,7 @@ caffeinate -i python3 scripts/endpoint.py run -- \
 python3 scripts/check_results.py results-resume-test
 ```
 
-Expect **Generated 180; reused 20** and 200 valid clips. This is a deliberate client stop, not a preemption; the separate 20/180 exercise was not run live. Finish with step 4 and confirm **STOPPED**. For local checks, run `python3 -m unittest discover -s tests`; see [VALIDATION.md](VALIDATION.md) for execution records.
+Expect **Generated 180; reused 20** and 200 valid clips. This is a deliberate client stop, not a preemption. Finish with step 4 and confirm **STOPPED**. For local checks, run `python3 -m unittest discover -s tests`; see [VALIDATION.md](VALIDATION.md) for execution records.
 
 ## Run with an agent
 
