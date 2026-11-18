@@ -60,6 +60,9 @@ def cli(args, *, required=True):
     except json.JSONDecodeError:
         if '--dry-run' in args:
             return {}
+        if args[:3] in (['ai', 'endpoint', 'start'], ['ai', 'endpoint', 'stop']) and '--async' in args:
+            # Async lifecycle calls can return a plain operation ID; the caller polls the Endpoint state.
+            return {}
         # Some versions prefix create output with a generated token. It remains in memory.
         for i, char in enumerate(proc.stdout if args[:3] == ['ai', 'endpoint', 'create'] else ''):
             if char == '{':
