@@ -18,6 +18,7 @@ import urllib.request
 ROOT = Path(__file__).resolve().parents[1]
 STATE = ROOT / '.state' / 'endpoint.json'
 CLI = os.environ.get('NEBIUS_BIN', 'nebius')
+# AI_AGENT identifies the CLI caller to Nebius; preserve an existing label or default to cookbook below.
 
 
 def resource_id(prefix):
