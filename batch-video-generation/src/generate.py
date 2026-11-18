@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate a small Wan video batch; preserve completed clips outside the GPU VM."""
+"""Generate a Wan video dataset; preserve completed clips outside the GPU VM."""
 from __future__ import annotations
 
 import argparse
@@ -168,7 +168,7 @@ class Client:
                         while chunk := response.read(1024 * 1024):
                             size += len(chunk)
                             if size > 200 * 1024 * 1024:
-                                raise RecipeError("Video exceeds the 200 MiB limit for this small demo.")
+                                raise RecipeError("Video exceeds the per-clip download limit of 200 MiB.")
                             stream.write(chunk)
                         stream.flush()
                         os.fsync(stream.fileno())
@@ -373,8 +373,8 @@ def gallery(output: Path, rows: list[dict], args: argparse.Namespace) -> None:
                             "validation": item["validation"]} for item in done],
                "note": "A generation batch for inspection. No VBench quality score is calculated."}
     atomic_json(output / "summary.json", summary)
-    heading = "Generate a Video Batch from VBench Prompts" if provenance else "Generate a Video Batch"
-    source_note = 'One reproducible prompt selection per content category. This subset does not produce a full VBench score.' if provenance else 'Custom input prompts. Completed clips remain available if the GPU stops.'
+    heading = "Video Dataset from VBench Prompts" if provenance else "Video Dataset from Your Prompts"
+    source_note = 'Reproducible VBench prompts with recorded source lines and seeds. This batch does not produce a VBench score.' if provenance else 'Custom input prompts. Completed clips remain available if the GPU stops.'
     (output / "index.html").write_text(f'''<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{html.escape(heading)}</title><style>
     *{{box-sizing:border-box}}body{{margin:0;background:#f6f5ef;color:#25271f;font:16px/1.6 system-ui,sans-serif}}main{{max-width:1150px;padding:38px 24px;margin:auto}}header{{display:flex;justify-content:space-between;gap:20px;align-items:center;border-bottom:1px solid #d7d8cb;padding-bottom:22px}}header img{{width:145px;height:auto}}.badge{{font-size:13px;border:1px solid #c9ccba;border-radius:20px;padding:6px 13px}}h1{{font-size:clamp(30px,5vw,49px);line-height:1.1;max-width:880px;margin:40px 0 16px}}.intro{{color:#656a5a;max-width:850px}}.grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:22px;margin:30px 0}}article{{border:1px solid #d5d6ca;border-radius:16px;overflow:hidden;background:white}}video{{width:100%;aspect-ratio:832/480;display:block;background:#22261e}}article>div{{padding:20px}}h2{{font-size:20px;margin:0 0 8px}}p{{margin:0 0 14px}}small{{display:block;color:#747963;margin-top:14px}}a{{color:#384512;font-weight:600}}footer{{padding:20px 0;border-top:1px solid #d7d8cb;color:#72765f;font-size:13px}}@media(max-width:600px){{header{{align-items:flex-start;flex-direction:column}}}}
     </style><main><header><img src="brand/nebius-logo.svg" alt="Nebius"><span class="badge">Powered by Nebius Serverless AI</span></header><h1>{html.escape(heading)}</h1><p class="intro">{len(done)} of {len(rows)} clips saved. {html.escape(source_note)}</p><p><a href="clips.csv">Clip manifest CSV</a> · <a href="summary.json">Run metadata</a> · <a href="input.csv">Input prompts</a></p><div class="grid">{''.join(cards) or '<p>No completed clips yet. Run the batch to fill your collection.</p>'}</div><footer>Wan2.1-T2V-1.3B · {args.frames} frames at {args.fps} fps, {args.steps} inference steps. Inspect prompt alignment and motion before using generated media.</footer></main></html>''', encoding="utf-8")

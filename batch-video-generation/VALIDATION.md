@@ -1,38 +1,75 @@
 # Validation
 
-## Nebius run: November 9, 2026
+## Completed 200-clip dataset: 2026-11-18 (UTC)
 
-An earlier selection of eight VBench prompts produced downloadable MP4s on a **preemptible H100** Endpoint. [Saved gallery and clips](docs/sample-results/index.html) · [Output manifest](docs/sample-results/clips.csv) · [Machine-readable results](docs/sample-results/summary.json).
+The saved Wan dataset reached 200 clips across an interrupted execution and two resumes. The full result checker then passed. [Complete-dataset evidence](docs/resume-results/complete-200.json) · [All 200 clip records](docs/resume-results/clips-200.csv). The earlier [57-clip check](docs/resume-results/summary.json) and [its records](docs/resume-results/clips.csv) remain separate.
 
-- Runtime: `vllm/vllm-omni:v0.24.0`, `Wan-AI/Wan2.1-T2V-1.3B-Diffusers`, one `gpu-h100-sxm`, preset `1gpu-16vcpu-200gb`, 500 GiB temporary disk.
-- Settings: 832×480, **49 frames at 16 fps**, 20 inference steps, guidance 5.0, flow shift 3.0, boundary ratio 0.0. Each clip is **3.0625 seconds**. Per-prompt seeds are in the input CSV.
-- Inputs: one unchanged prompt per VBench content category, selection seed 42, pinned revision `fd18b3d055cb0fc6f066ca90fe2c3c8cbb698490`. CSV SHA256: `40c6f386ddc9136f8bd2b529072c2ab25421f2ef8adf8105a37a71a24e3b4ba2`.
+| Execution | New saved clips | Reused | Total saved | Result |
+| --- | ---: | ---: | ---: | --- |
+| Initial execution | 54 | 0 | 54 | Client interrupted; no final summary was printed |
+| First resume | 3 | 54 | 57 | `Generated 3; reused 54` |
+| Completion resume | 143 | 57 | 200 | `Generated 143; reused 57` |
 
-The first invocation used `--limit 2` and generated two clips. The next invocation generated six and reused two. A third invocation reported **Generated 0; reused 8**, without new generation requests. The completed downloads remain usable after the Endpoint stops.
+The original 57 MP4s and completion records retained their hashes. All 200 saved file hashes match their records; the shipped checker verified the input joins and decoded 49 frames from every clip. Its result was:
 
-The Endpoint received one stop request after the batch; the helper verified **STOPPED** successfully.
-
-The result checker passed on both the original output and the public copy:
-
-```bash
-python3 scripts/check_results.py docs/sample-results
+```json
+{
+  "completed": 200,
+  "dataset": "VBench",
+  "frames_per_clip": [
+    49
+  ],
+  "input_sha256": "f38cf4cb4cb1b1deb18955567f17abe289157e2636a808776b275f41648ffbd6",
+  "decode_passed": true
+}
 ```
 
-It verified all eight source/input joins and file hashes, then decoded **49 frames from every MP4** with FFmpeg. The exported gallery includes actual middle-frame posters. Original request caches remain private; published artifacts contain no account IDs, Endpoint addresses, auth tokens or signed download URLs.
+The initial interruption followed confirmed Mac clamshell sleep; no provider preemption was established. The first resume explicitly allowed replacement of the lost unfinished request while preserving the 54 finished clips.
 
-The quoted rate for this run was **$0.80/hour for the H100 plus $0.048611/hour for the disk**, or **$0.848611/hour (about $0.85)** before tax. This is a changing hourly quote, not a measured bill or cost per clip; loading and idle time also use paid compute.
+A separate fresh attempt was deliberately stopped after 26 clips to return to the original 54-clip collection and demonstrate recovery. That stop was intentional, with no model or provider failure. Those outputs are excluded from the dataset; their Endpoint time remains included in the cost estimate.
 
-## What this establishes
+## Runtime and measured time
 
-The batch ran on preemptible compute, exported playable clips and reused completed work. It did **not** encounter a provider-initiated reclamation. Lost-request and ambiguous-request handling were checked with local fixtures, not a live GPU interruption.
+The runtime was `vllm/vllm-omni:v0.24.0` with `Wan-AI/Wan2.1-T2V-1.3B-Diffusers`, one preemptible H100 (`gpu-h100-sxm`, `1gpu-16vcpu-200gb`) and a 500 GiB temporary disk. Generation used 832×480, 49 frames at 16 fps and 20 steps. The pinned input contains 200 distinct VBench prompts, 25 per category. [Source, seeds and license](data/SOURCE.md).
 
-This recorded run used eight prompts, with one generation seed per prompt. It does not run the complete VBench sampling/scoring protocol, establish general video quality or support a leaderboard comparison. Inspect prompt alignment and motion yourself before using these short previews.
+| Measurement | Client wall-clock seconds |
+| --- | ---: |
+| Initial generation attempt, approximate wall span | 4721.35 |
+| First resume: 3 new, 54 reused | 49.83 |
+| Completion resume: 143 new, 57 reused | 5141.74 |
+| Sum of these generation-command spans | 9912.92 |
+| Completion Endpoint restart to Model API ready | 398.34 |
+| Full 200-item result checker | 32.23 |
 
-## Local checks for the 200-prompt default
+The initial wall span is approximate because its exact command start was not recorded; it uses the preceding readiness-phase finish. It includes the confirmed client-sleep interruption. The completion command also includes an observed client wall-clock gap of roughly 46 minutes; its cause was not confirmed. Both intervals remain in the wall sum. Between-session calendar gaps and repeated startups are outside that sum. It is not an awake, uninterrupted 200-clip benchmark.
 
-**33 tests passed**, covering source identity, deterministic selection, request/download handling, MP4 verification, completed-clip reuse, changed or corrupt results, lost requests, export manifests and the Endpoint helper. Fixture videos are separate from the generated Wan clips above. The default input checks passed for 200 distinct prompts, 25 per category. Its CSV SHA256 is `f38cf4cb4cb1b1deb18955567f17abe289157e2636a808776b275f41648ffbd6`. The result checker also decoded all eight historical published clips with 49 frames each and verified their saved hashes and metadata.
+The initial command separately recorded 927.73 monotonic seconds. Across the 200 clip records, the monotonic timers sum to 3253.000 seconds and average 16.265 seconds. These timers start after POST submission and cover polling, downloading and decoding; they exclude host suspension, POST overhead, later hashing/record writes and gallery export. They are separate from wall time and GPU busy time.
 
-A local API simulation exercised the full 200-row input using generated fixture-video bytes in place of model inference. Each completed 200-item output passed the result checker, including metadata, input joins, hashes and 49-frame decoding:
+## Quoted compute and disk costs
+
+The launch quote was USD 2.118611/hour for the initial session and USD 2.418611/hour for the November 18 sessions. The GPU price cap was USD 2.50/hour, with disk charges additional. The rough cost calculation applies each launch quote to its observed create/start-to-STOPPED window:
+
+| Session window | Window seconds | Quote-based estimate, USD |
+| --- | ---: | ---: |
+| Initial interrupted execution | 5404.83 | 3.18 |
+| Separate 26-clip attempt and first resume | 1007.37 | 0.68 |
+| Brief start-response recovery | 19.67 | 0.01 |
+| Completion and any optional test that ran | 5628.01 | 3.78 |
+| Listed-window total | | 7.65 |
+
+These approximations include startup, idle/sleep time, the excluded 26-clip attempt and the listed cleanup windows. They hold each launch quote constant; actual spot-rate history and invoices are unavailable. Windows can include unbilled allocation waiting and polling overhead. One additional brief diagnostic restart has no recorded interval and is not costed. Tax and charges outside quoted compute/disk are excluded. This is a rough validation-session cost, not an invoice or a per-clip price.
+
+## Recovery exercise and cleanup
+
+The separate 20/180 exercise was not run live because the remaining validation window was too short. Its README commands describe a deliberate client limit, not a provider preemption.
+
+The Endpoint was stopped and confirmed STOPPED at 2026-11-18T11:44:57.935846+00:00. The earlier Endpoints were also confirmed STOPPED. Downloaded clips, records and galleries remain on the client’s disk.
+
+## Local checks
+
+34 tests passed with `python3 -m unittest discover -s tests`. They cover input provenance, request/download handling, reuse, changed or corrupt results, lost/ambiguous requests and the Endpoint helper. The actual CLI 0.12.305 returned a plain operation ID for an asynchronous lifecycle command; the helper now accepts that response and polls the resulting state. This compatibility case is covered by a test.
+
+Earlier local API simulations used fixture-video bytes rather than Wan inference:
 
 | Local fixture run | New requests | Reused | Completed |
 | --- | ---: | ---: | ---: |
@@ -41,13 +78,10 @@ A local API simulation exercised the full 200-row input using generated fixture-
 | Controlled limit | 20 | 0 | 20 |
 | Resume from saved files | 180 | 20 | 200 |
 
-These check the request, saving, reuse and export paths. The fixture clips were temporary local test files; they are not published as Wan results.
+These fixture checks are separate from the live dataset evidence above. No VBench quality score is calculated.
 
-The current main walkthrough submits 200 prompts without a limit. Neither that full run nor the optional 20/180 recovery example was executed on a GPU during this update. The November 9 run above remains the live evidence: two new clips, then six with two reused, then eight reused. No new cloud resources were created for these local checks. The 200-clip GPU run remains to be validated; these results do not establish its runtime, cost or long-run model stability.
+## Historical eight-clip run: November 9, 2026
 
-```bash
-python3 scripts/prepare_data.py --verify
-python3 src/generate.py --check-input
-python3 scripts/check_results.py docs/sample-results
-python3 -m unittest discover -s tests
-```
+An earlier selection generated two clips, then six while reusing two, then reported `Generated 0; reused 8`. Its checker verified hashes and source/input joins and decoded 49 frames from each MP4. The Endpoint was stopped and confirmed STOPPED; no provider-initiated reclamation occurred. [Historical gallery](docs/sample-results/index.html) · [Manifest](docs/sample-results/clips.csv) · [Settings and counts](docs/sample-results/summary.json).
+
+Its quoted rate was USD 0.848611/hour before tax. Neither that historical price nor its timings supplies a measurement for the current 200-clip dataset.

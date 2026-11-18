@@ -161,6 +161,24 @@ class EndpointHelperTests(unittest.TestCase):
         self.assertEqual(mutation[mutation.index("--id") + 1], "aiendpoint-recipe")
         self.assertEqual(mutation[mutation.index("--retries") + 1], "1")
 
+    def test_async_lifecycle_text_acknowledgement_is_followed_by_state_verification(self):
+        stopped = json.loads(json.dumps(self.ep))
+        stopped["status"]["state"] = "STOPPED"
+        for action, before, after in (("start", stopped, self.ep), ("stop", self.ep, stopped)):
+            responses = [subprocess.CompletedProcess([], 0, json.dumps(before), ""),
+                         subprocess.CompletedProcess([], 0, "operation-example\n", ""),
+                         subprocess.CompletedProcess([], 0, json.dumps(after), "")]
+            output = io.StringIO()
+            with self.subTest(action=action), patch("sys.argv", ["endpoint.py", action]), \
+                 patch("subprocess.run", side_effect=responses) as run, \
+                 contextlib.redirect_stdout(output):
+                endpoint.main()
+            self.assertEqual(json.loads(output.getvalue())["state"], after["status"]["state"])
+            self.assertEqual(run.call_count, 3)
+            self.assertEqual(run.call_args_list[1].args[0][1:4], ["ai", "endpoint", action])
+            self.assertEqual(run.call_args_list[2].args[0][1:4], ["ai", "endpoint", "get"])
+            self.assertNotIn(FIXTURE_TOKEN, output.getvalue() + endpoint.STATE.read_text())
+
     def test_wait_does_not_try_http_until_managed_url_exists(self):
         pending = json.loads(json.dumps(self.ep))
         pending["status"] = {"state": "STARTING", "public_endpoints": []}
